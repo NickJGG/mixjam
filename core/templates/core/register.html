@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Toke Journey</title>
+	
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/index.css' %}">
+	
+	<style>
+		@font-face {
+			font-family: Roboto-Thin;
+			src: url({% static 'font/roboto/Roboto-Thin.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Light;
+			src: url({% static 'font/roboto/Roboto-Light.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Regular;
+			src: url({% static 'font/roboto/Roboto-Regular.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Medium;
+			src: url({% static 'font/roboto/Roboto-Medium.ttf' %});
+		}
+	</style>
+</head>
+<body>
+	<div id = "top">
+		
+	</div>
+	<div id = "mid">
+		<form id = "post" method = "POST">
+			{% csrf_token %}
+		
+			<input type = "text" name = "username" placeholder = "Username">
+			<input type = "email" name = "email" placeholder = "Email">
+			<input type = "password" name = "password" placeholder = "Password">
+			<input type = "password" name = "confirm-password" placeholder = "Confirm Password">
+			<br>
+			<input type = "submit" value = "REGISTER">
+			<a id = "alt-link" href = "{% url 'login' %}">login</a>
+		</form>
+	</div>
+	<div id = "bot">
+		
+	</div>
+
+	<script type = "text/javascript" src = "{% static 'js/jquery.js' %}"></script>
+</body>
+</html>

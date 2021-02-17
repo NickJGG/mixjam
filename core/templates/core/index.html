@@ -1,0 +1,30 @@
+{% load static %}
+
+<html>
+<head>
+	<title>Syncify</title>
+</head>
+<body>
+	<a id = "authorize">Authorize</a>
+	
+	<script src = "{% static 'js/jquery.js' %}"></script>
+	<script>
+		var params = {
+			response_type: 'code',
+			client_id: '8b817932e631474cb15f7e36edcfc53b',
+			scope: 'streaming app-remote-control user-modify-playback-state user-read-currently-playing',
+			redirect_uri: 'http://localhost:8000/callback/',
+			state: null
+		};
+
+		var esc = encodeURIComponent;
+		var query = 'https://accounts.spotify.com/authorize?' + Object.keys(params)
+			.map(k => esc(k) + '=' + esc(params[k]))
+			.join('&');
+		
+		console.log(query);
+		
+		$('#authorize').attr('href', query);
+	</script>
+</body>
+</html>

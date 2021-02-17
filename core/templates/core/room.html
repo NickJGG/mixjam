@@ -1,0 +1,104 @@
+{% load static %}
+
+<html>
+<head>
+	<title>Syncify</title>
+	
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/room.css' %}">
+	
+	<style>
+		@font-face {
+			font-family: Roboto-Thin;
+			src: url({% static 'font/roboto/Roboto-Thin.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Light;
+			src: url({% static 'font/roboto/Roboto-Light.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Regular;
+			src: url({% static 'font/roboto/Roboto-Regular.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Medium;
+			src: url({% static 'font/roboto/Roboto-Medium.ttf' %});
+		}
+	</style>
+</head>
+<body>
+	<div id = "player-container">
+		<div id = "player">
+			<div id = "song-info">
+				<div id = "song-cover">
+					<img src = "{{ room_state.song_state.item.album.images.0.url }}">
+				</div>
+				<div id = "song-details">
+					<p id = "song-title">{{ room_state.song_state.item.name }}</p>
+					<p id = "song-artist">{{ room_state.song_state.item.artists.0.name }}</p>
+				</div>
+			</div>
+			<div id = "controls">
+				<div id = "previous" class = "control">
+					<img src = "{% static 'img/icons/rewind-white-24.png' %}">
+				</div>
+				<div id = "play-pause" class = "control">
+					<img src = "{% if room_state.song_state.is_playing %}{% static 'img/icons/pause-white-24.png' %}{% else %}{% static 'img/icons/play-white-24.png' %}{% endif %}">
+				</div>
+				<div id = "next" class = "control">
+					<img src = "{% static 'img/icons/fastforward-white-24.png' %}">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id = "playlist-container">
+		<div id = "playlist-info">
+			<div id = "playlist-cover">
+				<img src = "{{ room_state.playlist_state.images.0.url }}">
+			</div>
+			<div id = "playlist-details">
+				{% if room_state.playlist_state.collaborative %}
+					
+					<p id = "playlist-collab"><span id = "collab-bullet">○</span>Collaborative</p>
+					
+				{% endif %}
+				
+				<p id = "playlist-title">{{ room_state.playlist_state.name }}</p>
+				<p id = "playlist-created">Created by <span id = "playlist-creator">{{ room_state.playlist_state.owner.display_name }}</span></p>
+				<p id = "playlist-count"><span id = "playlist-song-count">{{ room_state.playlist_state.tracks.total }}</span> songs</p>
+			</div>
+		</div>
+		<div id = "playlist-songs">
+			{% for song in room_state.playlist_state.tracks.items %}
+				
+				<div class = "playlist-song {% if song.track.name == room_state.song_state.item.name %}playing{% endif %}">
+					<div style = "display: flex; align-items: center;">
+						<img class = "song-cover" src = "{{ song.track.album.images.2.url }}">
+						<p class = "song-title">{{ song.track.name }}</p>
+					</div>
+					<p class = "song-artist">{{ song.track.artists.0.name }}</p>
+					<p class = "song-album">{{ song.track.album.name }}</p>
+					<p class = "song-user">{{ song.added_by.id }}</p>
+					<p class = "song-length">{{ song.track.duration_ms }}</p>
+				</div>
+				
+			{% endfor %}
+		</div>
+	</div>
+	
+	{% static 'img/icons/pause-white-24.png' as pausePath %}
+	{% static 'img/icons/play-white-24.png' as playPath %}
+	{% static '' as static_url %}
+	{{ room.code|json_script:"code" }}
+	{{ room_state.song_state.is_playing|json_script:"is_playing" }}
+	
+	<script src = "{% static 'js/jquery.js' %}"></script>
+	<script src = "{% static 'js/room.js' %}"></script>
+	<script type = "text/javascript">
+		var code = JSON.parse(document.getElementById('code').textContent),
+			staticUrl = '{{ static_url }}',
+			pausePath = '{{ pausePath }}',
+			playPath = '{{ playPath }}',
+			playing = "{{ room_state.song_state.is_playing }}" == "True";
+	</script>
+</body>
+</html>
