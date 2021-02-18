@@ -10,7 +10,13 @@ class Room(models.Model):
     users = models.ManyToManyField(User, related_name='users')
     active_users = models.ManyToManyField(User, related_name='active_users')
 
+    def __str__(self):
+        return self.code
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
     access_token = models.CharField(max_length = 200)
     refresh_token = models.CharField(max_length = 200)
+
+    def __str__(self):
+        return self.user.username
