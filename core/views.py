@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
 from django.contrib.auth import authenticate, login as auth_login
@@ -14,7 +16,12 @@ client_secret = '6ef495db91bd4268b520f861117d39f9'
 def index(request):
     spot = spotify.SpotifyAPI(client_id, client_secret, request.user, '')
 
-    return render(request, 'core/index.html')
+    redirect_uri = 'http://localhost:8000/callback/' if os.environ.get(
+        'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
+
+    return render(request, 'core/index.html', {
+        'redirect_uri': redirect_uri
+    })
 def callback(request):
     if request.GET and 'code' in request.GET:
         spot = spotify.SpotifyAPI(client_id, client_secret, request.user, request.GET['code'])
