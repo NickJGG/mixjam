@@ -14,16 +14,11 @@ client_secret = '6ef495db91bd4268b520f861117d39f9'
 def index(request):
     spot = spotify.SpotifyAPI(client_id, client_secret, request.user, '')
 
-    print(spot.pause())
-    print(spot.play())
-
     return render(request, 'core/index.html')
 def callback(request):
     if request.GET and 'code' in request.GET:
         spot = spotify.SpotifyAPI(client_id, client_secret, request.user, request.GET['code'])
         spot.perform_user_auth()
-
-        print(request.user.userprofile.access_token)
 
     return render(request, 'core/callback.html')
 

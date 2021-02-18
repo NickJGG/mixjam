@@ -1,5 +1,7 @@
 import base64
 import datetime
+import os
+
 import requests
 
 from urllib.parse import urlencode
@@ -84,9 +86,11 @@ class SpotifyAPI(object):
         return True
 
     def perform_user_auth(self):
+        redirect_uri = 'http://localhost:8000/callback/' if os.environ.get('DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
+
         token_data = {
             'code': self.code,
-            'redirect_uri': 'http://localhost:8000/callback/',
+            'redirect_uri': redirect_uri,
             'grant_type': 'authorization_code'
         }
 
