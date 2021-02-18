@@ -16,8 +16,7 @@ client_secret = '6ef495db91bd4268b520f861117d39f9'
 def index(request):
     spot = spotify.SpotifyAPI(client_id, client_secret, request.user, '')
 
-    redirect_uri = 'http://localhost:8000/callback/' if os.environ.get(
-        'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
+    redirect_uri = 'http://localhost:8000/callback/' if os.environ.get('DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
 
     return render(request, 'core/index.html', {
         'redirect_uri': redirect_uri
