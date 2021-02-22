@@ -43,6 +43,10 @@ $(document).ready(function(){
 			
 		});
 		
+		playing = songState.is_playing;
+				
+		updatePlayButton();
+		
 		if (playlistState != null){
 			$('#playlist-cover img').prop('src', playlistState.images[0].url);
 			$('#playlist-title').text(playlistState.name);
@@ -151,7 +155,7 @@ $(document).ready(function(){
 			if (playPause){
 				playing = !playing;
 				
-				$(this).find('img').prop('src', playing ? pausePath : playPath);
+				updatePlayButton();
 			}
 		});
 		
@@ -177,11 +181,6 @@ $(document).ready(function(){
 			socketSend({
 				'type': 'get_room_state'
 			});
-		});
-	}
-	function fixTimes(){
-		$('.song-length').each(function(){
-			$(this).text(secondsToClock(Math.round(parseInt($(this).text()) / 1000)));
 		});
 	}
 	
@@ -233,5 +232,14 @@ $(document).ready(function(){
 			clock += (minutes < 10 && hours > 0 ? '0' : '') + minutes + ':';
 		
 		return (hours == 0 && minutes == 0 ? ':' : '') + clock + (((minutes > 0 || hours > 0) && seconds < 10) || seconds < 10 ? '0' : '') + seconds;
+	}
+	
+	function fixTimes(){
+		$('.song-length').each(function(){
+			$(this).text(secondsToClock(Math.round(parseInt($(this).text()) / 1000)));
+		});
+	}
+	function updatePlayButton(){
+		$('#play-pause').find('img').prop('src', playing ? pausePath : playPath);
 	}
 });
