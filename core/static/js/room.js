@@ -29,11 +29,15 @@ $(document).ready(function(){
 		const songState = roomState.song_state,
 			  playlistState = roomState.playlist_state;
 		
-		$('#song-cover img').prop('src', songState.item.album.images[0].url);
+		$('#song-image img').prop('src', songState.item.album.images[0].url);
 		$('#song-title').text(songState.item.name);
 		$('#song-artist').text(songState.item.artists[0].name);
 		
 		var timeLeft = songState.item.duration_ms - songState.progress_ms;
+		
+		if (roomState.type == 'get_room_state'){
+			
+		}
 		
 		startTimer(timeLeft, function(){
 			
@@ -157,8 +161,7 @@ $(document).ready(function(){
 					'action': 'play'
 				};
 			
-			if (index > 0)
-				data['offset'] = index;
+			data['offset'] = index;
 			
 			socketSend({
 				'type': 'music_control',
@@ -168,6 +171,12 @@ $(document).ready(function(){
 			$('.playlist-song.playing').removeClass('playing');
 			
 			$(this).addClass('playing');
+		});
+		
+		$('#song-cover').on('click', function(){
+			socketSend({
+				'type': 'get_room_state'
+			});
 		});
 	}
 	function fixTimes(){
@@ -189,16 +198,18 @@ $(document).ready(function(){
 		return staticUrl + path;
 	}
 	function startTimer(milli, finished){
+		var seconds = milli / 1000;
+		
 		if (timer != null){
 			window.clearInterval(timer);
 		}
 		
 		timer = window.setInterval(function(){
 			if (playing)
-				milli -= 10;
+				seconds -= 1;
 			
-			if (milli > 0)
-				console.log(milli);
+			if (seconds > 0)
+				console.log(secondsToClock(seconds));
 			else {
 				finished();
 				
@@ -208,7 +219,7 @@ $(document).ready(function(){
 				
 				window.clearInterval(timer);
 			}
-		}, 10);
+		}, 1000);
 	}
 	function secondsToClock(seconds){
 		var hours = Math.floor(seconds / 3600), minutes = Math.floor((seconds - hours * 3600) / 60), clock = '';

@@ -50,6 +50,8 @@ def room(request, room_code):
         room = Room(code = room_code, leader = request.user)
         room.save()
 
+    print('\n\nHI\n\n')
+
     data['room'] = room
     data['room_state'] = util.get_room_state(request.user, room_code)
 

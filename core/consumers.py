@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .models import *
 from . import util
+from . import spotify
 
 from datetime import datetime
 from django.utils import timezone
@@ -144,33 +145,26 @@ class RoomConsumer(AsyncWebsocketConsumer):
     ##### SPOTIFY FUNCTIONS #####
 
     def base_control(self, username, option, offset = None):
-        endpoint = 'https://api.spotify.com/v1/me/player/' + option
+        endpoint = spotify.player_endpoint + option
 
         user = User.objects.filter(username = username)
 
         if user.exists():
             user = user[0]
 
-            access_token = user.userprofile.access_token
-
-            headers = {
-                "Authorization": f"Bearer {access_token}"
-            }
-
             data = {}
 
-            if offset:
+            if offset is not None:
                 data['context_uri'] = 'spotify:playlist:' + str(self.get_room().playlist_id)
+
                 data['offset'] = {
                     'position': offset
                 }
 
             if option in self.put_methods:
-                r = requests.put(endpoint, data=json.dumps(data), headers=headers)
+                r = spotify.put(user, endpoint, data = data)
             elif option in self.post_methods:
-                r = requests.post(endpoint, headers=headers)
-
-            print(r.status_code)
+                r = spotify.post(user, endpoint, data = data)
 
             if r.status_code not in range(200, 299):
                 return False

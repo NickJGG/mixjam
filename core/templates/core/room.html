@@ -30,7 +30,12 @@
 		<div id = "player">
 			<div id = "song-info">
 				<div id = "song-cover">
-					<img src = "{{ room_state.song_state.item.album.images.0.url }}">
+					<div id = "song-image">
+						<img src = "{{ room_state.song_state.item.album.images.0.url }}">
+					</div>
+					<div id = "sync">
+						<img src = "{% static 'img/icons/sync-green-48.png' %}">
+					</div>
 				</div>
 				<div id = "song-details">
 					<p id = "song-title">{{ room_state.song_state.item.name }}</p>
