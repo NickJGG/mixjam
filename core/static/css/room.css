@@ -109,18 +109,13 @@ body{
 	outline: 1px solid transparent;
 }
 #sync{
-	width: 60px;
-	height: 60px;
-	
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	
 	position: absolute;
-	top: calc(50% - 30px);
-	left: calc(50% - 30px);
-	
-	margin-top: 10px;
+	top: calc(50% - 19px);
+	left: calc(50% - 24px);
 	
 	border-radius: 100%;
 	
