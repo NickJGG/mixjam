@@ -269,6 +269,8 @@ body{
 	cursor: pointer;
 }
 .playlist-song.playing{
+	background-color: #2b2b2f;
+	
 	color: var(--light-green);
 }
 .playlist-song:hover{
