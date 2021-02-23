@@ -217,7 +217,9 @@ $(document).ready(function(){
 				milli -= 1000;
 				
 				updateProgress(milli);
-			} else {
+			}
+			
+			if (seconds < 0){
 				finished();
 				
 				socketSend({

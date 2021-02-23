@@ -138,7 +138,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         self.base_control(user.username, action, offset = offset)
 
-        time.sleep(.2)
+        time.sleep(.1)
 
         return util.get_room_state(user, self.get_room().code)
 
