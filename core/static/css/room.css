@@ -131,12 +131,77 @@ body{
 	height: auto;
 }
 
+#song-progress-container{
+	width: 100%;
+	
+	display: flex;
+	align-items: center;
+	
+	margin-top: 10px;
+}
+#progress-complete, #progress-incomplete{
+	height: 2px;
+}
+#song-progress{
+	height: 20px;
+	
+	display: flex;
+	align-items: center;
+	flex: 1;
+	
+	cursor: pointer;
+}
+#progress-complete{
+	width: 50%;
+	
+	position: relative;
+	
+	background-color: var(--dark-green);
+}
+#song-progress-container:hover #progress-thumb{
+	transform: scale(1);
+}
+#progress-thumb{
+	width: 10px;
+	height: 10px;
+	
+	position: absolute;
+	top: -4px;
+	right: -5px;
+	
+	background-color: var(--light-green);
+	
+	transform: scale(0);
+	
+	border-radius: 100%;
+	
+	transition: all .05s ease;
+}
+#progress-incomplete{
+	flex: 1;
+	
+	background-color: #2b2b31;
+}
+#song-progress-time, #song-total-time{
+	width: 24px;
+	
+	text-align: center;
+	
+	font-size: 12px;
+}
+#song-progress-time{
+	margin-right: 8px;
+}
+#song-total-time{
+	margin-left: 8px;
+}
+
 #controls{
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	
-	margin-top: 20px;
+	margin-top: 10px;
 }
 .control{
 	width: 45px;

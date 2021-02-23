@@ -25,7 +25,7 @@ $(document).ready(function(){
 	//                                                                                 //
 	/////////////////////////////////////////////////////////////////////////////////////
 	
-	function updatePlaylist(roomState){
+	function updatePlaylist(){
 		const songState = roomState.song_state,
 			  playlistState = roomState.playlist_state;
 		
@@ -35,17 +35,14 @@ $(document).ready(function(){
 		
 		var timeLeft = songState.item.duration_ms - songState.progress_ms;
 		
-		if (roomState.type == 'get_room_state'){
-			
-		}
+		playing = songState.is_playing;
 		
 		startTimer(timeLeft, function(){
 			
 		});
-		
-		playing = songState.is_playing;
 				
 		updatePlayButton();
+		updateProgress();
 		
 		if (playlistState != null){
 			$('#playlist-cover img').prop('src', playlistState.images[0].url);
@@ -92,6 +89,11 @@ $(document).ready(function(){
 		setupSocket();
 		setupControls();
 		fixTimes();
+		
+		if (roomState != null)
+			updatePlaylist();
+		
+		console.log(roomState);
 	}
 	
 	function setupSocket(){
@@ -100,8 +102,11 @@ $(document).ready(function(){
 			
 			console.log(data);
 			
-			if (data.room_state)
-				updatePlaylist(data.room_state);
+			if (data.room_state){
+				roomState = data.room_state;
+				
+				updatePlaylist();
+			}
 			
 			switch (data.type){
 				case 'connection':
@@ -205,12 +210,14 @@ $(document).ready(function(){
 		}
 		
 		timer = window.setInterval(function(){
-			if (playing)
-				seconds -= 1;
+			var clock = secondsToClock((roomState.song_state.item.duration_ms / 1000) - seconds - 1);
 			
-			if (seconds > 0)
-				console.log(secondsToClock(seconds));
-			else {
+			if (playing){
+				seconds -= 1;
+				milli -= 1000;
+				
+				updateProgress(milli);
+			} else {
 				finished();
 				
 				socketSend({
@@ -232,7 +239,13 @@ $(document).ready(function(){
 		if (hours > 0 || minutes > 0)
 			clock += (minutes < 10 && hours > 0 ? '0' : '') + minutes + ':';
 		
-		return (hours == 0 && minutes == 0 ? ':' : '') + clock + (((minutes > 0 || hours > 0) && seconds < 10) || seconds < 10 ? '0' : '') + seconds;
+		var clock = (hours == 0 && minutes == 0 ? ':' : '') + clock + (((minutes > 0 || hours > 0) && seconds < 10) || seconds < 10 ? '0' : '') + seconds;
+		
+		if (clock[0] == ':'){
+			clock = '0' + clock;
+		}
+		
+		return clock;
 	}
 	
 	function fixTimes(){
@@ -242,5 +255,13 @@ $(document).ready(function(){
 	}
 	function updatePlayButton(){
 		$('#play-pause').find('img').prop('src', playing ? pausePath : playPath);
+	}
+	function updateProgress(milli=roomState.song_state.item.duration_ms - roomState.song_state.progress_ms){
+		var clock = secondsToClock((roomState.song_state.item.duration_ms / 1000) - (milli / 1000)),
+			pure_clock = clock.split('.')[0];
+		
+		$('#song-progress-time').text(pure_clock);
+		$('#progress-complete').css('width', 'calc(' + (100 - milli / roomState.song_state.item.duration_ms * 100) + '%)');
+		$('#song-total-time').text(secondsToClock(roomState.song_state.item.duration_ms / 1000).split('.')[0]);
 	}
 });
