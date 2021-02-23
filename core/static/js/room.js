@@ -60,11 +60,12 @@ $(document).ready(function(){
 			var i;
 			
 			for (i = 0; i < playlistState.tracks.items.length; i++){
-				var song = playlistState.tracks.items[i];
+				var song = playlistState.tracks.items[i],
+					songPlaying = song.track.name == songState.item.name;
 				
-				$('#playlist-songs').append(`<div class = "playlist-song ` + (song.track.name == songState.item.name ? 'playing' : '') + `">
+				$('#playlist-songs').append(`<div class = "playlist-song ` + (songPlaying ? 'playing' : '') + `">
 												<div style = "display: flex; align-items: center;">
-													<img class = "song-cover" src = "` + song.track.album.images[2].url + `">
+													<img class = "song-cover" src = "` + song.track.album.images[songPlaying ? 1 : 2].url + `">
 													<p class = "song-title">` + song.track.name + `</p>
 												</div>
 												<p class = "song-artist">` + song.track.artists[0].name + `</p>
