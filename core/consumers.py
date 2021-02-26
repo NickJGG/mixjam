@@ -64,6 +64,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
             data['room_state'] = await self.music_control(event['action_data'])
         elif data['type'] == 'get_room_state':
             data['room_state'] = util.get_room_state(self.scope['user'], self.get_room().code)
+        elif data['type'] == 'seek':
+            data['room_state'] = await self.seek(event['seek_ms'])
 
         await self.send(text_data=json.dumps(data))
 
@@ -81,6 +83,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             if type == 'music_control':
                 out_data['action_data'] = data['data']
+            elif type == 'seek':
+                out_data['seek_ms'] = data['seek_ms']
 
             await self.channel_layer.group_send(
                 self.group_name, out_data
@@ -131,6 +135,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def music_control(self, data):
+        print('MUSIC CONTROL')
+
         action = data['action']
         offset = data['offset'] if 'offset' in data else None
 
@@ -138,7 +144,19 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         self.base_control(user.username, action, offset = offset)
 
-        time.sleep(.2)
+        time.sleep(.1)
+
+        return util.get_room_state(user, self.get_room().code)
+
+    @database_sync_to_async
+    def seek(self, seek_ms):
+        user = self.scope['user']
+
+        r = spotify.put(user, spotify.seek_endpoint, params = {
+            'position_ms': str(seek_ms)
+        })
+
+        time.sleep(.1)
 
         return util.get_room_state(user, self.get_room().code)
 
