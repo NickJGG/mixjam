@@ -11,7 +11,7 @@ class Room(models.Model):
     offset = models.IntegerField(default = 0, blank = True)
     playing = models.BooleanField(default = False, blank = True)
     progress = models.IntegerField(default = 0, blank = True)
-    progress_time = models.DateTimeField(null = True, blank = True, default = timezone.now())
+    progress_time = models.DateTimeField(null = True, blank = True)
     users = models.ManyToManyField(User, related_name='users')
     active_users = models.ManyToManyField(User, related_name='active_users')
 

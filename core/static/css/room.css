@@ -334,7 +334,7 @@ body{
 	cursor: pointer;
 }
 .playlist-song.playing{
-	background-color: #2b2b31;
+	background-color: #353535;
 	
 	color: var(--light-green);
 }

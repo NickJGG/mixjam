@@ -10,6 +10,7 @@ song_endpoint = 'https://api.spotify.com/v1/me/player/currently-playing'
 player_endpoint = 'https://api.spotify.com/v1/me/player/'
 playlist_endpoint = 'https://api.spotify.com/v1/playlists/'
 refresh_endpoint = 'https://accounts.spotify.com/api/token'
+seek_endpoint = 'https://api.spotify.com/v1/me/player/seek'
 
 def get_headers(user):
     return {
@@ -59,15 +60,15 @@ def get(user, endpoint):
 
     return response
 
-def put(user, endpoint, data):
+def put(user, endpoint, data = {}, params = {}):
     data = json.dumps(data)
 
-    response = requests.put(endpoint, data = data, headers = get_headers(user))
+    response = requests.put(endpoint, params = params, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
         refresh_token(user)
 
-        response = requests.put(endpoint, data = data, headers = get_headers(user))
+        response = requests.put(endpoint, params = data, headers = get_headers(user))
 
     return response
 

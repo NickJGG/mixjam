@@ -188,6 +188,32 @@ $(document).ready(function(){
 				'type': 'get_room_state'
 			});
 		});
+		
+		$('#song-progress').on('mousedown', function(fe){
+			var progress = this;
+			
+			fe.preventDefault();
+			
+			$(document).on('mouseup', function(e){
+				var x = e.pageX - $(progress).offset().left,
+					total = $(progress).width();
+			
+				if (x < 0)
+					x = 0;
+				else if (x > total)
+					x = total;
+				
+				var percentage = x / total,
+					seekProgress = Math.round(roomState.song_state.item.duration_ms * percentage);
+				
+				socketSend({
+					'type': 'seek',
+					'seek_ms': seekProgress
+				});
+				
+				$(document).unbind('mouseup');
+			});
+		});
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////
