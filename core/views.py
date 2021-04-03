@@ -2,7 +2,7 @@ import os
 
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
 import spotify
 
@@ -14,6 +14,11 @@ client_id = '8b817932e631474cb15f7e36edcfc53b'
 client_secret = '6ef495db91bd4268b520f861117d39f9'
 
 def index(request):
+    if request.user.is_authenticated:
+        return home(request)
+    else:
+        return landing(request)
+
     spot = spotify.SpotifyAPI(client_id, client_secret, request.user, '')
 
     redirect_uri = 'http://localhost:8000/callback/' if os.environ.get('DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
@@ -21,6 +26,22 @@ def index(request):
     return render(request, 'core/index.html', {
         'redirect_uri': redirect_uri
     })
+
+def home(request):
+    spot = spotify.SpotifyAPI(client_id, client_secret, request.user, '')
+
+    redirect_uri = 'http://localhost:8000/callback/' if os.environ.get(
+        'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
+
+    return render(request, 'core/home.html', {
+        'redirect_uri': redirect_uri
+    })
+
+def landing(request):
+    return render(request, 'core/landing.html', {
+
+    })
+
 def callback(request):
     if request.GET and 'code' in request.GET:
         spot = spotify.SpotifyAPI(client_id, client_secret, request.user, request.GET['code'])
@@ -48,14 +69,17 @@ def room(request, room_code):
         room.save()'''
 
         room = Room(code = room_code, leader = request.user)
-        room.save()
-
-    print('\n\nHI\n\n')
+        room.save()\
 
     data['room'] = room
     data['room_state'] = util.get_room_state(request.user, room_code)
 
     return render(request, 'core/room.html', data)
+
+def account(request):
+    return render(request, 'core/account.html', {
+
+    })
 
 def login(request):
     if request.POST:
@@ -74,6 +98,11 @@ def login(request):
             return redirect('index')
 
     return render(request, 'core/login.html')
+
+def logout(request):
+    auth_logout(request)
+
+    return redirect('index')
 
 def register(request):
     if request.POST:

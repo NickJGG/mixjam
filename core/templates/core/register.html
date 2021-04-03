@@ -1,11 +1,11 @@
 {% load static %}
 
-<!DOCTYPE html>
 <html>
 <head>
-	<title>Toke Journey</title>
+	<title>Sign Up - Syncify</title>
 	
-	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/index.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/landing.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/login.css' %}">
 	
 	<style>
 		@font-face {
@@ -26,27 +26,21 @@
 		}
 	</style>
 </head>
+	<img id = "logo" src = "{% static 'img/icons/spotify-384.png' %}">
 <body>
-	<div id = "top">
-		
-	</div>
-	<div id = "mid">
-		<form id = "post" method = "POST">
-			{% csrf_token %}
-		
-			<input type = "text" name = "username" placeholder = "Username">
-			<input type = "email" name = "email" placeholder = "Email">
-			<input type = "password" name = "password" placeholder = "Password">
-			<input type = "password" name = "confirm-password" placeholder = "Confirm Password">
-			<br>
-			<input type = "submit" value = "REGISTER">
-			<a id = "alt-link" href = "{% url 'login' %}">login</a>
-		</form>
-	</div>
-	<div id = "bot">
-		
-	</div>
-
-	<script type = "text/javascript" src = "{% static 'js/jquery.js' %}"></script>
+	<form id = "post" method = "POST">
+		{% csrf_token %}
+	
+		<p id = "header">Sign Up</p>
+		<hr>
+		<input type = "text" name = "username" placeholder = "Username">
+		<input type = "email" name = "email" placeholder = "Email">
+		<input type = "password" name = "password" placeholder = "Password">
+		<input type = "password" name = "confirm-password" placeholder = "Confirm Password">
+		<input class = "blue" type = "submit" value = "REGISTER">
+		<p class = "alt-message">Already have an account? <a class = "alt-link green" href = "{% url 'login' %}">Login</a></p>
+	</form>
+	
+	<script src = "{% static 'js/jquery.js' %}"></script>
 </body>
 </html>

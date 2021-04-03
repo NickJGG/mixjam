@@ -23,7 +23,11 @@ from . import views
 urlpatterns = [
     path('', views.index, name = 'index'),
     path('callback/', views.callback, name = 'callback'),
+
     path('r/<str:room_code>/', views.room, name = 'room'),
+
+    path('account/', views.account, name = 'account'),
     path('login/', views.login, name = 'login'),
+    path('logout/', views.logout, name = 'logout'),
     path('register/', views.register, name = 'register'),
 ]

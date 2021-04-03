@@ -1,0 +1,182 @@
+:root{
+	--light-green: #73d073;
+	--dark-green: #00B95E;
+	--black: #1d1d1d;
+	--medium-black: #222222;
+	--light-black: #333;
+}
+body{
+	width: 100vw;
+	min-height: calc(100vh);
+	max-height: calc(100vh);
+	
+	display: flex;
+	flex-direction: column;
+	
+	font-family: Roboto-Regular;
+
+	background-color: var(--black);
+	
+	margin: 0;
+	padding: 0;
+	
+	box-sizing: border-box;
+}
+*{
+	margin: 0;
+	padding: 0;
+}
+
+#nav{
+	width: 100%;
+	
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	
+	padding: 20px;
+	
+	box-sizing: border-box;
+}
+.nav-section{
+	display: flex;
+	align-items: center;
+}
+#logo{
+	width: 38px;
+	height: 38px;
+	
+	margin-right: 20px;
+}
+#page-info{
+	display: flex;
+	align-items: center;
+}
+#page-name{
+	font-family: Roboto-Medium;
+	font-size: 24px;
+	color: white;
+}
+
+#panel-labels{
+	display: flex;
+	align-items: center;
+	
+	position: relative;
+	top: 2px;
+	
+	margin-left: 30px;
+	
+	font-size: 12px;
+	text-transform: uppercase;
+	color: white;
+}
+.panel-label{
+	padding: 10px 15px;
+	
+	cursor: pointer;
+	
+	transition: all .05s ease;
+	
+	box-sizing: border-box;
+}
+.panel-label.selected{
+	font-family: Roboto-Medium;
+	font-size: 14px;
+}
+.panel-label:hover{
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.panel-label:not(:first-child){
+	margin-left: 10px;
+}
+
+#user-section{
+	justify-content: flex-end;
+}
+#user-container{
+	display: flex;
+}
+#user-profile-picture{
+	width: 30px;
+	height: 30px;
+	
+	background-color: white;
+	
+	border-radius: 100%;
+}
+
+#container{
+	width: 100%;
+	height: 100%;
+	
+	display: flex;
+	
+	overflow: hidden;
+	
+	box-sizing: border-box;
+}
+
+#room-list-container{
+	width: 250px;
+	
+	display: flex;
+	flex-direction: column;
+	
+	padding: 20px;
+	
+	background-color: var(--medium-black);
+	
+	box-sizing: border-box;
+}
+.list-section{
+	width: 100%;
+	
+	display: flex;
+	flex-direction: column;
+}
+.section-label{
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #ddd;
+}
+.section-items{
+	display: flex;
+	flex-direction: column;
+	
+	margin-top: 8px;
+}
+.section-item{
+	font-size: 14px;
+	letter-spacing: 1px;
+	color: white;
+}
+.section-item:hover{
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.section-item:not(:first-child){
+	margin-top: 6px;
+}
+
+#panel-container{
+	width: 100%;
+	height: 100%;
+	
+	display: flex;
+	flex-direction: column;
+	
+	padding: 20px;
+	
+	background-color: var(--light-black);
+	
+	overflow: hidden;
+	
+	box-sizing: border-box;
+}
+
+a{
+	text-decoration: none;
+	color: inherit;
+}

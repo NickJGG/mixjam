@@ -1,15 +1,14 @@
+{% extends 'core/base_auth.html' %}
 {% load static %}
 
-<html>
-<head>
-	<title>Syncify</title>
-</head>
-<body>
-	<a id = "authorize">Authorize</a>
-	<br>
-	<a href = "/r/banks">r/banks</a>
-	
-	<script src = "{% static 'js/jquery.js' %}"></script>
+{% block css %}
+
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/home.css' %}">
+
+{% endblock %}
+
+{% block js %}
+
 	<script>
 		var params = {
 			response_type: 'code',
@@ -28,5 +27,5 @@
 		
 		$('#authorize').attr('href', query);
 	</script>
-</body>
-</html>
+
+{% endblock %}

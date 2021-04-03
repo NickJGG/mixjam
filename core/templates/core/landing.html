@@ -2,10 +2,9 @@
 
 <html>
 <head>
-	<title>Login - Syncify</title>
+	<title>Syncify</title>
 	
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/landing.css' %}">
-	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/login.css' %}">
 	
 	<style>
 		@font-face {
@@ -28,16 +27,18 @@
 </head>
 	<img id = "logo" src = "{% static 'img/icons/spotify-384.png' %}">
 <body>
-	<form method = "POST">
-		{% csrf_token %}
-		
-		<p id = "header">Login</p>
-		<hr>
-		<input type = "text" name = "username" placeholder = "Username">
-		<input type = "password" name = "password" placeholder = "Password">
-		<input type = "submit" value = "LOGIN">
-		<p class = "alt-message">Don't have an account? <a class = "alt-link" href = "{% url 'register' %}">Sign up</a></p>
-	</form>
+	<p id = "welcome-message">Listen to your favorite music, together</p>
+	<div id = "account-buttons">
+		<a href = "{% url 'login' %}"><div class = "account-button login">
+			<img src = "{% static 'img/icons/add-user-white-96.png' %}">
+			<p>Login</p>
+		</div></a>
+		<p id = "button-separator">or</p>
+		<a href = "{% url 'register' %}"><div class = "account-button register">
+			<img src = "{% static 'img/icons/add-user-white-96.png' %}">
+			<p>Sign Up</p>
+		</div></a>
+	</div>
 	
 	<script src = "{% static 'js/jquery.js' %}"></script>
 </body>

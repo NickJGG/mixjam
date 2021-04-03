@@ -1,0 +1,33 @@
+{% extends 'core/base_auth.html' %}
+{% load static %}
+
+{% block css %}
+
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/account.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/panel.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/subpanel.css' %}">
+
+{% endblock %}
+
+{% block page_name %}Account{% endblock %}
+
+{% block panel_labels %}
+
+	<p class = "panel-label selected">Personalization</p>
+	<p class = "panel-label">Privacy</p>
+
+{% endblock %}
+
+{% block panel_container %}
+
+	{% include 'core/blocks/panels/account/personalization.html' with selected=True %}
+	{% include 'core/blocks/panels/account/privacy.html' %}
+
+{% endblock %}
+
+{% block js %}
+	
+	<script src = "{% static 'js/account.js' %}"></script>
+	<script src = "{% static 'js/panel.js' %}"></script>
+
+{% endblock %}

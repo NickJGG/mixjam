@@ -1,90 +1,81 @@
+{% extends 'core/base_auth.html' %}
 {% load static %}
 
-<html>
-<head>
-	<title>Syncify</title>
-	
+{% block css %}
+
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/room.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/panel.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/subpanel.css' %}">
+
+{% endblock %}
+
+{% block page_name %}{{ room_state.playlist_state.name }}{% endblock %}
+
+{% block page_name_after %}
+
+	<img id = "page-link" src = "{% static 'img/icons/link-white-50.png' %}">
+	<input id = "page-url" type = "text" style = "position: absolute; top: -1000px; left: -1000px;">
+
+{% endblock %}
+
+{% block panel_labels %}
+
+	<p class = "panel-label selected">Home</p>
+	<p class = "panel-label">Chat</p>
+	<p class = "panel-label">Toke Journey</p>
+
+{% endblock %}
+
+{% block panel_container %}
+
+	{% include 'core/blocks/panels/room/home.html' with selected=True %}
+	{% include 'core/blocks/panels/room/chat.html' %}
+	{% include 'core/blocks/panels/room/journey.html' %}
 	
-	<style>
-		@font-face {
-			font-family: Roboto-Thin;
-			src: url({% static 'font/roboto/Roboto-Thin.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Light;
-			src: url({% static 'font/roboto/Roboto-Light.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Regular;
-			src: url({% static 'font/roboto/Roboto-Regular.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Medium;
-			src: url({% static 'font/roboto/Roboto-Medium.ttf' %});
-		}
-	</style>
-</head>
-<body>
 	<div id = "player-container">
-		<div id = "player">
-			<div id = "song-info">
-				<div id = "song-cover">
-					<div id = "song-image">
-						<img>
-					</div>
-					<div id = "sync">
-						<img src = "{% static 'img/icons/sync-green-48.png' %}">
+		<div id = "song-info">
+			<div id = "song-image">
+				<img>
+			</div>
+			<div id = "current-song-details">
+				<p id = "current-song-name"></p>
+				<p id = "current-song-artist"></p>
+			</div>
+		</div>
+		<div id = "song-controls">
+			<div id = "previous" class = "control">
+				<img src = "{% static 'img/icons/rewind-white-24.png' %}">
+			</div>
+			<div id = "play-pause" class = "control">
+				<img src = "{% if room_state.song_state.is_playing %}{% static 'img/icons/pause-white-24.png' %}{% else %}{% static 'img/icons/play-white-24.png' %}{% endif %}">
+			</div>
+			<div id = "next" class = "control">
+				<img src = "{% static 'img/icons/fastforward-white-24.png' %}">
+			</div>
+		</div>
+		<div id = "song-progress-container">
+			<p id = "song-progress-time">- : - -</p>
+			<div id = "song-progress">
+				<div id = "progress-complete">
+					<div id = "progress-thumb">
+						
 					</div>
 				</div>
-				<div id = "song-details">
-					<p id = "song-title"></p>
-					<p id = "song-artist"></p>
-				</div>
-				<div id = "song-progress-container">
-					<p id = "song-progress-time">- : - -</p>
-					<div id = "song-progress">
-						<div id = "progress-complete">
-							<div id = "progress-thumb">
-								
-							</div>
-						</div>
-						<div id = "progress-incomplete">
-							
-						</div>
-					</div>
-					<p id = "song-total-time">- : - -</p>
+				<div id = "progress-incomplete">
+					
 				</div>
 			</div>
-			<div id = "controls">
-				<div id = "previous" class = "control">
-					<img src = "{% static 'img/icons/rewind-white-24.png' %}">
-				</div>
-				<div id = "play-pause" class = "control">
-					<img src = "{% if room_state.song_state.is_playing %}{% static 'img/icons/pause-white-24.png' %}{% else %}{% static 'img/icons/play-white-24.png' %}{% endif %}">
-				</div>
-				<div id = "next" class = "control">
-					<img src = "{% static 'img/icons/fastforward-white-24.png' %}">
-				</div>
-			</div>
+			<p id = "song-total-time">- : - -</p>
+		</div>
+		<div id = "extra-controls-container">
+			<img id = "fullscreen" class = "extra-control" src = "{% static 'img/icons/fullscreen-white-24.png' %}">
 		</div>
 	</div>
-	<div id = "playlist-container">
-		<div id = "playlist-info">
-			<div id = "playlist-cover">
-				<img src = "{{ room_state.playlist_state.images.0.url }}">
-			</div>
-			<div id = "playlist-details">
-				<p id = "playlist-title"></p>
-				<p id = "playlist-created">Created by <span id = "playlist-creator"></span></p>
-				<p id = "playlist-count"><span id = "playlist-song-count"></span> songs</p>
-			</div>
-		</div>
-		<div id = "playlist-songs">
-			
-		</div>
-	</div>
-	
+
+{% endblock %}
+
+{% block js %}
+
 	{% static 'img/icons/pause-white-24.png' as pausePath %}
 	{% static 'img/icons/play-white-24.png' as playPath %}
 	{% static '' as static_url %}
@@ -92,8 +83,8 @@
 	{{ room.code|json_script:"code" }}
 	{{ room_state.song_state.is_playing|json_script:"is_playing" }}
 	
-	<script src = "{% static 'js/jquery.js' %}"></script>
 	<script src = "{% static 'js/room.js' %}"></script>
+	<script src = "{% static 'js/panel.js' %}"></script>
 	<script type = "text/javascript">
 		var code = JSON.parse(document.getElementById('code').textContent),
 			staticUrl = '{{ static_url }}',
@@ -102,5 +93,5 @@
 			playing = "{{ room_state.song_state.is_playing }}" == "True",
 			roomState = JSON.parse(document.getElementById('roomState').textContent);
 	</script>
-</body>
-</html>
+
+{% endblock %}

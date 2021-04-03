@@ -1,0 +1,92 @@
+{% load static %}
+{% load util %}
+
+<html>
+<head>
+	<title>{% block title %}Syncify{% endblock %}</title>
+	
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/base_auth.css' %}">
+	
+	{% block css %}
+	{% endblock %}
+	
+	<style>
+		@font-face {
+			font-family: Roboto-Thin;
+			src: url({% static 'font/roboto/Roboto-Thin.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Light;
+			src: url({% static 'font/roboto/Roboto-Light.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Regular;
+			src: url({% static 'font/roboto/Roboto-Regular.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Medium;
+			src: url({% static 'font/roboto/Roboto-Medium.ttf' %});
+		}
+	</style>
+</head>
+<body>
+	<!--<a id = "authorize">Authorize</a>
+	<br>
+	<a href = "/r/banks">r/banks</a>-->
+	
+	<div id = "nav">
+		<div class = "nav-section">
+			<a href = "{% url 'index' %}"><img id = "logo" src = "{% static 'img/icons/spotify-96.png' %}"></a>
+			
+			<div id = "page-info">
+				<p id = "page-name">{% block page_name %}Home{% endblock %}</p>
+				
+				{% block page_name_after %}
+				{% endblock %}
+				
+				<div id = "panel-labels">
+					{% block panel_labels %}
+					{% endblock %}
+				</div>
+			</div>
+		</div>
+		<div class = "nav-section">
+			
+		</div>
+		<div id = "user-section" class = "nav-section">
+			<div id = "user-container">
+				<a href = "{% url 'account' %}">
+					<div id = "user-profile-picture">
+						
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+	<div id = "container">
+		<div id = "room-list-container">
+			<div class = "list-section">
+				<p class = "section-label">Your Rooms</p>
+				<div class = "section-items">
+					{% get_rooms user as rooms %}
+				
+					{% for room in rooms %}
+						
+						<a href = "{% url 'room' room_code=room.code %}"><div class = "section-item">{{ room.title }}</div></a>
+						
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		<div id = "panel-container">
+			{% block panel_container %}
+			{% endblock %}
+		</div>
+	</div>
+	
+	<script src = "{% static 'js/jquery.js' %}"></script>
+	
+	{% block js %}
+	{% endblock %}
+</body>
+</html>

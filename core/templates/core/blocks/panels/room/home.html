@@ -1,0 +1,24 @@
+<div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
+	<div id = "playlist-info">
+		<div id = "playlist-cover">
+			<img src = "{{ room_state.playlist_state.images.0.url }}">
+		</div>
+		<div id = "playlist-details">
+			<p id = "playlist-title"></p>
+			<p id = "playlist-created">Created by <span id = "playlist-creator"></span></p>
+			<p id = "playlist-count"><span id = "playlist-song-count"></span> songs</p>
+		</div>
+	</div>
+	<div class = "subpanel-container">
+		<div class = "subpanel-labels">
+			<div class = "subpanel-label selected">
+				Playlist
+			</div>
+			<div class = "subpanel-label">
+				Users
+			</div>
+		</div>
+		{% include 'core/blocks/panels/room/subpanels/playlist.html' with subpanel_selected=True %}
+		{% include 'core/blocks/panels/room/subpanels/users.html' %}
+	</div>
+</div>

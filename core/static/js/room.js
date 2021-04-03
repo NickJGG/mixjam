@@ -9,7 +9,7 @@ $(document).ready(function(){
 	const roomUrl = 'r/' + code + '/';
 	const socket = new WebSocket('ws://' + window.location.host + '/ws/' + roomUrl);
 	
-	var timer;
+	var timer, fullscreen = false, seek = false;
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	//                                                                                 //
@@ -30,8 +30,8 @@ $(document).ready(function(){
 			  playlistState = roomState.playlist_state;
 		
 		$('#song-image img').prop('src', songState.item.album.images[0].url);
-		$('#song-title').text(songState.item.name);
-		$('#song-artist').text(songState.item.artists[0].name);
+		$('#current-song-name').text(songState.item.name);
+		$('#current-song-artist').text(songState.item.artists[0].name);
 		
 		var timeLeft = songState.item.duration_ms - songState.progress_ms;
 		
@@ -78,6 +78,22 @@ $(document).ready(function(){
 				$('#playlist-collab').css('display', 'none');
 		}
 	}
+	function connection(data){
+		var userDiv = $('#user-' + data.connection_state.user);
+		
+		userDiv.remove();
+		
+		console.log(data.connection_state.user);
+		
+		if (data.connection_state.connection_type == 'join'){
+			$('#user-list').append(`
+				<div id = "user-` + data.connection_state.user + `" class = "user">
+					<div class = "user-image"></div>
+					<p class = "user-name">` + data.connection_state.user + `</p>
+				</div>
+			`);
+		}
+	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	//                                                                                 //
@@ -108,13 +124,9 @@ $(document).ready(function(){
 				updatePlaylist();
 			}
 			
-			switch (data.type){
+			switch (data.action){
 				case 'connection':
-					if (data.type == 'join'){
-						
-					} else {
-						
-					}
+					connection(data);
 					
 					break;
 				case 'music_control':
@@ -206,6 +218,8 @@ $(document).ready(function(){
 				var percentage = x / total,
 					seekProgress = Math.round(roomState.song_state.item.duration_ms * percentage);
 				
+				seek = true;
+				
 				socketSend({
 					'type': 'seek',
 					'seek_ms': seekProgress
@@ -213,6 +227,45 @@ $(document).ready(function(){
 				
 				$(document).unbind('mouseup');
 			});
+		});
+		
+		$('#fullscreen').on('click', function(){
+			var el = document.documentElement;
+			
+			var enterFullscreen = el.requestFullscreen
+					|| el.webkitRequestFullScreen
+					|| el.mozRequestFullScreen
+					|| el.msRequestFullscreen;
+			
+			if (fullscreen){
+				if (document.exitFullscreen){
+					document.exitFullscreen();
+				} else if (document.webkitExitFullscreen){
+					document.webkitExitFullscreen();
+				} else if (document.msExitFullscreen){
+					document.msExitFullscreen();
+				}
+			} else
+				enterFullscreen.call(el);
+				
+			fullscreen = !fullscreen;
+		});
+		
+		$('#page-link').on('click', function(){
+			$('#page-url').val(window.location.href);
+			
+			$('#page-url').focus();
+			$('#page-url')[0].setSelectionRange(0, 99999);
+			
+			document.execCommand("copy");
+			
+			$(this).css('transform', 'scale(1.2)');
+			
+			var div = this;
+			
+			setTimeout(function(){
+				$(div).css('transform', 'scale(1)');
+			}, 100);
 		});
 	}
 	
