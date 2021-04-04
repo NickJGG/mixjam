@@ -13,7 +13,7 @@ import requests
 import time
 
 class RoomConsumer(AsyncWebsocketConsumer):
-    put_methods = ['play', 'pause']
+    put_methods = ['play', 'pause', 'seek']
     post_methods = ['previous', 'next']
 
     # CONNECT FUNCTION
@@ -33,62 +33,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.group_name,
             {
-                'action': 'connection',
-                'success': True,
-                'connection_state': {
-                    'connection_type': 'join',
-                    'user': self.scope['user'].username
-                },
-                'type': 'room_send',
+                'type': 'request_connection',
+                'data': {
+                    'connection_state': {
+                        'connection_type': 'join',
+                        'user': self.scope['user'].username
+                    }
+                }
             }
         )
-
-    # SEND FUNCTIONS (WILL CALL FOR EVERYONE)
-    async def room_send(self, event):
-        data = {}
-
-        items = list(event.items())
-
-        for x in range(len(items)):
-            key = items[x][0]
-            value = items[x][1]
-
-            if key == 'message_type':
-                data['type'] = value
-            else:
-                data[key] = value
-
-        print(data)
-
-        if data['type'] == 'music_control':
-            data['room_state'] = await self.music_control(event['action_data'])
-        elif data['type'] == 'get_room_state':
-            data['room_state'] = util.get_room_state(self.scope['user'], self.get_room().code)
-        elif data['type'] == 'seek':
-            data['room_state'] = await self.seek(event['seek_ms'])
-
-        await self.send(text_data=json.dumps(data))
-
-    # RECEIVE FUNCTION (WILL CALL FOR USER)
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-
-        if 'type' in data:
-            out_data = {}
-
-            type = data['type']
-
-            out_data['type'] = 'room_send'
-            out_data['message_type'] = type
-
-            if type == 'music_control':
-                out_data['action_data'] = data['data']
-            elif type == 'seek':
-                out_data['seek_ms'] = data['seek_ms']
-
-            await self.channel_layer.group_send(
-                self.group_name, out_data
-            )
 
     # DISCONNECT FUNCTION
     async def disconnect(self, close_code):
@@ -112,6 +65,81 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         await self.offline()
 
+    # RECEIVE FUNCTION (WILL CALL FOR USER)
+    async def receive(self, text_data):
+        request_data = json.loads(text_data)
+
+        self.print_request(request_data)
+
+        if 'type' not in request_data or 'data' not in request_data:
+            pass
+
+        request_data['type'] = 'request_' + request_data['type']
+
+        await self.channel_layer.group_send(
+            self.group_name, request_data
+        )
+
+    async def response_send(self, type, response_data):
+        await self.send(text_data=json.dumps({
+            'type': type,
+            'response_data': response_data
+        }))
+
+    async def request_playlist(self, request_data):
+        simple_actions = ['play', 'pause', 'next', 'previous']
+
+        request_data = request_data['data']
+
+        request_action = request_data['action']
+        request_action_data = request_data['action_data']
+
+        user = self.scope['user']
+
+        method_data = {}
+        method_params = {}
+
+        #region Actions
+        if request_action != 'get_state':
+            endpoint_option = request_action
+
+            if request_action in simple_actions:
+                pass
+            elif request_action == 'seek':
+                method_params['position_ms'] = request_action_data['seek_ms']
+            elif request_action == 'play_direct':
+                endpoint_option = 'play'
+
+                method_data['context_uri'] = 'spotify:playlist:' + str(self.get_room().playlist_id)
+                method_data['offset'] = {
+                    'position': request_action_data['offset']
+                }
+
+            #endregion
+
+            endpoint = spotify.player_endpoint + endpoint_option
+
+            if endpoint_option in self.put_methods:
+                r = spotify.put(user, endpoint, data = method_data, params = method_params)
+            elif endpoint_option in self.post_methods:
+                r = spotify.post(user, endpoint, data = method_data)
+
+            if r.status_code not in range(200, 299):
+                return False
+
+            time.sleep(.1)
+    
+        await self.response_send('playlist', util.get_room_state(user, self.get_room().code))
+
+    async def request_chat(self, request_data):
+        pass
+
+    async def request_journey(self, request_data):
+        pass
+
+    async def request_connection(self, request_data):
+        await self.response_send('connection', request_data)
+
     # HELPER FUNCTIONS
 
     @database_sync_to_async
@@ -132,61 +160,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
         room = Room.objects.filter(code=self.room_name)
 
         return room[0] if room.exists() else None
-
-    @database_sync_to_async
-    def music_control(self, data):
-        print('MUSIC CONTROL')
-
-        action = data['action']
-        offset = data['offset'] if 'offset' in data else None
-
-        user = self.scope['user']
-
-        self.base_control(user.username, action, offset = offset)
-
-        time.sleep(.1)
-
-        return util.get_room_state(user, self.get_room().code)
-
-    @database_sync_to_async
-    def seek(self, seek_ms):
-        user = self.scope['user']
-
-        r = spotify.put(user, spotify.seek_endpoint, params = {
-            'position_ms': str(seek_ms)
-        })
-
-        time.sleep(.1)
-
-        return util.get_room_state(user, self.get_room().code)
-
-    ##### SPOTIFY FUNCTIONS #####
-
-    def base_control(self, username, option, offset = None):
-        endpoint = spotify.player_endpoint + option
-
-        user = User.objects.filter(username = username)
-
-        if user.exists():
-            user = user[0]
-
-            data = {}
-
-            if offset is not None:
-                data['context_uri'] = 'spotify:playlist:' + str(self.get_room().playlist_id)
-
-                data['offset'] = {
-                    'position': offset
-                }
-
-            if option in self.put_methods:
-                r = spotify.put(user, endpoint, data = data)
-            elif option in self.post_methods:
-                r = spotify.post(user, endpoint, data = data)
-
-            if r.status_code not in range(200, 299):
-                return False
-
-            return True
-
-        return False
+    
+    def print_request(self, request_data):
+        print('\n=== RECEIVED REQUEST ===============')
+        print('Time: ' + datetime.now().strftime('%I:%M:%S %m/%d'))
+        print('\nType: ' + request_data['type'])
+        print('Data: ' + json.dumps(request_data['data'], indent = 4))
+        print('==================== END REQUEST ===\n')

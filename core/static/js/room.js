@@ -9,26 +9,18 @@ $(document).ready(function(){
 	const roomUrl = 'r/' + code + '/';
 	const socket = new WebSocket('ws://' + window.location.host + '/ws/' + roomUrl);
 	
-	var timer, fullscreen = false, seek = false;
-	
-	/////////////////////////////////////////////////////////////////////////////////////
-	//                                                                                 //
-	//                                  MAIN SEQUENCE                                  //
-	//                                                                                 //
-	/////////////////////////////////////////////////////////////////////////////////////
+	var timer, fullscreen = false, seek = false, movingProgress = false;
 	
 	init();
 	
-	/////////////////////////////////////////////////////////////////////////////////////
-	//                                                                                 //
-	//                                 MAIN FUNCTIONS                                  //
-	//                                                                                 //
-	/////////////////////////////////////////////////////////////////////////////////////
+// 	#region Main Functions
 	
 	function updatePlaylist(){
 		const songState = roomState.song_state,
 			  playlistState = roomState.playlist_state;
 		
+		seek = true;
+
 		$('#song-image img').prop('src', songState.item.album.images[0].url);
 		$('#current-song-name').text(songState.item.name);
 		$('#current-song-artist').text(songState.item.artists[0].name);
@@ -95,11 +87,7 @@ $(document).ready(function(){
 		}
 	}
 	
-	/////////////////////////////////////////////////////////////////////////////////////
-	//                                                                                 //
-	//                                	INITIALIZATION                                 //
-	//                                                                                 //
-	/////////////////////////////////////////////////////////////////////////////////////
+// 	#region Initialization
 	
 	function init(){
 		setupSocket();
@@ -118,40 +106,13 @@ $(document).ready(function(){
 			
 			console.log(data);
 			
-			if (data.room_state){
-				roomState = data.room_state;
-				
-				updatePlaylist();
-			}
-			
-			switch (data.action){
-				case 'connection':
-					connection(data);
-					
+			switch(data.type){
+				case 'playlist':
+					roomState = data.response_data;
+
+					updatePlaylist();
+
 					break;
-				case 'music_control':
-					
-				
-					switch (data.action){
-						case 'play':
-							
-						
-							break;
-						case 'pause':
-							
-						
-							break;
-						case 'replay':
-							
-						
-							break;
-						case 'skip':
-							
-						
-							break;
-						default:
-							break;
-					}
 				default:
 					break;
 			}
@@ -163,12 +124,7 @@ $(document).ready(function(){
 				playPause = id == 'play-pause',
 				action = playPause ? (playing ? "pause" : "play") : id;
 			
-			socketSend({
-				'type': 'music_control',
-				'data': {
-					'action': action,
-				},
-			});
+			socketPlaylist(action);
 			
 			if (playPause){
 				playing = !playing;
@@ -178,16 +134,10 @@ $(document).ready(function(){
 		});
 		
 		$(document).on('click', '.playlist-song', function(){
-			var index = $(this).index(),
-				data = {
-					'action': 'play'
-				};
-			
-			data['offset'] = index;
-			
-			socketSend({
-				'type': 'music_control',
-				'data': data,
+			var index = $(this).index();
+
+			socketPlaylist('play_direct', action_data = {
+				'offset': index
 			});
 			
 			$('.playlist-song.playing').removeClass('playing');
@@ -196,16 +146,45 @@ $(document).ready(function(){
 		});
 		
 		$('#song-cover').on('click', function(){
-			socketSend({
-				'type': 'get_room_state'
-			});
+			socketPlaylist('get_state');
 		});
 		
 		$('#song-progress').on('mousedown', function(fe){
-			var progress = this;
+			var progress = this,
+				x = fe.pageX - $(progress).offset().left,
+				total = $(progress).width();
+			
+			if (x < 0)
+				x = 0;
+			else if (x > total)
+				x = total;
+			
+			var percentage = x / total;
 			
 			fe.preventDefault();
+
+			$('#progress-complete').css({
+				'transition': 'unset',
+				'width': 'calc(' + (percentage * 100) + '%)'
+			});
+
+			seek = false;
+
+			$(document).on('mousemove', function(e){
+				var x = e.pageX - $(progress).offset().left,
+					total = $(progress).width();
 			
+				if (x < 0)
+					x = 0;
+				else if (x > total)
+					x = total;
+				
+				var percentage = x / total;
+
+				$('#progress-complete').css({
+					'width': 'calc(' + (percentage * 100) + '%)'
+				});
+			});
 			$(document).on('mouseup', function(e){
 				var x = e.pageX - $(progress).offset().left,
 					total = $(progress).width();
@@ -218,14 +197,14 @@ $(document).ready(function(){
 				var percentage = x / total,
 					seekProgress = Math.round(roomState.song_state.item.duration_ms * percentage);
 				
-				seek = true;
-				
-				socketSend({
-					'type': 'seek',
+				socketPlaylist('seek', action_data = {
 					'seek_ms': seekProgress
 				});
 				
 				$(document).unbind('mouseup');
+				$(document).unbind('mousemove');
+
+				$('#progress-complete').css('transition', 'all 1s linear');
 			});
 		});
 		
@@ -268,16 +247,11 @@ $(document).ready(function(){
 			}, 100);
 		});
 	}
+
+// 	#endregion
 	
-	/////////////////////////////////////////////////////////////////////////////////////
-	//                                                                                 //
-	//                                HELPER FUNCTIONS                                 //
-	//                                                                                 //
-	/////////////////////////////////////////////////////////////////////////////////////
+// 	#region Helper Functions
 	
-	function socketSend(data){
-		socket.send(JSON.stringify(data));
-	}
 	function staticFile(path){
 		return staticUrl + path;
 	}
@@ -301,9 +275,7 @@ $(document).ready(function(){
 			if (seconds < 0){
 				finished();
 				
-				socketSend({
-					'type': 'get_room_state',
-				});
+				socketPlaylist('get_state');
 				
 				window.clearInterval(timer);
 			}
@@ -339,10 +311,44 @@ $(document).ready(function(){
 	}
 	function updateProgress(milli=roomState.song_state.item.duration_ms - roomState.song_state.progress_ms){
 		var clock = secondsToClock((roomState.song_state.item.duration_ms / 1000) - (milli / 1000)),
-			pure_clock = clock.split('.')[0];
+			pure_clock = clock.split('.')[0],
+			diff = Math.abs(roomState.song_state.item.duration_ms - roomState.song_state.progress_ms);
 		
+		if (seek){
+			if (diff > 10000)
+				$('#progress-complete').css('transition', 'unset');
+
+			$('#progress-complete').css({
+				'width': 'calc(' + (100 - milli / roomState.song_state.item.duration_ms * 100) + '%)'
+			});
+
+			setTimeout(function(){
+				$('#progress-complete').css('transition', 'unset');
+			}, 1000);
+		}
+
 		$('#song-progress-time').text(pure_clock);
-		$('#progress-complete').css('width', 'calc(' + (100 - milli / roomState.song_state.item.duration_ms * 100) + '%)');
 		$('#song-total-time').text(secondsToClock(roomState.song_state.item.duration_ms / 1000).split('.')[0]);
 	}
+
+// 	#endregion
+
+//	#region Socket Functions
+
+	function socketSend(type, data){
+		var dataToSend = {
+			'type': type,
+			'data': data
+		};
+
+		socket.send(JSON.stringify(dataToSend));
+	}
+	function socketPlaylist(action, action_data = {}){
+		socketSend('playlist', {
+			'action': action,
+			'action_data': action_data
+		});
+	}
+
+//	#endregion
 });

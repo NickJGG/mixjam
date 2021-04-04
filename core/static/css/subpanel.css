@@ -133,9 +133,13 @@
 	cursor: pointer;
 }
 .playlist-song.playing{
-	background-color: #353535;
+	padding-left: 5px;
 	
 	color: var(--light-green);
+	
+	background-color: #353535;
+	
+	border-left: 3px solid var(--dark-green);
 }
 .playlist-song:hover{
 	background-color: rgba(0, 0, 0, .3);
