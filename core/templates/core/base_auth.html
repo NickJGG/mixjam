@@ -5,6 +5,7 @@
 <head>
 	<title>{% block title %}Syncify{% endblock %}</title>
 	
+	<link rel = "shortcut icon" href = "{% static 'img/icons/logo-gray-379.ico' %}" />
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/base_auth.css' %}">
 	
 	{% block css %}
@@ -36,7 +37,7 @@
 	
 	<div id = "nav">
 		<div class = "nav-section">
-			<a href = "{% url 'index' %}"><img id = "logo" src = "{% static 'img/icons/spotify-96.png' %}"></a>
+			<a href = "{% url 'index' %}"><img id = "logo" src = "{% static 'img/icons/logo-white-379.png' %}"></a>
 			
 			<div id = "page-info">
 				<p id = "page-name">{% block page_name %}Home{% endblock %}</p>
