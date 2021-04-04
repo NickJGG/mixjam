@@ -19,7 +19,7 @@ $(document).ready(function(){
 		const songState = roomState.song_state,
 			  playlistState = roomState.playlist_state;
 		
-		seek = true;
+		seek = !movingProgress;
 
 		$('#song-image img').prop('src', songState.item.album.images[0].url);
 		$('#current-song-name').text(songState.item.name);
@@ -163,12 +163,13 @@ $(document).ready(function(){
 			
 			fe.preventDefault();
 
+			movingProgress = true;
+			seek = false;
+
 			$('#progress-complete').css({
 				'transition': 'unset',
 				'width': 'calc(' + (percentage * 100) + '%)'
 			});
-
-			seek = false;
 
 			$(document).on('mousemove', function(e){
 				var x = e.pageX - $(progress).offset().left,
@@ -200,6 +201,8 @@ $(document).ready(function(){
 				socketPlaylist('seek', action_data = {
 					'seek_ms': seekProgress
 				});
+
+				movingProgress = false;
 				
 				$(document).unbind('mouseup');
 				$(document).unbind('mousemove');
@@ -311,11 +314,15 @@ $(document).ready(function(){
 	}
 	function updateProgress(milli=roomState.song_state.item.duration_ms - roomState.song_state.progress_ms){
 		var clock = secondsToClock((roomState.song_state.item.duration_ms / 1000) - (milli / 1000)),
-			pure_clock = clock.split('.')[0],
-			diff = Math.abs(roomState.song_state.item.duration_ms - roomState.song_state.progress_ms);
+			pure_clock = clock.split('.')[0];
 		
 		if (seek){
-			if (diff > 10000)
+			var newPercentage = (100 - milli / roomState.song_state.item.duration_ms * 100),
+				diff = (($('#progress-complete').width() / ($('#progress-incomplete').width() + $('#progress-complete').width())) * 100) - newPercentage;
+
+			console.log(diff);
+
+			if (diff > 5)
 				$('#progress-complete').css('transition', 'unset');
 
 			$('#progress-complete').css({
@@ -323,7 +330,8 @@ $(document).ready(function(){
 			});
 
 			setTimeout(function(){
-				$('#progress-complete').css('transition', 'unset');
+				if (seek)
+					$('#progress-complete').css('transition', 'all 1s linear');
 			}, 1000);
 		}
 
