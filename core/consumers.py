@@ -99,9 +99,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
         method_data = {}
         method_params = {}
 
-        #region Actions
         if request_action != 'get_state':
             endpoint_option = request_action
+
+            #region Actions
 
             if request_action in simple_actions:
                 pass

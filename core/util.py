@@ -23,4 +23,8 @@ def get_playlist_state(user, room_code):
 
     playlist_data = spotify.get_playlist_data(user, room.playlist_id)
 
+    if room.playlist_image_url is None:
+        room.playlist_image_url = playlist_data['images'][1]['url']
+        room.save()
+
     return playlist_data

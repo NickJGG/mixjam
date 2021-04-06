@@ -87,6 +87,8 @@ $(document).ready(function(){
 		}
 	}
 	
+// 	#endregion
+
 // 	#region Initialization
 	
 	function init(){

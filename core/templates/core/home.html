@@ -4,28 +4,30 @@
 {% block css %}
 
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/home.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/panel.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/subpanel.css' %}">
+
+{% endblock %}
+
+{% block page_name %}Syncify{% endblock %}
+
+{% block panel_labels %}
+
+	<p class = "panel-label selected">Home</p>
+	<p class = "panel-label">FAQ</p>
+
+{% endblock %}
+
+{% block panel_container %}
+
+	{% include 'core/blocks/panels/home/home.html' with selected=True %}
+	{% include 'core/blocks/panels/home/faq.html' %}
 
 {% endblock %}
 
 {% block js %}
-
-	<script>
-		var params = {
-			response_type: 'code',
-			client_id: '8b817932e631474cb15f7e36edcfc53b',
-			scope: 'streaming app-remote-control user-modify-playback-state user-read-currently-playing',
-			redirect_uri: '{{ redirect_uri }}',
-			state: null
-		};
-
-		var esc = encodeURIComponent;
-		var query = 'https://accounts.spotify.com/authorize?' + Object.keys(params)
-			.map(k => esc(k) + '=' + esc(params[k]))
-			.join('&');
-		
-		console.log(query);
-		
-		$('#authorize').attr('href', query);
-	</script>
+	
+	<script src = "{% static 'js/home.js' %}"></script>
+	<script src = "{% static 'js/panel.js' %}"></script>
 
 {% endblock %}

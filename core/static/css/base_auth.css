@@ -1,9 +1,11 @@
 :root{
-	--light-green: #73d073;
-	--dark-green: #00B95E;
+	--light-green: rgb(115, 208, 115);
+	--dark-green: rgb(0, 185, 94);
 	--black: #1d1d1d;
 	--medium-black: #222222;
 	--light-black: #333;
+
+	--panel-padding: 20px;
 }
 body{
 	width: 100vw;
@@ -179,4 +181,8 @@ body{
 a{
 	text-decoration: none;
 	color: inherit;
+}
+a:hover *{
+	text-decoration: underline;
+	text-underline-offset: 1px;
 }

@@ -8,6 +8,7 @@ class Room(models.Model):
     leader = models.ForeignKey(User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
     playlist_id = models.CharField(max_length = 50, null = True)
+    playlist_image_url = models.CharField(max_length = 150, null = True, blank = True)
     offset = models.IntegerField(default = 0, blank = True)
     playing = models.BooleanField(default = False, blank = True)
     progress = models.IntegerField(default = 0, blank = True)
@@ -22,6 +23,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
     access_token = models.CharField(max_length = 200)
     refresh_token = models.CharField(max_length = 200)
+    most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.CASCADE, related_name = 'most_recent_name')
 
     def __str__(self):
         return self.user.username
