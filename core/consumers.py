@@ -48,13 +48,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.group_name,
             {
-                'action': 'connection',
-                'success': True,
-                'connection_state': {
-                    'connection_type': 'leave',
-                    'user': self.scope['user'].username
-                },
-                'type': 'room_send',
+                'type': 'request_connection',
+                'data': {
+                    'connection_state': {
+                        'connection_type': 'leave',
+                        'user': self.scope['user'].username
+                    }
+                }
             }
         )
 
