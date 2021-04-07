@@ -2,6 +2,21 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
+class ProfilePicture(models.Model):
+    BABY_YODA = 'baby-yoda'
+    BRUTUS = 'brutus'
+    ELF = 'elf'
+    BENDER = 'futurama-bender'
+    SCREAM = 'scream'
+
+    IMAGE_CHOICES = [
+        (BABY_YODA, 'Baby Yoda'),
+        (BRUTUS, 'Brutus'),
+        (ELF, 'Elf'),
+        (BENDER, 'Bender'),
+        (SCREAM, 'Scream'),
+    ]
+
 class Room(models.Model):
     code = models.CharField(max_length = 30)
     title = models.CharField(max_length=150, default="New Room")
@@ -23,7 +38,12 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
     access_token = models.CharField(max_length = 200)
     refresh_token = models.CharField(max_length = 200)
+    authorized = models.BooleanField(default = False)
     most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.CASCADE, related_name = 'most_recent_name')
+
+    icon_image = models.CharField(max_length = 100, choices = ProfilePicture.IMAGE_CHOICES, default = ProfilePicture.BABY_YODA)
+    icon_color = models.CharField(max_length = 6, default = 'ffffff')
+    background_color = models.CharField(max_length = 6, default = '07ace5')
 
     def __str__(self):
         return self.user.username

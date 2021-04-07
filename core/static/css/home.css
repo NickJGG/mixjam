@@ -1,3 +1,33 @@
+#welcome-container{
+    display: flex;
+}
+#welcome-user-picture{
+    width: 250px;
+    height: 250px;
+
+    background-color: white;
+
+    border-radius: 100%;
+}
+#welcome-message{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    margin-left: var(--panel-padding);
+}
+#welcome-text{
+    font-family: Roboto-Medium;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: var(--dark-green);
+}
+#welcome-user-name{
+    font-family: Roboto-Medium;
+    font-size: 36px;
+    color: white;
+}
+
 .widget-container{
     --rows: 2;
     --columns: 3;

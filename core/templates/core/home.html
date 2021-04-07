@@ -23,9 +23,12 @@
 	{% include 'core/blocks/panels/home/home.html' with selected=True %}
 	{% include 'core/blocks/panels/home/faq.html' %}
 
+	<!--<a href = "{{ authorize_url }}">Authorize</a>-->
+
 {% endblock %}
 
 {% block js %}
+	{{ block.super }}
 	
 	<script src = "{% static 'js/home.js' %}"></script>
 	<script src = "{% static 'js/panel.js' %}"></script>

@@ -57,9 +57,7 @@
 		<div id = "user-section" class = "nav-section">
 			<div id = "user-container">
 				<a href = "{% url 'account' %}">
-					<div id = "user-profile-picture">
-						
-					</div>
+					{% include 'core/blocks/profile-picture.html' with width='40px' height='40px' %}
 				</a>
 			</div>
 		</div>
@@ -86,6 +84,7 @@
 	</div>
 	
 	<script src = "{% static 'js/jquery.js' %}"></script>
+	<script src = "{% static 'js/base_auth.js' %}"></script>
 	
 	{% block js %}
 	{% endblock %}

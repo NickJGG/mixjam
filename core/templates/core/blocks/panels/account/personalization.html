@@ -1,49 +1,41 @@
+{% load static %}
+
 <div id = "panel-personalization" class = "panel {% if selected == True %}selected{% endif %}">
 	<div id = "user-info-container">
-		<div id = "profile-picture-container">
-			<div id = "profile-picture">
-				
-			</div>
-			<div id = "profile-picture-upload">
-				
-			</div>
-			<input id = "upload-profile-picture" type = "file" hidden>
-		</div>
+		{% include 'core/blocks/profile-picture.html' with width='200px' height='200px' %}
 	</div>
 	<div id = "settings-sections">
-		<div class = "settings-section">
-			<p class = "settings-label">Basic Info</p>
-			<div class = "settings-list">
-				<div class = "setting">
-					<p class = "setting-label">First Name</p>
-					<input type = "text" name = "first-name">
+		<form id = "form-personalization" method = "POST">
+			{% csrf_token %}
+
+			<input type = "hidden" name = "panel-label" value = "personalization">
+			<input id = "icon-image-path" type = "hidden" name = "icon-image" value = "{{ user.userprofile.icon_image }}">
+			<div class = "settings-section">
+				<p class = "settings-label">Identity</p>
+				<div class = "settings-list">
+					<div id = "setting-icon" class = "setting">
+						<p class = "setting-label">Icon</p>
+						<div id = "picture-choices-container">
+							{% for image in images %}
+					
+								{% with 'img/profile//'|add:image as path %}
+									<div class = "picture-choice {% if user.userprofile.icon_image in path %}selected{% endif %}" style = "--icon: url({% static path %})"></div>
+								{% endwith %}
+					
+							{% endfor %}
+						</div>
+					</div>
 				</div>
 				<div class = "setting">
-					<p class = "setting-label">Last Name</p>
-					<input type = "text" name = "last-name">
+					<p class = "setting-label">Icon Color (Hex)</p>
+					<input type = "text" name = "icon-color" value = "{{ user.userprofile.icon_color }}">
 				</div>
 				<div class = "setting">
-					<p class = "setting-label">Email</p>
-					<input type = "email" name = "first-name">
+					<p class = "setting-label">Background Color (Hex)</p>
+					<input type = "text" name = "background-color" value = "{{ user.userprofile.background_color }}">
 				</div>
+				<input type = "submit" value = "SAVE">
 			</div>
-		</div>
-		<div class = "settings-section">
-			<p class = "settings-label">Rooms</p>
-			<div class = "settings-list">
-				<div class = "setting">
-					<p class = "setting-label">First Name</p>
-					<input type = "text" name = "first-name">
-				</div>
-				<div class = "setting">
-					<p class = "setting-label">Last Name</p>
-					<input type = "text" name = "last-name">
-				</div>
-				<div class = "setting">
-					<p class = "setting-label">Email</p>
-					<input type = "email" name = "first-name">
-				</div>
-			</div>
-		</div>
+		</form>
 	</div>
 </div>

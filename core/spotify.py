@@ -1,10 +1,11 @@
+import os
 import base64
 import json
 
 import requests
 
-client_id = '8b817932e631474cb15f7e36edcfc53b'
-client_secret = '6ef495db91bd4268b520f861117d39f9'
+client_id = os.environ.get('CLIENT_ID')
+client_secret = os.environ.get('CLIENT_SECRET')
 
 song_endpoint = 'https://api.spotify.com/v1/me/player/currently-playing'
 player_endpoint = 'https://api.spotify.com/v1/me/player/'

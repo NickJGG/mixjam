@@ -4,7 +4,8 @@ $(document).ready(function(){
 		'chat': 'chat',
 		'toke journey': 'journey',
 		'personalization': 'personalization',
-		'privacy': 'privacy'
+		'privacy': 'privacy',
+		'overview': 'overview'
 	};
 	
 	$('.subpanel-label').on('click', function(){

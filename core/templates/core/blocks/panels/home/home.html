@@ -1,7 +1,15 @@
 {% load static %}
 
 <div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
-	<div class = "widget-container" style = "--rows: 2; --columns: 3">
+    <div id = "welcome-container">
+        {% include 'core/blocks/profile-picture.html' with width='250px' height='250px' %}
+
+        <div id = "welcome-message">
+            <p id = "welcome-text">Welcome back</p>
+            <p id = "welcome-user-name">{{ user.first_name }}</p>
+        </div>
+    </div>
+	<div class = "widget-container" style = "--rows: 2; --columns: 4">
         <div class = "widget" style = "--background-url: url({{ user.userprofile.most_recent_room.playlist_image_url }}); --background-color: #0086b9">
             <div class = "widget-label">
                 <img src = "{% static 'img/icons/recent-white-24.png' %}">
@@ -13,6 +21,12 @@
             <div class = "widget-info"> 
                 <a href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}"><p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p></a>
             </div>
+        </div>
+        <div class = "widget">
+            
+        </div>
+        <div class = "widget">
+            
         </div>
         <div class = "widget">
             

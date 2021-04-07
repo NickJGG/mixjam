@@ -58,6 +58,41 @@ body{
 	font-size: 24px;
 	color: white;
 }
+.profile-picture-container{
+	--width: 200px;
+	--height: 200px;
+
+	width: var(--width);
+	height: var(--height);
+	
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	position: relative;
+	
+	background-color: var(--background-color);
+
+	border-radius: 100%;
+	
+	overflow: hidden;
+}
+.profile-picture{
+	--background-color: #333;
+
+	width: 100%;
+	height: 40%;
+	
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.profile-picture-icon{
+	height: 100%;
+
+	background-color: var(--icon-color);;
+	-webkit-mask-box-image: var(--background-image);
+}
 
 #panel-labels{
 	display: flex;
