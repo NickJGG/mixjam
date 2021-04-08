@@ -23,13 +23,13 @@ class Room(models.Model):
     leader = models.ForeignKey(User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
     playlist_id = models.CharField(max_length = 50, null = True)
-    playlist_image_url = models.CharField(max_length = 150, null = True, blank = True)
+    playlist_image_url = models.CharField(max_length = 250, null = True, blank = True)
     offset = models.IntegerField(default = 0, blank = True)
     playing = models.BooleanField(default = False, blank = True)
     progress = models.IntegerField(default = 0, blank = True)
     progress_time = models.DateTimeField(null = True, blank = True)
-    users = models.ManyToManyField(User, related_name='users')
-    active_users = models.ManyToManyField(User, related_name='active_users')
+    users = models.ManyToManyField(User, blank = True, related_name = 'users')
+    active_users = models.ManyToManyField(User, blank = True, related_name = 'active_users')
 
     def __str__(self):
         return self.code

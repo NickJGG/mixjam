@@ -139,7 +139,7 @@
     font-family: Roboto-Medium;
     font-size: 10px;
     text-transform: uppercase;
-    color: #efefef;
+    color: var(--light-green);
 }
 .widget-name{
     font-family: Roboto-Medium;
