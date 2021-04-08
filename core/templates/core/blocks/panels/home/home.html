@@ -10,57 +10,41 @@
         </div>
     </div>
 	<div class = "widget-container" style = "--rows: 2; --columns: 4">
-        <div class = "widget" style = "--background-url: url({{ user.userprofile.most_recent_room.playlist_image_url }}); --background-color: #0086b9">
-            <div class = "widget-label">
-                <img src = "{% static 'img/icons/recent-white-24.png' %}">
-                <p>Most Recent Room</p>
-            </div>
-            <div class = "widget-image">
-
-            </div>
-            <div class = "widget-info"> 
-                <a href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}"><p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p></a>
-            </div>
-        </div>
-        <div class = "widget">
-            
-        </div>
-        <div class = "widget">
-            
-        </div>
-        <div class = "widget">
-            
-        </div>
-        <div class = "widget">
-            
-        </div>
-        <div class = "widget">
-            
-        </div>
-        <div class = "widget">
-            
-        </div>
-        <div class = "widget no-padding">
-            <div class = "widget-container small" style = "--rows: 2; --columns: 2">
-                <div class = "widget" style = "--background-url: url({% static 'img/icons/edit-white-96.png' %})">
-                    <div class = "widget-image">
-        
+        <p class = "widget-container-label">Quick Access</p>
+        <div class = "widget-list">
+            <div class = "widget" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }}); --background-color: #0086b9">
+                <div class = "widget-info">
+                    <div class = "widget-type">
+                        <img src = "{% static 'img/icons/recent-white-24.png' %}">
+                        <p>Most Recent Room</p>
                     </div>
-                    <div class = "widget-info"> 
-                        <a href = "{% url 'account' %}"><p class = "widget-name">Customize</p></a>
-                    </div>
-                </div>
-                <div class = "widget"></div>
-                <div class = "widget"></div>
-                <div class = "widget" style = "--background-url: url({% static 'img/icons/account-white-96.png' %})">
-                    <div class = "widget-image">
-        
-                    </div>
-                    <div class = "widget-info"> 
-                        <a href = "{% url 'account' %}"><p class = "widget-name">Account</p></a>
+                    <div class = "widget-label"> 
+                        <a href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}"><p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p></a>
                     </div>
                 </div>
             </div>
+            <!--<div class = "widget no-padding">
+                <div class = "widget-list grid small" style = "--rows: 2; --columns: 2">
+                    <div class = "widget" style = "--background-url: url({% static 'img/icons/edit-white-96.png' %})">
+                        <div class = "widget-image">
+            
+                        </div>
+                        <div class = "widget-info"> 
+                            <a href = "{% url 'account' %}"><p class = "widget-name">Customize</p></a>
+                        </div>
+                    </div>
+                    <div class = "widget"></div>
+                    <div class = "widget"></div>
+                    <div class = "widget" style = "--background-url: url({% static 'img/icons/account-white-96.png' %})">
+                        <div class = "widget-image">
+            
+                        </div>
+                        <div class = "widget-info"> 
+                            <a href = "{% url 'account' %}"><p class = "widget-name">Account</p></a>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
         </div>
     </div>
 </div>
