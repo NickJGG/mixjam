@@ -45,6 +45,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     # DISCONNECT FUNCTION
     async def disconnect(self, close_code):
+        await self.offline()
+
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -62,8 +64,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
             self.group_name,
             self.channel_name
         )
-
-        await self.offline()
 
     # RECEIVE FUNCTION (WILL CALL FOR USER)
     async def receive(self, text_data):

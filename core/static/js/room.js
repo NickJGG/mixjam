@@ -322,7 +322,7 @@ $(document).ready(function(){
 			var newPercentage = (100 - milli / roomState.song_state.item.duration_ms * 100),
 				diff = (($('#progress-complete').width() / ($('#progress-incomplete').width() + $('#progress-complete').width())) * 100) - newPercentage;
 
-			console.log(diff);
+			//console.log(diff);
 
 			if (diff > 5)
 				$('#progress-complete').css('transition', 'unset');

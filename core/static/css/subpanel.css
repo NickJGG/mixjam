@@ -38,6 +38,12 @@
 	
 	background-color: var(--medium-black);
 }
+.subpanel-label:first-child{
+	border-radius: var(--border-radius) 0 0 0;
+}
+.subpanel-label:last-child{
+	border-radius: 0 var(--border-radius) 0 0;
+}
 .subpanel{
 	width: 100%;
 	
@@ -46,6 +52,8 @@
 	
 	background-color: var(--medium-black);
 	
+	border-radius: 0 var(--border-radius) var(--border-radius) var(--border-radius);
+
 	overflow: hidden;
 	
 	box-sizing: border-box;
@@ -63,6 +71,8 @@
 #playlist-cover, #playlist-cover img{
 	width: 250px;
 	height: 250px;
+
+	border-radius: var(--border-radius);
 }
 #playlist-details{
 	display: flex;

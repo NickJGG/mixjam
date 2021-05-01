@@ -11,12 +11,13 @@
 
 	padding: var(--panel-padding);
 
-	background-color: var(--medium-black);
-
 	box-sizing: border-box;
 }
 .settings-section:not(:first-child){
 	margin-top: var(--panel-padding);
+}
+.settings-section > *:not(.settings-label){
+	margin-left: 15px;
 }
 .settings-label{
 	margin-bottom: 20px;

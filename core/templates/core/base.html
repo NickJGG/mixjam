@@ -1,0 +1,45 @@
+{% load static %}
+
+<html>
+<head>
+	<title>{% block title %}Syncify{% endblock %}</title>
+	
+	<link rel = "shortcut icon" href = "{% static 'img/icons/ico/logo-gray-379.ico' %}" />
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/base.css' %}">
+	
+	{% block css %}
+	{% endblock %}
+	
+	<style>
+		@font-face {
+			font-family: Roboto-Thin;
+			src: url({% static 'font/roboto/Roboto-Thin.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Light;
+			src: url({% static 'font/roboto/Roboto-Light.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Regular;
+			src: url({% static 'font/roboto/Roboto-Regular.ttf' %});
+		}
+		@font-face {
+			font-family: Roboto-Medium;
+			src: url({% static 'font/roboto/Roboto-Medium.ttf' %});
+		}
+	</style>
+</head>
+<body>
+	<!--<a id = "authorize">Authorize</a>
+	<br>
+	<a href = "/r/banks">r/banks</a>-->
+	
+    {% block content %}
+    {% endblock %}
+	
+	{% block js %}
+        <script src = "{% static 'js/jquery.js' %}"></script>
+        <script src = "{% static 'js/base.js' %}"></script>
+	{% endblock %}
+</body>
+</html>

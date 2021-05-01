@@ -1,39 +1,16 @@
+{% extends 'core/base.html' %}
+
 {% load static %}
 {% load util %}
 
-<html>
-<head>
-	<title>{% block title %}Syncify{% endblock %}</title>
-	
-	<link rel = "shortcut icon" href = "{% static 'img/icons/ico/logo-gray-379.ico' %}" />
+{% block css %}
+
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/base_auth.css' %}">
+
+{% endblock %}
 	
-	{% block css %}
-	{% endblock %}
-	
-	<style>
-		@font-face {
-			font-family: Roboto-Thin;
-			src: url({% static 'font/roboto/Roboto-Thin.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Light;
-			src: url({% static 'font/roboto/Roboto-Light.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Regular;
-			src: url({% static 'font/roboto/Roboto-Regular.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Medium;
-			src: url({% static 'font/roboto/Roboto-Medium.ttf' %});
-		}
-	</style>
-</head>
-<body>
-	<!--<a id = "authorize">Authorize</a>
-	<br>
-	<a href = "/r/banks">r/banks</a>-->
+
+{% block content %}
 	
 	<div id = "nav">
 		<div class = "nav-section">
@@ -82,11 +59,11 @@
 			{% endblock %}
 		</div>
 	</div>
+
+{% endblock %}
 	
-	<script src = "{% static 'js/jquery.js' %}"></script>
+{% block js %}
+	{{ block.super }}
+
 	<script src = "{% static 'js/base_auth.js' %}"></script>
-	
-	{% block js %}
-	{% endblock %}
-</body>
-</html>
+{% endblock %}

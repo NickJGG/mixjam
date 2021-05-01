@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block css %}
+	{{ block.super }}
 
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/account.css' %}">
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/panel.css' %}">
@@ -28,6 +29,7 @@
 {% endblock %}
 
 {% block js %}
+	{{ block.super }}
 	
 	<script src = "{% static 'js/account.js' %}"></script>
 	<script src = "{% static 'js/panel.js' %}"></script>

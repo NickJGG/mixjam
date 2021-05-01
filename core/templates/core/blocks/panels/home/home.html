@@ -5,14 +5,17 @@
         {% include 'core/blocks/profile-picture.html' with width='250px' height='250px' %}
 
         <div id = "welcome-message">
-            <p id = "welcome-text">Welcome back</p>
+            <p id = "welcome-text">Welcome back,</p>
             <p id = "welcome-user-name">{{ user.first_name }}</p>
         </div>
     </div>
 	<div class = "widget-container" style = "--rows: 2; --columns: 4">
         <p class = "widget-container-label">Quick Access</p>
         <div class = "widget-list">
-            <div class = "widget" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }}); --background-color: #0086b9">
+            <div class = "widget">
+                <div class = "widget-image-container">
+                    <img src = "{{ user.userprofile.most_recent_room.playlist_image_url }}">
+                </div>
                 <div class = "widget-info">
                     <div class = "widget-type">
                         <img src = "{% static 'img/icons/recent-white-24.png' %}">

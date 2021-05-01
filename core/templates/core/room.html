@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block css %}
+	{{ block.super }}
 
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/room.css' %}">
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/panel.css' %}">
@@ -75,6 +76,7 @@
 {% endblock %}
 
 {% block js %}
+	{{ block.super }}
 
 	{% static 'img/icons/pause-white-24.png' as pausePath %}
 	{% static 'img/icons/play-white-24.png' as playPath %}

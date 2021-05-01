@@ -35,8 +35,6 @@ def get_client_credentials():
     return client_creds_b64.decode()
 
 def refresh_token(user):
-    print('NEEDS REFRESH')
-
     response = requests.post(refresh_endpoint, data = {
         'grant_type': 'refresh_token',
         'refresh_token': user.userprofile.refresh_token
@@ -44,20 +42,24 @@ def refresh_token(user):
 
     r_json = response.json()
 
-    print(r_json)
-
-    user.userprofile.access_token = r_json['access_token']
+    if response.status_code < 400:
+        user.userprofile.access_token = r_json['access_token']
+        user.userprofile.authorized = True
+    else:
+        user.userprofile.authorized = False
+    
     user.userprofile.save()
 
-    return response.status_code
+    return user.userprofile.authorized
 
 def get(user, endpoint):
     response = requests.get(endpoint, headers = get_headers(user))
 
     if response.status_code == 401:
-        refresh_token(user)
+        authorized = refresh_token(user)
 
-        response = requests.get(endpoint, headers=get_headers(user))
+        if authorized:
+            response = requests.get(endpoint, headers=get_headers(user))
 
     return response
 
@@ -67,9 +69,10 @@ def put(user, endpoint, data = {}, params = {}):
     response = requests.put(endpoint, params = params, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
-        refresh_token(user)
+        authorized = refresh_token(user)
 
-        response = requests.put(endpoint, params = data, headers = get_headers(user))
+        if authorized:
+            response = requests.put(endpoint, params = data, headers = get_headers(user))
 
     return response
 
@@ -79,9 +82,15 @@ def post(user, endpoint, data):
     response = requests.post(endpoint, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
-        refresh_token(user)
+        authorized = refresh_token(user)
 
-        response = requests.post(endpoint, data = data, headers = get_headers(user))
+        if authorized:
+            response = requests.post(endpoint, data = data, headers = get_headers(user))
+        else:
+            response = {
+                'error': 'unauthorized',
+                'error_message': 'User is unauthorized'
+            }
 
     return response
 
