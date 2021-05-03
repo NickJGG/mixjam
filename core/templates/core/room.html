@@ -75,6 +75,38 @@
 
 {% endblock %}
 
+{% block right_side_panel %}
+
+	<div id = "chat-container">
+		<div id = "chat-messages">
+			<div class = "chat-message">
+				<div class = "chat-message-info">
+					<div class = "message-picture">
+						{% include 'core/blocks/profile-picture.html' with width='24px' height='24px' %}
+					</div>
+					<p class = "message-username">{{ user.username }}</p>
+				</div>
+				<div class = "chat-message-text">
+					{% lorem 10 w %}
+				</div>
+			</div>
+			<div class = "chat-message">
+				<div class = "chat-message-info">
+					<div class = "message-picture">
+						{% include 'core/blocks/profile-picture.html' with width='24px' height='24px' %}
+					</div>
+					<p class = "message-username">{{ user.username }}</p>
+				</div>
+				<div class = "chat-message-text">
+					{% lorem 10 w %}
+				</div>
+			</div>
+		</div>
+	</div>
+	<input id = "chat-box" type = "text" placeholder = "Write a message">
+
+{% endblock %}
+
 {% block js %}
 	{{ block.super }}
 

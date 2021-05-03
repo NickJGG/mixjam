@@ -64,7 +64,7 @@ body{
 	
 	background-color: var(--background-color);
 
-	border: calc(var(--height) / 12) solid rgba(0, 0, 0, .4);
+	/*border: calc(var(--height) / 12) solid rgba(0, 0, 0, .4);*/
 
 	border-radius: 100%;
 	
@@ -85,7 +85,7 @@ body{
 .profile-picture-icon{
 	height: 100%;
 
-	background-color: var(--icon-color);;
+	background-color: var(--icon-color);
 	-webkit-mask-box-image: var(--background-image);
 }
 
@@ -149,8 +149,10 @@ body{
 	box-sizing: border-box;
 }
 
-#room-list-container{
-	width: 250px;
+.side-panel-container{
+	--side-panel-width: 250px;
+
+	width: var(--side-panel-width);
 	
 	display: flex;
 	flex-direction: column;

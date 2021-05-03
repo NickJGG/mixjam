@@ -40,7 +40,7 @@
 		</div>
 	</div>
 	<div id = "container">
-		<div id = "room-list-container">
+		<div id = "room-list-container" class = "side-panel-container">
 			<div class = "list-section">
 				<p class = "section-label">Your Rooms</p>
 				<div class = "section-items">
@@ -56,6 +56,10 @@
 		</div>
 		<div id = "panel-container">
 			{% block panel_container %}
+			{% endblock %}
+		</div>
+		<div id = "right-side-panel" class = "side-panel-container">
+			{% block right_side_panel %}
 			{% endblock %}
 		</div>
 	</div>

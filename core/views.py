@@ -41,6 +41,8 @@ def home(request):
 
     authorize_url = urlunsplit((scheme, netloc, path, query, ""))
 
+    print(authorize_url)
+
     return render(request, 'core/home.html', {
         'authorize_url': authorize_url
     })
@@ -77,11 +79,10 @@ def room(request, room_code):
         room.save()'''
 
         room = Room(code = room_code, leader = request.user)
-        room.save()\
+        room.save()
 
     request.user.userprofile.most_recent_room = room
-
-    print(request.user.userprofile.most_recent_room)
+    request.user.userprofile.save()
 
     data['room'] = room
     data['room_state'] = util.get_room_state(request.user, room_code)

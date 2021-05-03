@@ -8,6 +8,9 @@
 	
 	cursor: pointer;
 }
+#right-side-panel{
+	--side-panel-width: 350px;
+}
 
 #player-container{
 	width: 100%;
@@ -202,4 +205,52 @@
 }
 .extra-control:hover{
 	transform: scale(1.1);
+}
+
+#chat-container{
+	flex: 1;
+
+	overflow-y: auto;
+}
+#chat-messages{
+	
+}
+.chat-message{
+	display: flex;
+	flex-direction: column;
+
+	color: white;
+}
+.chat-message:not(:first-child){
+	margin-top: 20px;
+}
+.chat-message-info{
+	display: flex;
+	align-items: center;
+
+	margin-bottom: 4px;
+}
+.message-picture{
+	width: 24x;
+	height: 24px;
+}
+.message-username{
+	margin-left: 4px;
+
+	font-family: Roboto-Medium;
+	font-size: 12px;
+}
+.chat-message-text{
+	padding: 15px;
+
+	font-size: 14px;
+
+	background-color: #2c2c2c;
+
+	border-radius: var(--border-radius);
+
+	box-sizing: border-box;
+}
+#chat-box{
+	margin-top: var(--panel-padding);
 }

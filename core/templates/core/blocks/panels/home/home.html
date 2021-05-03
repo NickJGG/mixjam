@@ -1,53 +1,22 @@
 {% load static %}
 
 <div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
-    <div id = "welcome-container">
-        {% include 'core/blocks/profile-picture.html' with width='250px' height='250px' %}
-
-        <div id = "welcome-message">
-            <p id = "welcome-text">Welcome back,</p>
-            <p id = "welcome-user-name">{{ user.first_name }}</p>
-        </div>
-    </div>
 	<div class = "widget-container" style = "--rows: 2; --columns: 4">
-        <p class = "widget-container-label">Quick Access</p>
         <div class = "widget-list">
-            <div class = "widget">
-                <div class = "widget-image-container">
-                    <img src = "{{ user.userprofile.most_recent_room.playlist_image_url }}">
-                </div>
-                <div class = "widget-info">
-                    <div class = "widget-type">
-                        <img src = "{% static 'img/icons/recent-white-24.png' %}">
-                        <p>Most Recent Room</p>
-                    </div>
-                    <div class = "widget-label"> 
-                        <a href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}"><p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p></a>
+            <p class = "widget-list-label">Rooms</p>
+            <div class = "widgets">
+                <div class = "widget link" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }})">
+                    <div class = "widget-info">
+                        <div class = "widget-type">
+                            <img src = "{% static 'img/icons/recent-white-24.png' %}">
+                            <p>Most Recent Room</p>
+                        </div>
+                        <div class = "widget-label"> 
+                            <a href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}"><p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p></a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!--<div class = "widget no-padding">
-                <div class = "widget-list grid small" style = "--rows: 2; --columns: 2">
-                    <div class = "widget" style = "--background-url: url({% static 'img/icons/edit-white-96.png' %})">
-                        <div class = "widget-image">
-            
-                        </div>
-                        <div class = "widget-info"> 
-                            <a href = "{% url 'account' %}"><p class = "widget-name">Customize</p></a>
-                        </div>
-                    </div>
-                    <div class = "widget"></div>
-                    <div class = "widget"></div>
-                    <div class = "widget" style = "--background-url: url({% static 'img/icons/account-white-96.png' %})">
-                        <div class = "widget-image">
-            
-                        </div>
-                        <div class = "widget-info"> 
-                            <a href = "{% url 'account' %}"><p class = "widget-name">Account</p></a>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
         </div>
     </div>
 </div>
