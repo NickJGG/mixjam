@@ -251,6 +251,16 @@ $(document).ready(function(){
 				$(div).css('transform', 'scale(1)');
 			}, 100);
 		});
+
+		socket.onclose = function(e){
+			$('#connection-status').css('--background-color', 'var(--red)');
+			$('#connection-status-label p').text('Disconnected');
+		};
+
+		socket.onopen = function(e){
+			$('#connection-status').css('--background-color', 'var(--dark-green)');
+			$('#connection-status-label p').text('Connected');
+		};
 	}
 
 // 	#endregion

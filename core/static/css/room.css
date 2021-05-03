@@ -8,6 +8,46 @@
 	
 	cursor: pointer;
 }
+#connection-container{
+	--background-color: var(--red);
+
+	position: relative;
+}
+#connection-status{
+	width: 24px;
+	height: 24px;
+
+	display: block;
+
+	background-color: var(--background-color);
+	-webkit-mask-box-image: var(--background-image);
+}
+#connection-container:hover #connection-status-label{
+	display: flex;
+}
+#connection-status-label{
+	display: none;
+	justify-content: center;
+
+	width: 100%;
+
+	position: absolute;
+	top: calc(100% + 3px);
+	left: 0;
+
+	box-sizing: border-box;
+}
+#connection-status-label p{
+	padding: 6px 10px;
+
+	background-color: black;
+
+	font-size: 12px;
+	color: white;
+	text-align: center;
+
+	border-radius: 10px;
+}
 #right-side-panel{
 	--side-panel-width: 350px;
 }

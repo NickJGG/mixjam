@@ -27,6 +27,17 @@
 
 {% endblock %}
 
+{% block user_container_before %}
+
+	<div id = "connection-container" style = "--background-image: url({% static 'img/icons/connection-white-96.png' %})">
+		<div id = "connection-status"></div>
+		<div id = "connection-status-label">
+			<p>Disconnected</p>
+		</div>
+	</div>
+
+{% endblock %}
+
 {% block panel_container %}
 
 	{% include 'core/blocks/panels/room/home.html' with selected=True %}
