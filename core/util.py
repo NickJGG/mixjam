@@ -3,9 +3,17 @@ from .models import *
 from . import spotify
 
 def get_room_state(user, room_code):
+    room = Room.objects.get(code = room_code)
+
+    playlist_state = get_playlist_state(user, room_code)
+    song_state = playlist_state['tracks']['items'][room.playlist.song_index]
+
+    song_state['is_playing'] = room.playlist.playing
+    song_state['progress_ms'] = room.playlist.progress_ms
+
     return {
-        'song_state': get_song_state(user),
-        'playlist_state': get_playlist_state(user, room_code)
+        'song_state': song_state,
+        'playlist_state': playlist_state
     }
 
 def get_song_state(user):

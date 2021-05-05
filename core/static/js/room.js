@@ -21,11 +21,11 @@ $(document).ready(function(){
 		
 		seek = !movingProgress;
 
-		$('#song-image img').prop('src', songState.item.album.images[0].url);
-		$('#current-song-name').text(songState.item.name);
-		$('#current-song-artist').text(songState.item.artists[0].name);
+		$('#song-image img').prop('src', songState.track.album.images[0].url);
+		$('#current-song-name').text(songState.track.name);
+		$('#current-song-artist').text(songState.track.artists[0].name);
 		
-		var timeLeft = songState.item.duration_ms - songState.progress_ms;
+		var timeLeft = songState.track.duration_ms - songState.progress_ms;
 		
 		playing = songState.is_playing;
 		
@@ -50,7 +50,7 @@ $(document).ready(function(){
 			
 			for (i = 0; i < playlistState.tracks.items.length; i++){
 				var song = playlistState.tracks.items[i],
-					songPlaying = song.track.name == songState.item.name;
+					songPlaying = song.track.name == songState.track.name;
 				
 				$('#playlist-songs').append(`<div class = "playlist-song ` + (songPlaying ? 'playing' : '') + `">
 												<div style = "display: flex; align-items: center;">
@@ -198,7 +198,7 @@ $(document).ready(function(){
 					x = total;
 				
 				var percentage = x / total,
-					seekProgress = Math.round(roomState.song_state.item.duration_ms * percentage);
+					seekProgress = Math.round(roomState.song_state.track.duration_ms * percentage);
 				
 				socketPlaylist('seek', action_data = {
 					'seek_ms': seekProgress
@@ -278,7 +278,7 @@ $(document).ready(function(){
 		}
 		
 		timer = window.setInterval(function(){
-			var clock = secondsToClock((roomState.song_state.item.duration_ms / 1000) - seconds - 1);
+			var clock = secondsToClock((roomState.song_state.track.duration_ms / 1000) - seconds - 1);
 			
 			if (playing){
 				seconds -= 1;
@@ -324,12 +324,12 @@ $(document).ready(function(){
 	function updatePlayButton(){
 		$('#play-pause').find('img').prop('src', playing ? pausePath : playPath);
 	}
-	function updateProgress(milli=roomState.song_state.item.duration_ms - roomState.song_state.progress_ms){
-		var clock = secondsToClock((roomState.song_state.item.duration_ms / 1000) - (milli / 1000)),
+	function updateProgress(milli=roomState.song_state.track.duration_ms - roomState.song_state.progress_ms){
+		var clock = secondsToClock((roomState.song_state.track.duration_ms / 1000) - (milli / 1000)),
 			pure_clock = clock.split('.')[0];
 		
 		if (seek){
-			var newPercentage = (100 - milli / roomState.song_state.item.duration_ms * 100),
+			var newPercentage = (100 - milli / roomState.song_state.track.duration_ms * 100),
 				diff = (($('#progress-complete').width() / ($('#progress-incomplete').width() + $('#progress-complete').width())) * 100) - newPercentage;
 
 			//console.log(diff);
@@ -338,7 +338,7 @@ $(document).ready(function(){
 				$('#progress-complete').css('transition', 'unset');
 
 			$('#progress-complete').css({
-				'width': 'calc(' + (100 - milli / roomState.song_state.item.duration_ms * 100) + '%)'
+				'width': 'calc(' + (100 - milli / roomState.song_state.track.duration_ms * 100) + '%)'
 			});
 
 			setTimeout(function(){
@@ -348,7 +348,7 @@ $(document).ready(function(){
 		}
 
 		$('#song-progress-time').text(pure_clock);
-		$('#song-total-time').text(secondsToClock(roomState.song_state.item.duration_ms / 1000).split('.')[0]);
+		$('#song-total-time').text(secondsToClock(roomState.song_state.track.duration_ms / 1000).split('.')[0]);
 	}
 
 // 	#endregion

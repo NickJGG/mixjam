@@ -33,6 +33,7 @@ def update_playlist(user, room, request_data):
         room.playlist.progress_ms = get_progress(room)
     elif action == 'play_direct' or action == 'previous' or action == 'next':
         room.playlist.progress_ms = 0
+        room.playlist.playing = True
     
     room.playlist.last_action = timezone.now()
     room.playlist.save()
@@ -70,6 +71,15 @@ def play(user, room, offset = None):
         data['offset'] = {
             'position': offset
         }
+
+    wait_time = 1.5 - (timezone.now() - room.playlist.last_action).total_seconds()
+
+    print('LAST ACTION: ' + str(room.playlist.last_action))
+    print('NOW: ' + str(timezone.now()))
+    print('TIME UNTIL 1.5s AFTER LAST ACTION: ' + str(wait_time))
+
+    if wait_time > 0:
+        time.sleep(wait_time)
 
     put(user, play_endpoint, data = data)
 
