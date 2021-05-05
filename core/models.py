@@ -17,6 +17,20 @@ class ProfilePicture(models.Model):
         (SCREAM, 'Scream'),
     ]
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete = models.CASCADE)
+    access_token = models.CharField(max_length = 200)
+    refresh_token = models.CharField(max_length = 200)
+    authorized = models.BooleanField(default = False)
+    most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.CASCADE, related_name = 'most_recent_name')
+
+    icon_image = models.CharField(max_length = 100, choices = ProfilePicture.IMAGE_CHOICES, default = ProfilePicture.BABY_YODA)
+    icon_color = models.CharField(max_length = 6, default = 'ffffff')
+    background_color = models.CharField(max_length = 6, default = '07ace5')
+
+    def __str__(self):
+        return self.user.username
+
 class Room(models.Model):
     code = models.CharField(max_length = 30)
     title = models.CharField(max_length=150, default="New Room")
@@ -34,16 +48,15 @@ class Room(models.Model):
     def __str__(self):
         return self.code
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete = models.CASCADE)
-    access_token = models.CharField(max_length = 200)
-    refresh_token = models.CharField(max_length = 200)
-    authorized = models.BooleanField(default = False)
-    most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.CASCADE, related_name = 'most_recent_name')
+    def is_active(self):
+        return self.active_users.count() > 0
+    
+    def others_active(self, user):
+        return (self.active_users.count() - 1 if user in self.active_users.all() else 0) > 0
 
-    icon_image = models.CharField(max_length = 100, choices = ProfilePicture.IMAGE_CHOICES, default = ProfilePicture.BABY_YODA)
-    icon_color = models.CharField(max_length = 6, default = 'ffffff')
-    background_color = models.CharField(max_length = 6, default = '07ace5')
-
-    def __str__(self):
-        return self.user.username
+class Playlist(models.Model):
+    room = models.OneToOneField(Room, on_delete = models.CASCADE)
+    song_index = models.IntegerField(default = 0, blank = True)
+    progress_ms = models.IntegerField(default = 0, null = True, blank = True)
+    last_action = models.DateTimeField(null = True, blank = True)
+    playing = models.BooleanField(default = False, blank = True)

@@ -18,7 +18,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     # CONNECT FUNCTION
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_code']
+        room_code = self.scope['url_route']['kwargs']['room_code']
+        user = self.scope['user']
+        room = Room.objects.get(code = room_code)
+
+        self.room_name = room_code
         self.group_name = 'room_%s' % self.room_name
 
         await self.channel_layer.group_add(
@@ -37,11 +41,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 'data': {
                     'connection_state': {
                         'connection_type': 'join',
-                        'user': self.scope['user'].username
+                        'user': user.username
                     }
                 }
             }
         )
+
+        await self.request_playlist({
+            'data': {
+                'action': 'get_state'
+            }
+        })
 
     # DISCONNECT FUNCTION
     async def disconnect(self, close_code):
@@ -74,6 +84,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if 'type' not in request_data or 'data' not in request_data:
             pass
 
+        if request_data['type'] == 'playlist':
+            spotify.update_playlist(self.scope['user'], self.get_room(), request_data['data'])
+
         request_data['type'] = 'request_' + request_data['type']
 
         await self.channel_layer.group_send(
@@ -92,7 +105,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         request_data = request_data['data']
 
         request_action = request_data['action']
-        request_action_data = request_data['action_data']
+        request_action_data = request_data['action_data'] if 'action_data' in request_data else None
 
         user = self.scope['user']
 
@@ -100,33 +113,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
         method_params = {}
 
         if request_action != 'get_state':
-            endpoint_option = request_action
+            spotify.action(user, self.get_room(), request_action, request_action_data)
 
-            #region Actions
-
-            if request_action in simple_actions:
-                pass
-            elif request_action == 'seek':
-                method_params['position_ms'] = request_action_data['seek_ms']
-            elif request_action == 'play_direct':
-                endpoint_option = 'play'
-
-                method_data['context_uri'] = 'spotify:playlist:' + str(self.get_room().playlist_id)
-                method_data['offset'] = {
-                    'position': request_action_data['offset']
-                }
-
-            #endregion
-
-            endpoint = spotify.player_endpoint + endpoint_option
-
-            if endpoint_option in self.put_methods:
-                r = spotify.put(user, endpoint, data = method_data, params = method_params)
-            elif endpoint_option in self.post_methods:
-                r = spotify.post(user, endpoint, data = method_data)
-
-            if r.status_code not in range(200, 299):
-                return False
+            #if r.status_code not in range(200, 299):
+                #return False
 
             time.sleep(.1)
     
