@@ -4,6 +4,8 @@ import json
 import requests
 import time
 
+from channels.db import database_sync_to_async
+
 from django.utils import timezone
 
 client_id = os.environ.get('CLIENT_ID')
@@ -46,7 +48,9 @@ def update_playlist(user, room, request_data):
     print('"""""""""""""""""""""""""""')
 
 def action(user, room, request_action, action_data = None):
-    print('BEFORE: ' + request_action + ' FOR @' + str(user.username))
+    before = timezone.now()
+
+    print('BEFORE: ' + request_action + ' FOR @' + str(user.username) + ' at ' + str(before))
 
     if request_action == 'play':
         play(user, room)
@@ -60,8 +64,11 @@ def action(user, room, request_action, action_data = None):
         previous(user)
     elif request_action == 'next':
         next(user)
-    
-    print('AFTER: ' + request_action + ' FOR @' + str(user.username))
+
+    after = timezone.now()
+
+    print('AFTER:  ' + request_action + ' FOR @' + str(user.username) + ' at ' + str(after))
+    print('duration: ' + str((after - before).total_seconds()))
 
 def play(user, room, offset = None):
     data = {}
@@ -71,15 +78,6 @@ def play(user, room, offset = None):
         data['offset'] = {
             'position': offset
         }
-
-    wait_time = 1.5 - (timezone.now() - room.playlist.last_action).total_seconds()
-
-    print('LAST ACTION: ' + str(room.playlist.last_action))
-    print('NOW: ' + str(timezone.now()))
-    print('TIME UNTIL 1.5s AFTER LAST ACTION: ' + str(wait_time))
-
-    if wait_time > 0:
-        time.sleep(wait_time)
 
     put(user, play_endpoint, data = data)
 
@@ -96,7 +94,7 @@ def pause(user, room):
     position_ms = room.playlist.progress_ms
 
     put(user, pause_endpoint)
-    time.sleep(.1)
+    time.sleep(.2)
     seek(user, {
         'seek_ms': position_ms
     })

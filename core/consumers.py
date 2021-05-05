@@ -84,7 +84,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if 'type' not in request_data or 'data' not in request_data:
             pass
 
-        if request_data['type'] == 'playlist':
+        if request_data['type'] == 'playlist' and request_data['data']['action'] != 'get_state':
             spotify.update_playlist(self.scope['user'], self.get_room(), request_data['data'])
 
         request_data['type'] = 'request_' + request_data['type']
