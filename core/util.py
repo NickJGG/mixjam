@@ -2,14 +2,7 @@ from .models import *
 
 from . import spotify
 
-from django.utils import timezone
-
 def get_room_state(user, room_code):
-    room = Room.objects.filter(code = room_code)
-
-    if room.exists():
-        room = room[0]
-
     return {
         'song_state': get_song_state(user),
         'playlist_state': get_playlist_state(user, room_code)

@@ -1,124 +1,17 @@
+import os
 import base64
 import json
 
 import requests
 
-from django.utils import timezone
-
 client_id = os.environ.get('CLIENT_ID')
 client_secret = os.environ.get('CLIENT_SECRET')
 
-player_endpoint = 'https://api.spotify.com/v1/me/player/'
-
 song_endpoint = 'https://api.spotify.com/v1/me/player/currently-playing'
+player_endpoint = 'https://api.spotify.com/v1/me/player/'
 playlist_endpoint = 'https://api.spotify.com/v1/playlists/'
 refresh_endpoint = 'https://accounts.spotify.com/api/token'
-
-play_endpoint = 'https://api.spotify.com/v1/me/player/play'
-pause_endpoint = 'https://api.spotify.com/v1/me/player/pause'
 seek_endpoint = 'https://api.spotify.com/v1/me/player/seek'
-previous_endpoint = 'https://api.spotify.com/v1/me/player/previous'
-next_endpoint = 'https://api.spotify.com/v1/me/player/next'
-
-def playlist_control(user, room, request_data):
-    last_action = timezone.now()
-
-    progress_ms = 0
-
-    request_action = request_data['action']
-
-    if request_action == 'play':
-        progress_ms = room.playlist.progress_ms
-    elif request_action == 'pause':
-        progress_ms = get_progress(room)
-    elif request_action == 'seek':
-        progress_ms = request_data['action_data']['seek_ms']
-
-    room.playlist.last_action = last_action
-    room.playlist.progress_ms = progress_ms
-    room.playlist.save()
-
-def action(user, room, request_action, action_data = None):
-    print('BEFORE: ' + request_action + ' FOR @' + str(user.username))
-
-    if request_action == 'play':
-        play(user, room)
-    elif request_action == 'play_direct':
-        play_direct(user, room, action_data)
-    elif request_action == 'pause':
-        pause(user, room)
-    elif request_action == 'seek':
-        seek(user, action_data)
-    elif request_action == 'previous':
-        previous(user)
-    elif request_action == 'next':
-        next(user)
-    
-    print('AFTER: ' + request_action + ' FOR @' + str(user.username))
-
-def play(user, room, offset = None):
-    data = {}
-
-    if offset is not None:
-        data['context_uri'] = 'spotify:playlist:' + str(room.playlist_id)
-        data['offset'] = {
-            'position': offset
-        }
-
-    put(user, play_endpoint, data = data)
-
-def play_direct(user, room, action_data):
-    offset = action_data['offset']
-
-    room.playlist.song_index = offset
-    room.playlist.progress_ms = 0
-    room.playlist.save()
-
-    play(user, room, offset = offset)
-
-def pause(user, room):
-    position_ms = room.playlist.progress_ms
-
-    put(user, pause_endpoint)
-    seek(user, {
-        'seek_ms': position_ms
-    })
-
-def seek(user, action_data):
-    params = {
-        'position_ms': action_data['seek_ms']
-    }
-
-    put(user, seek_endpoint, params = params)
-
-def previous(user):
-    post(user, previous_endpoint)
-
-def next(user):
-    post(user, next_endpoint)
-
-def update_play(user, room):
-    if room.others_active(user):
-        progress_ms = get_progress(room)
-
-        play_direct(user, room, {
-            'offset': room.playlist.song_index,
-            'position_ms': progress_ms
-        })
-    else:
-        room.playlist.playing = False
-
-def get_playlist_data(user, playlist_id):
-    playlist_data = get(user, playlist_endpoint + playlist_id)
-
-    return playlist_data.json()
-
-def get_song_data(user):
-    song_data = get(user, song_endpoint)
-
-    return song_data.json()
-
-# region HELPER FUNCTIONS
 
 def get_headers(user):
     return {
@@ -142,8 +35,6 @@ def get_client_credentials():
     return client_creds_b64.decode()
 
 def refresh_token(user):
-    print('NEEDS REFRESH')
-
     response = requests.post(refresh_endpoint, data = {
         'grant_type': 'refresh_token',
         'refresh_token': user.userprofile.refresh_token
@@ -151,20 +42,24 @@ def refresh_token(user):
 
     r_json = response.json()
 
-    print(r_json)
-
-    user.userprofile.access_token = r_json['access_token']
+    if response.status_code < 400:
+        user.userprofile.access_token = r_json['access_token']
+        user.userprofile.authorized = True
+    else:
+        user.userprofile.authorized = False
+    
     user.userprofile.save()
 
-    return response.status_code
+    return user.userprofile.authorized
 
 def get(user, endpoint):
     response = requests.get(endpoint, headers = get_headers(user))
 
     if response.status_code == 401:
-        refresh_token(user)
+        authorized = refresh_token(user)
 
-        response = requests.get(endpoint, headers=get_headers(user))
+        if authorized:
+            response = requests.get(endpoint, headers=get_headers(user))
 
     return response
 
@@ -174,29 +69,37 @@ def put(user, endpoint, data = {}, params = {}):
     response = requests.put(endpoint, params = params, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
-        refresh_token(user)
+        authorized = refresh_token(user)
 
-        response = requests.put(endpoint, params = data, headers = get_headers(user))
+        if authorized:
+            response = requests.put(endpoint, params = data, headers = get_headers(user))
 
     return response
 
-def post(user, endpoint, data = {}):
+def post(user, endpoint, data):
     data = json.dumps(data)
 
     response = requests.post(endpoint, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
-        refresh_token(user)
+        authorized = refresh_token(user)
 
-        response = requests.post(endpoint, data = data, headers = get_headers(user))
+        if authorized:
+            response = requests.post(endpoint, data = data, headers = get_headers(user))
+        else:
+            response = {
+                'error': 'unauthorized',
+                'error_message': 'User is unauthorized'
+            }
 
     return response
 
-def get_progress(room):
-    position_ms = room.playlist.progress_ms
-    difference = round((timezone.now() - room.playlist.last_action).total_seconds() * 1000)
-    progress_ms = position_ms + difference
+def get_playlist_data(user, playlist_id):
+    playlist_data = get(user, playlist_endpoint + playlist_id)
 
-    return progress_ms
+    return playlist_data.json()
 
-# endregion
+def get_song_data(user):
+    song_data = get(user, song_endpoint)
+
+    return song_data.json()
