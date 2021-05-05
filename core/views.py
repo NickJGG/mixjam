@@ -2,56 +2,25 @@ import os
 
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate, login as auth_login
 
 import spotify
-from syncify import settings
-from urllib.parse import urlunsplit, urlencode
 
 from .models import *
 
 from . import util
 
-client_id = os.environ.get('CLIENT_ID')
-client_secret = os.environ.get('CLIENT_SECRET')
-scheme = os.environ.get("API_SCHEME", "https")
-netloc = os.environ.get("API_NETLOC", "accounts.spotify.com")
+client_id = '8b817932e631474cb15f7e36edcfc53b'
+client_secret = '6ef495db91bd4268b520f861117d39f9'
 
 def index(request):
-    if request.user.is_authenticated:
-        return home(request)
-    else:
-        return landing(request)
-
-def home(request):
     spot = spotify.SpotifyAPI(client_id, client_secret, request.user, '')
 
-    redirect_uri = 'http://localhost:8000/callback/' if os.environ.get(
-        'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
+    redirect_uri = 'http://localhost:8000/callback/' if os.environ.get('DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
 
-    path = f"/authorize"
-    
-    query = urlencode(dict(
-        response_type = 'code',
-        client_id = client_id,
-        scope = 'streaming app-remote-control user-modify-playback-state user-read-currently-playing',
-        redirect_uri = redirect_uri,
-        state = 'null'
-    ))
-
-    authorize_url = urlunsplit((scheme, netloc, path, query, ""))
-
-    print(authorize_url)
-
-    return render(request, 'core/home.html', {
-        'authorize_url': authorize_url
+    return render(request, 'core/index.html', {
+        'redirect_uri': redirect_uri
     })
-
-def landing(request):
-    return render(request, 'core/landing.html', {
-
-    })
-
 def callback(request):
     if request.GET and 'code' in request.GET:
         spot = spotify.SpotifyAPI(client_id, client_secret, request.user, request.GET['code'])
@@ -81,6 +50,9 @@ def room(request, room_code):
         room = Room(code = room_code, leader = request.user)
         room.save()
 
+        room.playlist = Playlist(room = room)
+        room.playlist.save()
+
     request.user.userprofile.most_recent_room = room
     request.user.userprofile.save()
 
@@ -88,38 +60,6 @@ def room(request, room_code):
     data['room_state'] = util.get_room_state(request.user, room_code)
 
     return render(request, 'core/room.html', data)
-
-def account(request):
-    print(settings.BASE_DIR)
-    path = os.path.join(settings.BASE_DIR, 'core', 'static', 'img', 'profile')
-    file_list = os.listdir(path)
-
-    if request.POST:
-        if 'panel-label' in request.POST:
-            panel = request.POST.get('panel-label')
-
-            if panel == 'personalization':
-                icon_image = request.POST.get('icon-image')
-                icon_color = request.POST.get('icon-color')
-                background_color = request.POST.get('background-color')
-
-                print(icon_color)
-
-                try:
-                    int(icon_color, 16)
-
-                    print('is hex')
-
-                    request.user.userprofile.icon_image = icon_image
-                    request.user.userprofile.icon_color = icon_color
-                    request.user.userprofile.background_color = background_color
-                    request.user.userprofile.save()
-                except:
-                    print('is not hex')
-
-    return render(request, 'core/account.html', {
-        'images': file_list
-    })
 
 def login(request):
     if request.POST:
@@ -138,11 +78,6 @@ def login(request):
             return redirect('index')
 
     return render(request, 'core/login.html')
-
-def logout(request):
-    auth_logout(request)
-
-    return redirect('index')
 
 def register(request):
     if request.POST:
