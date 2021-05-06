@@ -46,6 +46,8 @@ def update_playlist(user, room, request_data):
         else:
             room.playlist.song_index = action_data['offset']
             room.playlist.progress_ms = 0
+    elif action == 'seek':
+        room.playlist.progress_ms = action_data['seek_ms']
     
     room.playlist.last_action = timezone.now()
     room.playlist.save()
@@ -99,17 +101,17 @@ async def play(user, room, offset = None):
             'position': offset
         }
 
-    time_since = (timezone.now() - room.playlist.last_action).total_seconds() * 1000
-
-    print('TIME SINCE LAST ACTION: ' + str(time_since))
-
     await put(user, play_endpoint, data = data)
 
 async def play_direct(user, room, action_data):
     await play(user, room, offset = action_data['offset'])
+    await sync(user, room)
 
 async def pause(user, room):
     await put(user, pause_endpoint)
+    await sync(user, room)
+
+async def sync(user, room):
     await seek(user, {
         'seek_ms': room.playlist.progress_ms
     })
@@ -134,8 +136,8 @@ def get_progress(room):
 
     return progress_ms
 
-def refresh_token(user):
-    response = requests.post(refresh_endpoint, data = {
+async def refresh_token(user):
+    response = await requests_async.post(refresh_endpoint, data = {
         'grant_type': 'refresh_token',
         'refresh_token': user.userprofile.refresh_token
     }, headers = get_token_headers())
@@ -187,7 +189,7 @@ async def get(user, endpoint):
     response = await requests_async.get(endpoint, headers = get_headers(user))
 
     if response.status_code == 401:
-        authorized = refresh_token(user)
+        authorized = await refresh_token(user)
 
         if authorized:
             response = await requests_async.get(endpoint, headers=get_headers(user))
@@ -200,7 +202,7 @@ async def put(user, endpoint, data = {}, params = {}):
     response = await requests_async.put(endpoint, params = params, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
-        authorized = refresh_token(user)
+        authorized = await refresh_token(user)
 
         if authorized:
             response = requests_async.put(endpoint, params = data, headers = get_headers(user))
@@ -213,7 +215,7 @@ async def post(user, endpoint, data = {}):
     response = await requests_async.post(endpoint, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
-        authorized = refresh_token(user)
+        authorized = await refresh_token(user)
 
         if authorized:
             response = requests_async.post(endpoint, data = data, headers = get_headers(user))

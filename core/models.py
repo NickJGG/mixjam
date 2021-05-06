@@ -63,15 +63,20 @@ class Playlist(models.Model):
     last_action = models.DateTimeField(null = True, blank = True)
     playing = models.BooleanField(default = False, blank = True)
 
+    @database_sync_to_async
     def previous_song(self):
         self.song_index = self.song_index - 1 if self.song_index > 0 else 0
+        self.progress_ms = 0
         self.save()
     
+    @database_sync_to_async
     def next_song(self):
         self.song_index += 1
+        self.progress_ms = 0
         self.save()
 
     @database_sync_to_async
     def restart(self):
         self.song_index = 0
+        self.progress_ms = 0
         self.save()

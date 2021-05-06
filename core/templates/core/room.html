@@ -10,7 +10,7 @@
 
 {% endblock %}
 
-{% block page_name %}{{ room_state.playlist_state.name }}{% endblock %}
+{% block page_name %}{{ room.title }}{% endblock %}
 
 {% block page_name_after %}
 
@@ -22,16 +22,16 @@
 {% block panel_labels %}
 
 	<p class = "panel-label selected">Home</p>
-	<p class = "panel-label">Chat</p>
 	<p class = "panel-label">Toke Journey</p>
+	<p class = "panel-label">Settings</p>
 
 {% endblock %}
 
 {% block user_container_before %}
 
-	<div id = "connection-container" style = "--background-image: url({% static 'img/icons/connection-white-96.png' %})">
-		<div id = "connection-status"></div>
-		<div id = "connection-status-label">
+	<div id = "connection-container" class = "subtitle-container" style = "--background-image: url({% static 'img/icons/connection-white-96.png' %})">
+		<div id = "connection-status" class = "subtitle-image colored"></div>
+		<div id = "connection-status-label" class = "subtitle-label">
 			<p>Disconnected</p>
 		</div>
 	</div>
@@ -41,8 +41,8 @@
 {% block panel_container %}
 
 	{% include 'core/blocks/panels/room/home.html' with selected=True %}
-	{% include 'core/blocks/panels/room/chat.html' %}
 	{% include 'core/blocks/panels/room/journey.html' %}
+	{% include 'core/blocks/panels/room/settings.html' %}
 	
 	<div id = "player-container">
 		<div id = "song-info">
@@ -88,33 +88,18 @@
 
 {% block right_side_panel %}
 
-	<div id = "chat-container">
-		<div id = "chat-messages">
-			<div class = "chat-message">
-				<div class = "chat-message-info">
-					<div class = "message-picture">
-						{% include 'core/blocks/profile-picture.html' with width='24px' height='24px' %}
-					</div>
-					<p class = "message-username">{{ user.username }}</p>
-				</div>
-				<div class = "chat-message-text">
-					{% lorem 10 w %}
-				</div>
+	<div class = "tab-container">
+		<div class = "tab-selectors">
+			<div class = "tab-selector selected">
+				Chat
 			</div>
-			<div class = "chat-message">
-				<div class = "chat-message-info">
-					<div class = "message-picture">
-						{% include 'core/blocks/profile-picture.html' with width='24px' height='24px' %}
-					</div>
-					<p class = "message-username">{{ user.username }}</p>
-				</div>
-				<div class = "chat-message-text">
-					{% lorem 10 w %}
-				</div>
+			<div class = "tab-selector">
+				Users
 			</div>
 		</div>
+
+		{% include 'core/blocks/tabs/room/chat.html' with selected=True %}
 	</div>
-	<input id = "chat-box" type = "text" placeholder = "Write a message">
 
 {% endblock %}
 
@@ -130,6 +115,7 @@
 	
 	<script src = "{% static 'js/room.js' %}"></script>
 	<script src = "{% static 'js/panel.js' %}"></script>
+	<script src = "{% static 'js/tab.js' %}"></script>
 	<script type = "text/javascript">
 		var code = JSON.parse(document.getElementById('code').textContent),
 			staticUrl = '{{ static_url }}',

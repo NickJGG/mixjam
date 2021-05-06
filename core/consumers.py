@@ -15,6 +15,7 @@ import time
 class RoomConsumer(AsyncWebsocketConsumer):
     put_methods = ['play', 'pause', 'seek']
     post_methods = ['previous', 'next']
+    playlist_notifications = ['song_end']
 
     # CONNECT FUNCTION
     async def connect(self):
@@ -81,13 +82,20 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         request_data = json.loads(text_data)
 
-        self.print_request(request_data)
-
         if 'type' not in request_data or 'data' not in request_data:
             pass
 
-        if request_data['type'] == 'playlist' and request_data['data']['action'] != 'get_state':
+        if request_data['type'] == 'playlist' and request_data['data']['action'] not in self.playlist_notifications:
             spotify.update_playlist(self.scope['user'], self.get_room(), request_data['data'])
+        elif request_data['type'] == 'chat':
+            user = self.scope['user']
+
+            request_data['data']['action_data']['user'] = {
+                'username': user.username,
+                'color': user.userprofile.background_color
+            }
+
+        self.print_request(request_data)
 
         request_data['type'] = 'request_' + request_data['type']
 
@@ -102,30 +110,32 @@ class RoomConsumer(AsyncWebsocketConsumer):
         }))
 
     async def request_playlist(self, request_data):
-        simple_actions = ['play', 'pause', 'next', 'previous']
-
         request_data = request_data['data']
 
         request_action = request_data['action']
         request_action_data = request_data['action_data'] if 'action_data' in request_data else None
 
         user = self.scope['user']
+        room = self.get_room()
 
         method_data = {}
         method_params = {}
 
-        if request_action != 'get_state':
-            await spotify.action(user, self.get_room(), request_action, request_action_data)
+        if request_action not in self.playlist_notifications:
+            await spotify.action(user, room, request_action, request_action_data)
 
             #if r.status_code not in range(200, 299):
                 #return False
+        elif request_action == 'song_end':
+            await room.playlist.next_song()
+            await spotify.sync(user, room)
     
-        room_state = await util.get_room_state(user, self.get_room().code)
+        room_state = await util.get_room_state(user, room.code)
 
         await self.response_send('playlist', room_state)
 
     async def request_chat(self, request_data):
-        pass
+        await self.response_send('chat', request_data['data'])
 
     async def request_journey(self, request_data):
         pass

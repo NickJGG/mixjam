@@ -8,7 +8,7 @@ async def get_room_state(user, room_code):
     room = Room.objects.get(code = room_code)
 
     playlist_state = await get_playlist_state(user, room_code)
-
+    
     if room.playlist.song_index >= len(playlist_state['tracks']['items']):
         await room.playlist.restart()
 
@@ -27,7 +27,7 @@ def get_song_state(user):
 
     return song_data
 
-def get_playlist_state(user, room_code):
+async def get_playlist_state(user, room_code):
     room = Room.objects.filter(code = room_code)
 
     if not room.exists() or room[0].playlist_id is None:
@@ -35,7 +35,7 @@ def get_playlist_state(user, room_code):
 
     room = room[0]
 
-    playlist_data = spotify.get_playlist_data(user, room.playlist_id)
+    playlist_data = await spotify.get_playlist_data(user, room.playlist_id)
 
     if room.playlist_image_url is None:
         room.playlist_image_url = playlist_data['images'][1]['url']

@@ -1,24 +1,36 @@
+{% load static %}
+
 <div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
 	<div id = "playlist-info">
 		<div id = "playlist-cover">
 			<img src = "{{ room_state.playlist_state.images.0.url }}">
 		</div>
 		<div id = "playlist-details">
+			<p id = "playlist-collab"><span id = "collab-bullet">○</span>Collaborative</p>
 			<p id = "playlist-title"></p>
-			<p id = "playlist-created">Created by <span id = "playlist-creator"></span></p>
-			<p id = "playlist-count"><span id = "playlist-song-count"></span> songs</p>
+			<div id = "playlist-stats">
+				<div class = "playlist-stat subtitle-container">
+					<div class = "playlist-stat-image subtitle-image" style = "--background-image: url({% static 'img/icons/music-record-white-96.png' %})"></div>
+					<p id = "playlist-song-count"></p>
+					<div class = "subtitle-label">
+						<p>Songs</p>
+					</div>
+				</div>
+				<div class = "playlist-stat subtitle-container">
+					<div class = "playlist-stat-image subtitle-image" style = "--background-image: url({% static 'img/icons/audio-wave-white-96.png' %})"></div>
+					<p id = "playlist-length"></p>
+					<div class = "subtitle-label">
+						<p>Length</p>
+					</div>
+				</div>
+			</div>
+			<div id = "playlist-author">
+				<img src = "{% static 'img/icons/account-white-96.png' %}">
+				<p id = "playlist-creator"></p>
+			</div>
 		</div>
 	</div>
-	<div class = "subpanel-container">
-		<div class = "subpanel-labels">
-			<div class = "subpanel-label selected">
-				Playlist
-			</div>
-			<div class = "subpanel-label">
-				Users
-			</div>
-		</div>
+	<div class = "subpanel-container no-labels">
 		{% include 'core/blocks/panels/room/subpanels/playlist.html' with subpanel_selected=True %}
-		{% include 'core/blocks/panels/room/subpanels/users.html' %}
 	</div>
 </div>

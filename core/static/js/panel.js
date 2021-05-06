@@ -1,8 +1,8 @@
 $(document).ready(function(){
 	var labelToPanelId = {
 		'home': 'home',
-		'chat': 'chat',
 		'toke journey': 'journey',
+		'settings': 'settings',
 		'personalization': 'personalization',
 		'privacy': 'privacy',
 		'overview': 'overview'

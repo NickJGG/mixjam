@@ -14,7 +14,45 @@ $(document).ready(function(){
 	init();
 	
 // 	#region Main Functions
-	
+
+	function updateChat(data){
+		var action = data['response_data']['action'],
+			text = data['response_data']['action_data']['text'],
+			username = data['response_data']['action_data']['user']['username'],
+			messageColor = data['response_data']['action_data']['user']['color'],
+			newMessage = true;
+		
+		if ($('#chat-messages').children().length > 0){
+			var lastMessage = $('.chat-message').last();
+
+			if ($(lastMessage).find('.message-username').text() == username){
+				$(lastMessage).find('.chat-message-string').append(`
+					<div class = "chat-message-text">
+						` + text + `
+					</div>
+				`);
+
+				newMessage = false;
+			}
+		}
+
+		if (newMessage){
+			$('#chat-messages').append(`
+				<div class = "chat-message">
+					<div class = "chat-message-info">
+						<div class = "message-color" style = "--message-color: ` + messageColor + `"></div>
+						<p class = "message-username">` + username + `</p>
+					</div>
+					<div class = "chat-message-string">
+						<div class = "chat-message-text">
+							` + text + `
+						</div>
+					</div>
+				</div>
+			`);
+		}
+	}
+
 	function updatePlaylist(){
 		const songState = roomState.song_state,
 			  playlistState = roomState.playlist_state;
@@ -46,11 +84,13 @@ $(document).ready(function(){
 			
 			$('.playlist-song.playing').removeClass('playing');
 			
-			var i;
+			var i, length = 0;
 			
 			for (i = 0; i < playlistState.tracks.items.length; i++){
 				var song = playlistState.tracks.items[i],
 					songPlaying = song.track.name == songState.track.name;
+				
+				length += song.track.duration_ms;
 				
 				$('#playlist-songs').append(`<div class = "playlist-song ` + (songPlaying ? 'playing' : '') + `">
 												<div style = "display: flex; align-items: center;">
@@ -64,6 +104,8 @@ $(document).ready(function(){
 											</div>`);	
 			}
 			
+			$('#playlist-length').text(secondsToLength(length / 1000));
+
 			if (playlistState.collaborative)
 				$('#playlist-collab').css('display', 'block');
 			else
@@ -115,6 +157,8 @@ $(document).ready(function(){
 					updatePlaylist();
 
 					break;
+				case 'chat':
+					updateChat(data);
 				default:
 					break;
 			}
@@ -252,6 +296,16 @@ $(document).ready(function(){
 			}, 100);
 		});
 
+		$('#chat-box').on('keyup', function(e){
+			if (e.key == 'Enter'){
+				socketChat('send', {
+					'text': $(this).val()
+				});
+
+				$(this).val('');
+			}
+		});
+
 		socket.onclose = function(e){
 			$('#connection-status').css('--background-color', 'var(--red)');
 			$('#connection-status-label p').text('Disconnected');
@@ -290,7 +344,7 @@ $(document).ready(function(){
 			if (seconds < 0){
 				finished();
 				
-				socketPlaylist('get_state');
+				socketPlaylist('song_end');
 				console.log(seconds);
 				
 				window.clearInterval(timer);
@@ -309,6 +363,25 @@ $(document).ready(function(){
 			clock += (minutes < 10 && hours > 0 ? '0' : '') + minutes + ':';
 		
 		var clock = (hours == 0 && minutes == 0 ? ':' : '') + clock + (((minutes > 0 || hours > 0) && seconds < 10) || seconds < 10 ? '0' : '') + seconds;
+		
+		if (clock[0] == ':'){
+			clock = '0' + clock;
+		}
+		
+		return clock;
+	}
+	function secondsToLength(seconds){
+		var hours = Math.floor(seconds / 3600), minutes = Math.floor((seconds - hours * 3600) / 60), clock = '';
+		
+		seconds %= 60;
+		
+		if (hours > 0)
+			clock += hours + 'h ';
+		
+		if (hours > 0 || minutes > 0)
+			clock += (minutes < 10 && hours > 0 ? '0' : '') + minutes + 'm';
+		
+		var clock = (hours == 0 && minutes == 0 ? ':' : '') + clock + (((minutes > 0 || hours > 0) && seconds < 10) || seconds < 10 ? '0' : '');
 		
 		if (clock[0] == ':'){
 			clock = '0' + clock;
@@ -366,6 +439,12 @@ $(document).ready(function(){
 	}
 	function socketPlaylist(action, action_data = {}){
 		socketSend('playlist', {
+			'action': action,
+			'action_data': action_data
+		});
+	}
+	function socketChat(action, action_data = {}){
+		socketSend('chat', {
 			'action': action,
 			'action_data': action_data
 		});
