@@ -53,6 +53,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
             }
         })
 
+        #await spotify.update_play(user, room)
+
     # DISCONNECT FUNCTION
     async def disconnect(self, close_code):
         await self.offline()
@@ -113,14 +115,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
         method_params = {}
 
         if request_action != 'get_state':
-            spotify.action(user, self.get_room(), request_action, request_action_data)
+            await spotify.action(user, self.get_room(), request_action, request_action_data)
 
             #if r.status_code not in range(200, 299):
                 #return False
-
-            time.sleep(.1)
     
-        await self.response_send('playlist', util.get_room_state(user, self.get_room().code))
+        room_state = await util.get_room_state(user, self.get_room().code)
+
+        await self.response_send('playlist', room_state)
 
     async def request_chat(self, request_data):
         pass

@@ -1,5 +1,7 @@
 import os
 
+from channels.db import database_sync_to_async
+
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -59,6 +61,7 @@ def callback(request):
 
     return render(request, 'core/callback.html')
 
+@database_sync_to_async
 def room(request, room_code):
     data = {}
 
@@ -85,7 +88,9 @@ def room(request, room_code):
     request.user.userprofile.save()
 
     data['room'] = room
-    data['room_state'] = util.get_room_state(request.user, room_code)
+    #data['room_state'] = util.get_room_state(request.user, room_code)
+
+    #print(data)
 
     return render(request, 'core/room.html', data)
 

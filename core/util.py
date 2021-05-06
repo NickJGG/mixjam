@@ -1,11 +1,17 @@
+from channels.db import database_sync_to_async
+
 from .models import *
 
 from . import spotify
 
-def get_room_state(user, room_code):
+async def get_room_state(user, room_code):
     room = Room.objects.get(code = room_code)
 
-    playlist_state = get_playlist_state(user, room_code)
+    playlist_state = await get_playlist_state(user, room_code)
+
+    if room.playlist.song_index >= len(playlist_state['tracks']['items']):
+        await room.playlist.restart()
+
     song_state = playlist_state['tracks']['items'][room.playlist.song_index]
 
     song_state['is_playing'] = room.playlist.playing

@@ -6,6 +6,8 @@ import time
 
 from channels.db import database_sync_to_async
 
+import requests_async
+
 from django.utils import timezone
 
 client_id = os.environ.get('CLIENT_ID')
@@ -36,6 +38,14 @@ def update_playlist(user, room, request_data):
     elif action == 'play_direct' or action == 'previous' or action == 'next':
         room.playlist.progress_ms = 0
         room.playlist.playing = True
+        
+        if action == 'previous':
+            room.playlist.previous_song()
+        elif action == 'next':
+            room.playlist.next_song()
+        else:
+            room.playlist.song_index = action_data['offset']
+            room.playlist.progress_ms = 0
     
     room.playlist.last_action = timezone.now()
     room.playlist.save()
@@ -47,30 +57,40 @@ def update_playlist(user, room, request_data):
     print('LAST ACTION: ' + str(room.playlist.last_action))
     print('"""""""""""""""""""""""""""')
 
-def action(user, room, request_action, action_data = None):
+async def update_play(user, room):
+    if room.others_active(user):
+        progress_ms = get_progress(room)
+
+        await play_direct(user, room, {
+            'offset': room.playlist.song_index,
+        })
+    else:
+        room.playlist.playing = False
+
+async def action(user, room, request_action, action_data = None):
     before = timezone.now()
 
     print('BEFORE: ' + request_action + ' FOR @' + str(user.username) + ' at ' + str(before))
 
     if request_action == 'play':
-        play(user, room)
+        await play(user, room)
     elif request_action == 'play_direct':
-        play_direct(user, room, action_data)
+        await play_direct(user, room, action_data)
     elif request_action == 'pause':
-        pause(user, room)
+        await pause(user, room)
     elif request_action == 'seek':
-        seek(user, action_data)
+        await seek(user, action_data)
     elif request_action == 'previous':
-        previous(user)
+        await previous(user)
     elif request_action == 'next':
-        next(user)
+        await next(user)
 
     after = timezone.now()
 
     print('AFTER:  ' + request_action + ' FOR @' + str(user.username) + ' at ' + str(after))
     print('duration: ' + str((after - before).total_seconds()))
 
-def play(user, room, offset = None):
+async def play(user, room, offset = None):
     data = {}
 
     if offset is not None:
@@ -79,38 +99,33 @@ def play(user, room, offset = None):
             'position': offset
         }
 
-    put(user, play_endpoint, data = data)
+    time_since = (timezone.now() - room.playlist.last_action).total_seconds() * 1000
 
-def play_direct(user, room, action_data):
-    offset = action_data['offset']
+    print('TIME SINCE LAST ACTION: ' + str(time_since))
 
-    room.playlist.song_index = offset
-    room.playlist.progress_ms = 0
-    room.playlist.save()
+    await put(user, play_endpoint, data = data)
 
-    play(user, room, offset = offset)
+async def play_direct(user, room, action_data):
+    await play(user, room, offset = action_data['offset'])
 
-def pause(user, room):
-    position_ms = room.playlist.progress_ms
-
-    put(user, pause_endpoint)
-    time.sleep(.2)
-    seek(user, {
-        'seek_ms': position_ms
+async def pause(user, room):
+    await put(user, pause_endpoint)
+    await seek(user, {
+        'seek_ms': room.playlist.progress_ms
     })
 
-def seek(user, action_data):
+async def seek(user, action_data):
     params = {
         'position_ms': action_data['seek_ms']
     }
 
-    put(user, seek_endpoint, params = params)
+    await put(user, seek_endpoint, params = params)
 
-def previous(user):
-    post(user, previous_endpoint)
+async def previous(user):
+    await post(user, previous_endpoint)
 
-def next(user):
-    post(user, next_endpoint)
+async def next(user):
+    await post(user, next_endpoint)
 
 def get_progress(room):
     position_ms = room.playlist.progress_ms
@@ -137,13 +152,13 @@ def refresh_token(user):
 
     return user.userprofile.authorized
 
-def get_playlist_data(user, playlist_id):
-    playlist_data = get(user, playlist_endpoint + playlist_id)
+async def get_playlist_data(user, playlist_id):
+    playlist_data = await get(user, playlist_endpoint + playlist_id)
 
     return playlist_data.json()
 
-def get_song_data(user):
-    song_data = get(user, song_endpoint)
+async def get_song_data(user):
+    song_data = await get(user, song_endpoint)
 
     return song_data.json()
 
@@ -168,40 +183,40 @@ def get_client_credentials():
 
     return client_creds_b64.decode()
 
-def get(user, endpoint):
-    response = requests.get(endpoint, headers = get_headers(user))
+async def get(user, endpoint):
+    response = await requests_async.get(endpoint, headers = get_headers(user))
 
     if response.status_code == 401:
         authorized = refresh_token(user)
 
         if authorized:
-            response = requests.get(endpoint, headers=get_headers(user))
+            response = await requests_async.get(endpoint, headers=get_headers(user))
 
     return response
 
-def put(user, endpoint, data = {}, params = {}):
+async def put(user, endpoint, data = {}, params = {}):
     data = json.dumps(data)
 
-    response = requests.put(endpoint, params = params, data = data, headers = get_headers(user))
+    response = await requests_async.put(endpoint, params = params, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
         authorized = refresh_token(user)
 
         if authorized:
-            response = requests.put(endpoint, params = data, headers = get_headers(user))
+            response = requests_async.put(endpoint, params = data, headers = get_headers(user))
 
     return response
 
-def post(user, endpoint, data = {}):
+async def post(user, endpoint, data = {}):
     data = json.dumps(data)
 
-    response = requests.post(endpoint, data = data, headers = get_headers(user))
+    response = await requests_async.post(endpoint, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
         authorized = refresh_token(user)
 
         if authorized:
-            response = requests.post(endpoint, data = data, headers = get_headers(user))
+            response = requests_async.post(endpoint, data = data, headers = get_headers(user))
         else:
             response = {
                 'error': 'unauthorized',

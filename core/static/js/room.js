@@ -291,6 +291,7 @@ $(document).ready(function(){
 				finished();
 				
 				socketPlaylist('get_state');
+				console.log(seconds);
 				
 				window.clearInterval(timer);
 			}

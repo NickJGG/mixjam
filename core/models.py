@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
+from channels.db import database_sync_to_async
+
 class ProfilePicture(models.Model):
     BABY_YODA = 'baby-yoda'
     BRUTUS = 'brutus'
@@ -60,3 +62,16 @@ class Playlist(models.Model):
     progress_ms = models.IntegerField(default = 0, null = True, blank = True)
     last_action = models.DateTimeField(null = True, blank = True)
     playing = models.BooleanField(default = False, blank = True)
+
+    def previous_song(self):
+        self.song_index = self.song_index - 1 if self.song_index > 0 else 0
+        self.save()
+    
+    def next_song(self):
+        self.song_index += 1
+        self.save()
+
+    @database_sync_to_async
+    def restart(self):
+        self.song_index = 0
+        self.save()
