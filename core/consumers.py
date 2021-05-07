@@ -1,16 +1,18 @@
+import json
+import requests
+import time
+
+from datetime import datetime
+
+from django.utils import timezone
+from django.template.loader import render_to_string
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .models import *
 from . import util
 from . import spotify
-
-from datetime import datetime
-from django.utils import timezone
-
-import json
-import requests
-import time
 
 class RoomConsumer(AsyncWebsocketConsumer):
     put_methods = ['play', 'pause', 'seek']
@@ -42,7 +44,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 'data': {
                     'connection_state': {
                         'connection_type': 'join',
-                        'user': user.username
+                        'user': {
+                            'username': user.username,
+                            'color': user.userprofile.background_color,
+                            'profile_picture': render_to_string('core/blocks/profile-picture.html', {
+                                'width': 'var(--user-width)',
+                                'height': 'var(--user-width)',
+                                'user': user
+                            }),
+                        }
                     }
                 }
             }
@@ -135,6 +145,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.response_send('playlist', room_state)
 
     async def request_chat(self, request_data):
+        request_data['data']['action_data']['user']['self'] = request_data['data']['action_data']['user']['username'] == self.scope['user'].username
+
         await self.response_send('chat', request_data['data'])
 
     async def request_journey(self, request_data):

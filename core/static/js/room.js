@@ -20,6 +20,7 @@ $(document).ready(function(){
 			text = data['response_data']['action_data']['text'],
 			username = data['response_data']['action_data']['user']['username'],
 			messageColor = data['response_data']['action_data']['user']['color'],
+			self = data['response_data']['action_data']['user']['self'],
 			newMessage = true;
 		
 		if ($('#chat-messages').children().length > 0){
@@ -38,11 +39,11 @@ $(document).ready(function(){
 
 		if (newMessage){
 			$('#chat-messages').append(`
-				<div class = "chat-message">
+				<div class = "chat-message ` + (self ? 'self' : '') + `">` + (self ? `` : `
 					<div class = "chat-message-info">
 						<div class = "message-color" style = "--message-color: ` + messageColor + `"></div>
 						<p class = "message-username">` + username + `</p>
-					</div>
+					</div>`) + `
 					<div class = "chat-message-string">
 						<div class = "chat-message-text">
 							` + text + `
@@ -112,20 +113,24 @@ $(document).ready(function(){
 				$('#playlist-collab').css('display', 'none');
 		}
 	}
-	function connection(data){
-		var userDiv = $('#user-' + data.connection_state.user);
-		
-		userDiv.remove();
-		
-		console.log(data.connection_state.user);
-		
-		if (data.connection_state.connection_type == 'join'){
+	function updateConnections(data){
+		var join = data['response_data']['data']['connection_state']['connection_type'] == 'join',
+			username = data['response_data']['data']['connection_state']['user']['username'];
+
+		$('#user-' + username).remove();
+
+		if (join){
+			var profilePicture = data['response_data']['data']['connection_state']['user']['profile_picture'],
+				color = data['response_data']['data']['connection_state']['user']['color'];
+
 			$('#user-list').append(`
-				<div id = "user-` + data.connection_state.user + `" class = "user">
-					<div class = "user-image"></div>
-					<p class = "user-name">` + data.connection_state.user + `</p>
+				<div id = "user-` + username + `" class = "user" style = "--background-color: ` + color + `">
+					` + profilePicture + `
+					<p>` + username + `</p>
 				</div>
 			`);
+
+			$('.user').last().find('.profile-picture-icon').width($('.user').last().find('.profile-picture-icon').height());
 		}
 	}
 	
@@ -151,6 +156,10 @@ $(document).ready(function(){
 			console.log(data);
 			
 			switch(data.type){
+				case 'connection':
+					updateConnections(data);
+
+					break;
 				case 'playlist':
 					roomState = data.response_data;
 
@@ -159,6 +168,8 @@ $(document).ready(function(){
 					break;
 				case 'chat':
 					updateChat(data);
+
+					break;
 				default:
 					break;
 			}

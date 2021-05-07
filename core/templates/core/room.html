@@ -90,15 +90,16 @@
 
 	<div class = "tab-container">
 		<div class = "tab-selectors">
-			<div class = "tab-selector selected">
+			<div class = "tab-selector">
 				Chat
 			</div>
-			<div class = "tab-selector">
+			<div class = "tab-selector selected">
 				Users
 			</div>
 		</div>
 
-		{% include 'core/blocks/tabs/room/chat.html' with selected=True %}
+		{% include 'core/blocks/tabs/room/chat.html' %}
+		{% include 'core/blocks/tabs/room/users.html' with selected=True active_users=room.active_users.all %}
 	</div>
 
 {% endblock %}
