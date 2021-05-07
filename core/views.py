@@ -83,11 +83,25 @@ def room(request, room_code):
         room = Room(code = room_code, leader = request.user)
         room.save()
 
+    if request.user not in room.users.all():
+        room.users.add(request.user)
+        room.save()
+
+    if not Playlist.objects.filter(room = room).exists():
+        room.playlist = Playlist(room = room)
+        room.playlist.save()
+
     request.user.userprofile.most_recent_room = room
     request.user.userprofile.save()
 
+    offline_users = []
+
+    for user in room.users.all():
+        if user not in room.active_users.all():
+            offline_users.append(user)
+
     data['room'] = room
-    #data['room_state'] = util.get_room_state(request.user, room_code)
+    data['offline_users'] = offline_users
 
     return render(request, 'core/room.html', data)
 

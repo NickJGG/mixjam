@@ -77,7 +77,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 'data': {
                     'connection_state': {
                         'connection_type': 'leave',
-                        'user': self.scope['user'].username
+                        'user': {
+                            'username': self.scope['user'].username
+                        }
                     }
                 }
             }
@@ -170,6 +172,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         if room:
             room.active_users.remove(self.scope['user'])
+            room.save()
 
     def get_room(self):
         room = Room.objects.filter(code=self.room_name)

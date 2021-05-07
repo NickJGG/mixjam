@@ -117,9 +117,9 @@ $(document).ready(function(){
 		var join = data['response_data']['data']['connection_state']['connection_type'] == 'join',
 			username = data['response_data']['data']['connection_state']['user']['username'];
 
-		$('#user-' + username).remove();
-
 		if (join){
+			$('#user-' + username).remove();
+
 			var profilePicture = data['response_data']['data']['connection_state']['user']['profile_picture'],
 				color = data['response_data']['data']['connection_state']['user']['color'];
 
@@ -131,6 +131,8 @@ $(document).ready(function(){
 			`);
 
 			$('.user').last().find('.profile-picture-icon').width($('.user').last().find('.profile-picture-icon').height());
+		} else {
+			$('#user-' + username).appendTo('#offline-user-list');
 		}
 	}
 	

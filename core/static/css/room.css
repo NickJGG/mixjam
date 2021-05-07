@@ -545,10 +545,15 @@
 
 /* #region Users */
 
-#user-list{
+#user-list, #offline-user-list{
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-gap: var(--panel-padding);
+
+	margin-top: 8px;
+}
+#offline-wrapper{
+	margin-top: var(--panel-padding);
 }
 .user{
 	--user-width: calc((var(--side-panel-width) - var(--panel-padding) * 3) / 2);
@@ -564,6 +569,9 @@
 	border-radius: var(--border-radius);
 
 	overflow: hidden;
+}
+#offline-user-list{
+	filter: grayscale(100%);
 }
 .user:after{
 	content: '';
