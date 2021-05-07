@@ -2,21 +2,36 @@
 
 <div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
 	<div class = "widget-container" style = "--rows: 2; --columns: 4">
-        <div class = "widget-list">
-            <p class = "widget-list-label">Rooms</p>
-            <div class = "widgets">
-                <div class = "widget link" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }})">
-                    <div class = "widget-info">
-                        <div class = "widget-type">
-                            <img src = "{% static 'img/icons/recent-white-24.png' %}">
-                            <p>Most Recent Room</p>
-                        </div>
-                        <div class = "widget-label"> 
-                            <a href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}"><p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p></a>
+        {% if user.userprofile.authorized == False %}
+            
+            <div class = "widget-list">
+                <p class = "widget-list-label">Authorization</p>
+                <div class = "widgets">
+                    <a id = "authorize-link" href = "{{ authorize_url }}">
+                        <input type = "submit" value = "Authorize">
+                    </a>
+                </div>
+            </div>
+
+        {% else %}
+        
+            <div class = "widget-list">
+                <p class = "widget-list-label">Rooms</p>
+                <div class = "widgets">
+                    <div class = "widget link" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }})">
+                        <div class = "widget-info">
+                            <div class = "widget-type">
+                                <img src = "{% static 'img/icons/recent-white-24.png' %}">
+                                <p>Most Recent Room</p>
+                            </div>
+                            <div class = "widget-label"> 
+                                <a href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}"><p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p></a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+        {% endif %}
     </div>
 </div>

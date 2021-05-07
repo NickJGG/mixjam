@@ -59,7 +59,10 @@ def callback(request):
         spot = spotify.SpotifyAPI(client_id, client_secret, request.user, request.GET['code'])
         spot.perform_user_auth()
 
-    return render(request, 'core/callback.html')
+        request.user.userprofile.authorized = True
+        request.user.userprofile.save()
+
+    return index(request)
 
 def room(request, room_code):
     data = {}
