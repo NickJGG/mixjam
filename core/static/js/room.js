@@ -130,7 +130,7 @@ $(document).ready(function(){
 				</div>
 			`);
 
-			$('.user').last().find('.profile-picture-icon').width($('.user').last().find('.profile-picture-icon').height());
+			$('#online-wrapper .user').last().find('.profile-picture-icon').width($('#online-wrapper .user').last().find('.profile-picture-icon').height());
 		} else {
 			$('#user-' + username).appendTo('#offline-user-list');
 		}
