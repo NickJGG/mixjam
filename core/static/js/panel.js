@@ -5,7 +5,8 @@ $(document).ready(function(){
 		'settings': 'settings',
 		'personalization': 'personalization',
 		'privacy': 'privacy',
-		'overview': 'overview'
+		'overview': 'overview',
+		'activities': 'activities',
 	};
 	
 	$('.subpanel-label').on('click', function(){

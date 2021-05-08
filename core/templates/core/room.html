@@ -22,8 +22,11 @@
 {% block panel_labels %}
 
 	<p class = "panel-label selected">Home</p>
-	<p class = "panel-label">Toke Journey</p>
-	<p class = "panel-label">Settings</p>
+	<p class = "panel-label">Activities</p>
+
+	{% if room.leader == user %}
+		<p class = "panel-label">Settings</p>
+	{% endif %}
 
 {% endblock %}
 
@@ -41,8 +44,11 @@
 {% block panel_container %}
 
 	{% include 'core/blocks/panels/room/home.html' with selected=True %}
-	{% include 'core/blocks/panels/room/journey.html' %}
-	{% include 'core/blocks/panels/room/settings.html' %}
+	{% include 'core/blocks/panels/room/activities.html' %}
+
+	{% if room.leader == user %}
+		{% include 'core/blocks/panels/room/settings.html' %}
+	{% endif %}
 	
 	<div id = "player-container">
 		<div id = "song-info">

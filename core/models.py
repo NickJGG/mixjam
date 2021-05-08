@@ -61,7 +61,20 @@ class Playlist(models.Model):
     song_index = models.IntegerField(default = 0, blank = True)
     progress_ms = models.IntegerField(default = 0, null = True, blank = True)
     last_action = models.DateTimeField(null = True, blank = True)
+    last_song_end = models.DateTimeField(null = True, blank = True)
     playing = models.BooleanField(default = False, blank = True)
+
+    @database_sync_to_async
+    def song_end(self):
+        now = timezone.now()
+
+        if self.last_song_end is None or (now - self.last_song_end).total_seconds() > 5:
+            self.last_song_end = now
+            self.save()
+
+            return True
+        
+        return False
 
     @database_sync_to_async
     def previous_song(self):

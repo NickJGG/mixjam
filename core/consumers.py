@@ -139,8 +139,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
             #if r.status_code not in range(200, 299):
                 #return False
         elif request_action == 'song_end':
-            await room.playlist.next_song()
-            await spotify.sync(user, room)
+            if await room.playlist.song_end():
+                await room.playlist.next_song()
+
+            await spotify.sync(user, room, progress_ms = 0)
     
         room_state = await util.get_room_state(user, room.code)
 

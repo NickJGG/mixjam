@@ -601,9 +601,9 @@
 	z-index: 2;
 }
 .user .profile-picture-container{
-	box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+	//box-shadow: 0 0 10px rgba(0, 0, 0, .3);
 	
-	border-radius: var(--border-radius);
+	border-radius: var(--border-radius) var(--border-radius) 0 0;
 
 	z-index: 2;
 }

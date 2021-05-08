@@ -111,9 +111,11 @@ async def pause(user, room):
     await put(user, pause_endpoint)
     await sync(user, room)
 
-async def sync(user, room):
+async def sync(user, room, progress_ms = None):
+    seek_ms = progress_ms if progress_ms is not None else room.playlist.progress_ms
+
     await seek(user, {
-        'seek_ms': room.playlist.progress_ms
+        'seek_ms': seek_ms
     })
 
 async def seek(user, action_data):
