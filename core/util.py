@@ -15,7 +15,7 @@ async def get_room_state(user, room_code):
     song_state = playlist_state['tracks']['items'][room.playlist.song_index]
 
     song_state['is_playing'] = room.playlist.playing
-    song_state['progress_ms'] = room.playlist.progress_ms
+    song_state['progress_ms'] = room.playlist.get_progress(user)
 
     return {
         'song_state': song_state,

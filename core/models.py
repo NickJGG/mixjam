@@ -40,10 +40,6 @@ class Room(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     playlist_id = models.CharField(max_length = 50, null = True)
     playlist_image_url = models.CharField(max_length = 250, null = True, blank = True)
-    offset = models.IntegerField(default = 0, blank = True)
-    playing = models.BooleanField(default = False, blank = True)
-    progress = models.IntegerField(default = 0, blank = True)
-    progress_time = models.DateTimeField(null = True, blank = True)
     users = models.ManyToManyField(User, blank = True, related_name = 'users')
     active_users = models.ManyToManyField(User, blank = True, related_name = 'active_users')
 
@@ -64,7 +60,16 @@ class Playlist(models.Model):
     last_song_end = models.DateTimeField(null = True, blank = True)
     playing = models.BooleanField(default = False, blank = True)
 
-    @database_sync_to_async
+    def get_progress(self, user):
+        if self.room.others_active(user):
+            position_ms = self.progress_ms
+            difference = round((timezone.now() - self.last_action).total_seconds() * 1000)
+            progress_ms = position_ms + difference
+        else:
+            progress_ms = self.progress_ms
+
+        return progress_ms
+
     def song_end(self):
         now = timezone.now()
 
@@ -72,17 +77,17 @@ class Playlist(models.Model):
             self.last_song_end = now
             self.save()
 
+            self.next_song()
+
             return True
         
         return False
 
-    @database_sync_to_async
     def previous_song(self):
         self.song_index = self.song_index - 1 if self.song_index > 0 else 0
         self.progress_ms = 0
         self.save()
     
-    @database_sync_to_async
     def next_song(self):
         self.song_index += 1
         self.progress_ms = 0

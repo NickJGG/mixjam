@@ -17,7 +17,7 @@ from . import spotify
 class RoomConsumer(AsyncWebsocketConsumer):
     put_methods = ['play', 'pause', 'seek']
     post_methods = ['previous', 'next']
-    playlist_notifications = ['song_end']
+    playlist_notifications = []
 
     # CONNECT FUNCTION
     async def connect(self):
@@ -58,13 +58,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
             }
         )
 
+        await spotify.update_play(user, room)
+
         await self.request_playlist({
             'data': {
                 'action': 'get_state'
             }
         })
-
-        #await spotify.update_play(user, room)
 
     # DISCONNECT FUNCTION
     async def disconnect(self, close_code):
@@ -138,11 +138,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             #if r.status_code not in range(200, 299):
                 #return False
-        elif request_action == 'song_end':
-            if await room.playlist.song_end():
-                await room.playlist.next_song()
-
-            await spotify.sync(user, room, progress_ms = 0)
     
         room_state = await util.get_room_state(user, room.code)
 

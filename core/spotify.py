@@ -3,6 +3,7 @@ import base64
 import json
 import requests
 import time
+import math
 
 from channels.db import database_sync_to_async
 
@@ -48,6 +49,8 @@ def update_playlist(user, room, request_data):
             room.playlist.progress_ms = 0
     elif action == 'seek':
         room.playlist.progress_ms = action_data['seek_ms']
+    elif action == 'song_end':
+        room.playlist.song_end()
     
     room.playlist.last_action = timezone.now()
     room.playlist.save()
@@ -60,14 +63,12 @@ def update_playlist(user, room, request_data):
     print('"""""""""""""""""""""""""""')
 
 async def update_play(user, room):
-    if room.others_active(user):
-        progress_ms = get_progress(room)
+    if room.is_active():
+        progress_ms = room.playlist.get_progress(user)
 
         await play_direct(user, room, {
             'offset': room.playlist.song_index,
         })
-    else:
-        room.playlist.playing = False
 
 async def action(user, room, request_action, action_data = None):
     before = timezone.now()
@@ -86,6 +87,8 @@ async def action(user, room, request_action, action_data = None):
         await previous(user)
     elif request_action == 'next':
         await next(user)
+    elif request_action == 'song_end':
+        await sync(user, room)
 
     after = timezone.now()
 
@@ -112,7 +115,7 @@ async def pause(user, room):
     await sync(user, room)
 
 async def sync(user, room, progress_ms = None):
-    seek_ms = progress_ms if progress_ms is not None else room.playlist.progress_ms
+    seek_ms = progress_ms if progress_ms is not None else room.playlist.get_progress(user)
 
     await seek(user, {
         'seek_ms': seek_ms
@@ -157,9 +160,17 @@ async def refresh_token(user):
     return user.userprofile.authorized
 
 async def get_playlist_data(user, playlist_id):
-    playlist_data = await get(user, playlist_endpoint + playlist_id)
+    playlist_data = (await get(user, playlist_endpoint + playlist_id)).json()
 
-    return playlist_data.json()
+    if playlist_data['tracks']['total'] > 100:
+        for x in range(math.floor(playlist_data['tracks']['total'] / 100)):
+            tracks = (await get(user, playlist_endpoint + playlist_id + '/tracks', params = {
+                'offset': (x + 1) * 100
+            })).json()
+
+            playlist_data['tracks']['items'].extend(tracks['items'])
+
+    return playlist_data
 
 async def get_song_data(user):
     song_data = await get(user, song_endpoint)
@@ -187,14 +198,16 @@ def get_client_credentials():
 
     return client_creds_b64.decode()
 
-async def get(user, endpoint):
-    response = await requests_async.get(endpoint, headers = get_headers(user))
+async def get(user, endpoint, params = {}):
+    response = await requests_async.get(endpoint, params = params, headers = get_headers(user))
+
+    print(params)
 
     if response.status_code == 401:
         authorized = await refresh_token(user)
 
         if authorized:
-            response = await requests_async.get(endpoint, headers=get_headers(user))
+            response = await requests_async.get(endpoint, params = params, headers=get_headers(user))
 
     return response
 
