@@ -4,6 +4,8 @@ from django.utils import timezone
 
 from channels.db import database_sync_to_async
 
+from . import util
+
 class ProfilePicture(models.Model):
     BABY_YODA = 'baby-yoda'
     BRUTUS = 'brutus'
@@ -62,9 +64,7 @@ class Playlist(models.Model):
 
     def get_progress(self, user):
         if self.room.others_active(user):
-            position_ms = self.progress_ms
-            difference = round((timezone.now() - self.last_action).total_seconds() * 1000)
-            progress_ms = position_ms + difference
+            progress_ms = util.get_adjusted_progress(self.room)
         else:
             progress_ms = self.progress_ms
 

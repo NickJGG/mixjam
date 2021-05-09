@@ -148,8 +148,6 @@
 	
 	color: white;
 	
-	border-bottom: 1px solid #555;
-	
 	box-sizing: border-box;
 	
 	cursor: pointer;
@@ -159,12 +157,12 @@
 	
 	color: var(--light-green);
 	
-	background-color: #353535;
+	background-color: #464646;
 	
 	border-left: 3px solid var(--dark-green);
 }
-.playlist-song:hover{
-	background-color: rgba(0, 0, 0, .3);
+.playlist-song:not(.playing):hover{
+	background-color: #363636;
 }
 .playlist-song > *{
 	display: flex;

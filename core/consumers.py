@@ -139,7 +139,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             #if r.status_code not in range(200, 299):
                 #return False
     
-        room_state = await util.get_room_state(user, room.code)
+        room_state = await spotify.get_room_state(user, room.code)
 
         await self.response_send('playlist', room_state)
 
@@ -170,6 +170,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if room:
             room.active_users.remove(self.scope['user'])
             room.save()
+
+            if not room.is_active():
+                if room.playlist.playing:
+                    room.playlist.progress_ms = util.get_adjusted_progress(room)
+                    room.playlist.playing = False
+                    room.playlist.save()
 
     def get_room(self):
         room = Room.objects.filter(code=self.room_name)

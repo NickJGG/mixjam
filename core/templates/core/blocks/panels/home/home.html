@@ -16,7 +16,9 @@
         {% else %}
         
             <div class = "widget-list">
-                <p class = "widget-list-label">Rooms</p>
+                <div class = "widget-list-header">
+                    <p class = "widget-list-label">Rooms</p>
+                </div>
                 <div class = "widgets">
                     <div class = "widget link" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }})">
                         <div class = "widget-info">
@@ -28,6 +30,9 @@
                                 <a href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}"><p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p></a>
                             </div>
                         </div>
+                    </div>
+                    <div class = "widget fake action">
+                        <div class = "widget-action-image" style = "--background-image: url({% static 'img/icons/plus-white-96.png' %})"></div>
                     </div>
                 </div>
             </div>

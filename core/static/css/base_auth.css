@@ -187,16 +187,47 @@ body{
 	margin-top: 8px;
 }
 .section-item{
-	font-size: 14px;
-	letter-spacing: 1px;
-	color: white;
+	display: flex;
+	align-items: center;
 }
-.section-item:hover{
+.section-item:not(.room):hover .item-label{
 	text-decoration: underline;
 	text-underline-offset: 2px;
 }
 .section-item:not(:first-child){
 	margin-top: 6px;
+}
+.item-label{
+	font-size: 14px;
+	letter-spacing: 1px;
+	color: white;
+}
+.section-item.room{
+	padding: 5px;
+
+	border-radius: 9px;
+
+	box-sizing: border-box;
+}
+.section-item.room:hover{
+	background-color: #2c2c2c;
+}
+.section-item.room .item-label{
+	margin-left: 6px;
+}
+.item-picture{
+	width: 24px;
+	height: 24px;
+
+	background-image: var(--background-image);
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-color: var(--dark-green);
+
+	border-radius: 7px;
+
+	box-sizing: border-box;
 }
 
 #panel-container{
@@ -265,6 +296,6 @@ a{
 	text-underline-offset: 1px;
 	color: inherit;
 }
-a:hover *{
+a:not(.no-underline):hover *{
 	text-decoration: underline;
 }

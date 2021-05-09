@@ -51,7 +51,12 @@
 				
 					{% for room in rooms %}
 						
-						<a href = "{% url 'room' room_code=room.code %}"><div class = "section-item">{{ room.title }}</div></a>
+						<a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
+							<div class = "section-item room">
+								<div class = "item-picture" style = "--background-image: url({{ room.playlist_image_url }})"></div>
+								<p class = "item-label no-underline">{{ room.title }}</p>
+							</div>
+						</a>
 						
 					{% endfor %}
 				</div>

@@ -11,6 +11,9 @@ import requests_async
 
 from django.utils import timezone
 
+from .models import *
+from . import util
+
 client_id = os.environ.get('CLIENT_ID')
 client_secret = os.environ.get('CLIENT_SECRET')
 
@@ -35,7 +38,7 @@ def update_playlist(user, room, request_data):
     elif action == 'pause':
         room.playlist.playing = False
 
-        room.playlist.progress_ms = get_progress(room)
+        room.playlist.progress_ms = util.get_adjusted_progress(room)
     elif action == 'play_direct' or action == 'previous' or action == 'next':
         room.playlist.progress_ms = 0
         room.playlist.playing = True
@@ -63,7 +66,7 @@ def update_playlist(user, room, request_data):
     print('"""""""""""""""""""""""""""')
 
 async def update_play(user, room):
-    if room.is_active():
+    if room.others_active(user):
         progress_ms = room.playlist.get_progress(user)
 
         await play_direct(user, room, {
@@ -134,13 +137,6 @@ async def previous(user):
 async def next(user):
     await post(user, next_endpoint)
 
-def get_progress(room):
-    position_ms = room.playlist.progress_ms
-    difference = round((timezone.now() - room.playlist.last_action).total_seconds() * 1000)
-    progress_ms = position_ms + difference
-
-    return progress_ms
-
 async def refresh_token(user):
     response = await requests_async.post(refresh_endpoint, data = {
         'grant_type': 'refresh_token',
@@ -172,10 +168,40 @@ async def get_playlist_data(user, playlist_id):
 
     return playlist_data
 
-async def get_song_data(user):
-    song_data = await get(user, song_endpoint)
+async def get_room_state(user, room_code):
+    room = Room.objects.get(code = room_code)
 
-    return song_data.json()
+    playlist_state = (await get_playlist_state(user, room_code))
+    
+    print(type(playlist_state))
+
+    if room.playlist.song_index >= len(playlist_state['tracks']['items']):
+        await room.playlist.restart()
+
+    song_state = playlist_state['tracks']['items'][room.playlist.song_index]
+
+    song_state['is_playing'] = room.playlist.playing
+    song_state['progress_ms'] = room.playlist.get_progress(user)
+
+    return {
+        'song_state': song_state,
+        'playlist_state': playlist_state
+    }
+
+async def get_playlist_state(user, room_code):
+    room = Room.objects.filter(code = room_code)
+
+    if not room.exists() or room[0].playlist_id is None:
+        return None
+
+    room = room[0]
+
+    playlist_data = await get_playlist_data(user, room.playlist_id)
+
+    if room.playlist_image_url is None:
+        await util.update_playlist_image(room, playlist_data['images'][0]['url'])
+
+    return playlist_data
 
 def get_headers(user):
     return {
