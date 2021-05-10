@@ -10,31 +10,60 @@
 
 			<input type = "hidden" name = "panel-label" value = "personalization">
 			<input id = "icon-image-path" type = "hidden" name = "icon-image" value = "{{ user.userprofile.icon_image }}">
-			<div class = "settings-section">
-				<p class = "settings-label">Profile Picture</p>
-				<div class = "settings-list">
-					<div id = "setting-icon" class = "setting">
-						<p class = "setting-label">Icon</p>
-						<div id = "picture-choices-container">
-							{% for image in images %}
-					
-								{% with 'img/profile//'|add:image as path %}
-									<div class = "picture-choice {% if user.userprofile.icon_image in path %}selected{% endif %}" style = "--icon: url({% static path %})"></div>
-								{% endwith %}
-					
-							{% endfor %}
+			<div class = "settings-actions">
+				<input type = "submit" value = "SAVE">
+			</div>
+			<div class = "settings-sections">
+				<div class = "settings-section">
+					<p class = "settings-label">Profile Picture</p>
+					<div class = "settings-list">
+						<div id = "setting-icon" class = "setting">
+							<p class = "setting-label">Icon</p>
+							<div id = "picture-choices-container">
+								{% for image in images %}
+						
+									{% with 'img/profile//'|add:image as path %}
+										<div class = "picture-choice {% if user.userprofile.icon_image in path %}selected{% endif %}" style = "--icon: url({% static path %})"></div>
+									{% endwith %}
+						
+								{% endfor %}
+							</div>
+						</div>
+						<div class = "setting">
+							<p class = "setting-label">Icon Color (Hex)</p>
+							<input type = "text" name = "icon-color" value = "{{ user.userprofile.icon_color }}">
+						</div>
+						<div class = "setting">
+							<p class = "setting-label">Background Color (Hex)</p>
+							<input type = "text" name = "background-color" value = "{{ user.userprofile.background_color }}">
 						</div>
 					</div>
 				</div>
-				<div class = "setting">
-					<p class = "setting-label">Icon Color (Hex)</p>
-					<input type = "text" name = "icon-color" value = "{{ user.userprofile.icon_color }}">
+				<div class = "settings-section">
+					<p class = "settings-label">Profile Picture</p>
+					<div class = "settings-list">
+						<div id = "setting-icon" class = "setting">
+							<p class = "setting-label">Icon</p>
+							<div id = "picture-choices-container">
+								{% for image in images %}
+						
+									{% with 'img/profile//'|add:image as path %}
+										<div class = "picture-choice {% if user.userprofile.icon_image in path %}selected{% endif %}" style = "--icon: url({% static path %})"></div>
+									{% endwith %}
+						
+								{% endfor %}
+							</div>
+						</div>
+						<div class = "setting">
+							<p class = "setting-label">Icon Color (Hex)</p>
+							<input type = "text" name = "icon-color" value = "{{ user.userprofile.icon_color }}">
+						</div>
+						<div class = "setting">
+							<p class = "setting-label">Background Color (Hex)</p>
+							<input type = "text" name = "background-color" value = "{{ user.userprofile.background_color }}">
+						</div>
+					</div>
 				</div>
-				<div class = "setting">
-					<p class = "setting-label">Background Color (Hex)</p>
-					<input type = "text" name = "background-color" value = "{{ user.userprofile.background_color }}">
-				</div>
-				<input type = "submit" value = "SAVE">
 			</div>
 		</form>
 	</div>
