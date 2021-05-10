@@ -218,7 +218,7 @@ def get_client_credentials():
     return client_creds_b64.decode()
 
 async def async_refresh_token(user):
-    response = await requests_async.post(refresh_endpoint, data = {
+    response = await requests_async.post(endpoints['refresh'], data = {
         'grant_type': 'refresh_token',
         'refresh_token': user.userprofile.refresh_token
     }, headers = get_token_headers())
@@ -236,7 +236,7 @@ async def async_refresh_token(user):
     return user.userprofile.authorized
 
 def refresh_token(user):
-    response = requests.post(refresh_endpoint, data = {
+    response = requests.post(endpoints['refresh'], data = {
         'grant_type': 'refresh_token',
         'refresh_token': user.userprofile.refresh_token
     }, headers = get_token_headers())
