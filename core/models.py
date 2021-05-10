@@ -23,6 +23,7 @@ class ProfilePicture(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
+    tag_line = models.CharField(max_length = 50, default = 'Syncer')
     access_token = models.CharField(max_length = 200)
     refresh_token = models.CharField(max_length = 200)
     authorized = models.BooleanField(default = False)
@@ -38,6 +39,7 @@ class UserProfile(models.Model):
 class Room(models.Model):
     code = models.CharField(max_length = 30)
     title = models.CharField(max_length=150, default="New Room")
+    description = models.CharField(max_length = 1000, default = "")
     leader = models.ForeignKey(User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
     playlist_id = models.CharField(max_length = 50, null = True)

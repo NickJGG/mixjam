@@ -115,7 +115,8 @@ $(document).ready(function(){
 	}
 	function updateConnections(data){
 		var join = data['response_data']['data']['connection_state']['connection_type'] == 'join',
-			username = data['response_data']['data']['connection_state']['user']['username'];
+			username = data['response_data']['data']['connection_state']['user']['username'],
+			is_leader = data['response_data']['data']['connection_state']['user']['is_leader'];
 
 		if (join){
 			$('#user-' + username).remove();
@@ -126,7 +127,10 @@ $(document).ready(function(){
 			$('#user-list').append(`
 				<div id = "user-` + username + `" class = "user" style = "--background-color: ` + color + `">
 					` + profilePicture + `
-					<p>` + username + `</p>
+					<div class = "room-user-info">
+						` + (is_leader ? `<img src = "/static/img/icons/crown-96.png">` : ``) + `
+						<p>` + username + `</p>
+					</div>
 				</div>
 			`);
 

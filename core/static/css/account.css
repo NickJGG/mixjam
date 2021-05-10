@@ -6,21 +6,20 @@
 
 	overflow: unset !important;
 }
-#user-info-container{
-	display: flex;
-	justify-content: center;
-
-	margin: var(--panel-padding) 0 calc(var(--panel-padding) * 2) 0;
+#panel-personalization{
+	//align-items: center;
 }
 
 #picture-choices-container{
     display: grid;
 	grid-template-columns: repeat(6, 60px);
-	grid-gap: 5px;
+	grid-gap: 7px;
 
 	margin: 10px 0;
 }
 .picture-choice{
+	--highlight-color: var(--dark-green);
+
 	width: 60px;
 	height: 60px;
 
@@ -30,13 +29,133 @@
 	background-position: center;
 	background-repeat: no-repeat;
 
-    border-radius: 100%;
+    border-radius: 15px;
 
 	cursor: pointer;
 }
 .picture-choice.selected{
-	background-color: var(--dark-green);
+	background-color: var(--highlight-color);
 }
 .picture-choice:hover{
+	background-color: var(--highlight-color);
+}
+
+#user-card{
+	width: fit-content;
+
+	display: flex;
+	align-self: center;
+	flex-direction: column;
+
+	margin-bottom: var(--panel-padding);
+
+	background-color: var(--medium-black);
+
+	border-radius: var(--border-radius);
+
+	overflow: hidden;
+
+	box-sizing: border-box;
+}
+#user-card-identity, #user-card-showcase{
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+
+	box-sizing: border-box;
+}
+#user-card-identity{
+	justify-content: center;
+
+	padding: var(--panel-padding) calc(var(--panel-padding) * 2);
+}
+#user-card-showcase{
+	--background-color: var(--dark-green);
+
+	padding: var(--panel-padding);
+
+	background-color: var(--background-color);
+}
+#user-identity-username{
+	margin-top: calc(var(--panel-padding) / 2);
+
+	font-family: Roboto-Bold;
+	font-size: 22px;
+	color: white;
+}
+#user-identity-tagline{
+	margin-top: 1px;
+
+	font-size: 12px;
+	color: #aaa;
+}
+.user-showcase-group{
+	width: 100%;
+
+	display: flex;
+	flex-direction: column;
+}
+.showcase-group-label{
+	font-family: Roboto-Medium;
+	font-size: 12px;
+	text-transform: uppercase;
+	color: white;
+}
+.showcase-group-content{
+	width: 100%;
+
+	display: flex;
+
+	margin-top: 4px;
+}
+#user-showcase-rooms{
+	min-width: 140px;
+
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	grid-gap: 5px;
+}
+.showcase-room{
+	width: 100%;
+
+	padding-top: 100%;
+
+	background-color: rgba(0, 0, 0, .1);
+	background-image: var(--background-image);
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+
+	border-radius: 10px;
+}
+
+#authorized-status{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+#status-indicator{
+	height: 40px;
+
+	padding: 10px;
+
 	background-color: var(--dark-green);
+
+	border-radius: 10px;
+
+	box-sizing: border-box;
+}
+#authorized-status.unauthorized #status-indicator{
+	background-color: var(--red);
+}
+#authorized-status p{
+	margin-left: 10px;
+
+	font-family: Roboto-Bold;
+	font-size: 16px;
+	color: white;
+}
+
+input[type="submit"]{
+	margin: 0 !important;
 }

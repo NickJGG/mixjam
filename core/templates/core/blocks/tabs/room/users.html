@@ -1,3 +1,5 @@
+{% load static %}
+
 <div id = "tab-users" class = "tab {% if selected == True %}selected{% endif %}">
     <div id = "users-wrapper">
         <div id = "online-wrapper">
@@ -7,7 +9,16 @@
     
                     <div id = "user-{{ user.username }}" class = "user" style = "--background-color: {{ user.userprofile.background_color }}">
                         {% include 'core/blocks/profile-picture.html' with width='var(--user-width)' height='var(--user-width)' %}
-                        <p>{{ user.username }}</p>
+                        
+                        <div class = "room-user-info">
+                            {% if user == leader %}
+
+                                <img src = "{% static 'img/icons/crown-96.png' %}">
+
+                            {% endif %}
+
+                            <p>{{ user.username }}</p>
+                        </div>
                     </div>
     
                 {% endfor %}
@@ -20,7 +31,16 @@
     
                     <div id = "user-{{ user.username }}" class = "user" style = "--background-color: {{ user.userprofile.background_color }}">
                         {% include 'core/blocks/profile-picture.html' with width='var(--user-width)' height='var(--user-width)' %}
-                        <p>{{ user.username }}</p>
+                        
+                        <div class = "room-user-info">
+                            {% if user == leader %}
+
+                                <img src = "{% static 'img/icons/crown-96.png' %}">
+
+                            {% endif %}
+
+                            <p>{{ user.username }}</p>
+                        </div>
                     </div>
     
                 {% endfor %}

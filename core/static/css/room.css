@@ -72,9 +72,17 @@
 #collab-bullet{
 	margin: 0 3px;
 }
+#playlist-description{
+	margin-top: 6px;
+	padding-left: 4px;
+
+	font-size: 14px;
+}
 #playlist-stats{
 	display: flex;
-	flex: 1;
+}
+#playlist-author{
+	margin-top: auto;
 }
 .playlist-stat, #playlist-author{
 	display: flex;
@@ -586,6 +594,17 @@
 	filter: brightness(.7) saturate(.8);
 
 	z-index: 1;
+}
+.room-user-info{
+	display: flex;
+	align-items: center;
+
+	z-index: 5;
+}
+.room-user-info img{
+	height: 20px;
+
+	margin-right: 2px;
 }
 .user p{
 	padding: 10px 0;

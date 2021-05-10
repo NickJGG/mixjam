@@ -1,3 +1,6 @@
+{% load static %}
+{% load util %}
+
 <div id = "panel-overview" class = "panel {% if selected == True %}selected{% endif %}">
 	<div id = "user-info-container">
 		<div id = "profile-picture-container">
@@ -16,33 +19,50 @@
 			<div class = "settings-list">
 				<div class = "setting">
 					<p class = "setting-label">First Name</p>
-					<input type = "text" name = "first-name">
+					<input type = "text" name = "first-name" value = "{{ user.first_name }}">
 				</div>
 				<div class = "setting">
 					<p class = "setting-label">Last Name</p>
-					<input type = "text" name = "last-name">
+					<input type = "text" name = "last-name" value = "{{ user.last_name }}">
 				</div>
 				<div class = "setting">
 					<p class = "setting-label">Email</p>
-					<input type = "email" name = "first-name">
+					<input type = "email" name = "email" value = "{{ user.email }}">
+				</div>
+				<div class = "setting">
+					<p class = "setting-label">Tag Line</p>
+					<input type = "text" name = "tag-line" value = "{{ user.userprofile.tag_line }}">
+				</div>
+				<div class = "settings-actions">
+					<input type = "submit" value = "Save">
 				</div>
 			</div>
 		</div>
 		<div class = "settings-section">
 			<p class = "settings-label">Spotify Link</p>
 			<div class = "settings-list">
-				<div class = "setting">
-					<p class = "setting-label">First Name</p>
-					<input type = "text" name = "first-name">
-				</div>
-				<div class = "setting">
-					<p class = "setting-label">Last Name</p>
-					<input type = "text" name = "last-name">
-				</div>
-				<div class = "setting">
-					<p class = "setting-label">Email</p>
-					<input type = "email" name = "first-name">
-				</div>
+				{% if authorized %}
+
+					<div id = "authorized-status">
+						<div style = "display: flex; align-items: center">
+							<img id = "status-indicator" src = "{% static 'img/icons/check-white-96.png' %}">
+							<p>Authorized</p>
+						</div>
+					</div>
+
+				{% else %}
+
+					<div id = "authorized-status" class = "unauthorized">
+						<div style = "display: flex; align-items: center">
+							<img id = "status-indicator" src = "{% static 'img/icons/close-white-96.png' %}">
+							<p>Unauthorized</p>
+						</div>
+						<a id = "authorize-link" class = "no-underline" href = "{% authorize_url %}">
+							<input type = "submit" value = "Authorize">
+						</a>
+					</div>
+
+				{% endif %}
 			</div>
 		</div>
 	</div>

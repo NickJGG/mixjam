@@ -52,6 +52,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                                 'height': 'var(--user-width)',
                                 'user': user
                             }),
+                            'is_leader': user == room.leader
                         }
                     }
                 }
@@ -185,6 +186,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
     def print_request(self, request_data):
         print('\n=== RECEIVED REQUEST ===============')
         print('Time: ' + datetime.now().strftime('%I:%M:%S %m/%d'))
+        print('User: ' + self.scope['user'].username)
         print('\nType: ' + request_data['type'])
         print('Data: ' + json.dumps(request_data['data'], indent = 4))
         print('==================== END REQUEST ===\n')

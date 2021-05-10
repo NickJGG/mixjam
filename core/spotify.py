@@ -79,8 +79,6 @@ async def update_play(user, room):
 async def action(user, room, request_action, action_data = None):
     before = timezone.now()
 
-    print('BEFORE: ' + request_action + ' FOR @' + str(user.username) + ' at ' + str(before))
-
     if request_action == 'play':
         await play(user, room)
     elif request_action == 'play_direct':
@@ -97,9 +95,6 @@ async def action(user, room, request_action, action_data = None):
         await sync(user, room)
 
     after = timezone.now()
-
-    print('AFTER:  ' + request_action + ' FOR @' + str(user.username) + ' at ' + str(after))
-    print('duration: ' + str((after - before).total_seconds()))
 
 async def play(user, room, offset = None):
     data = {}
@@ -161,8 +156,6 @@ async def get_room_state(user, room_code):
     room = Room.objects.get(code = room_code)
 
     playlist_state = (await get_playlist_state(user, room_code))
-    
-    print(type(playlist_state))
 
     if room.playlist.song_index >= len(playlist_state['tracks']['items']):
         await room.playlist.restart()

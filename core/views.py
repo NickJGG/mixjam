@@ -8,7 +8,6 @@ from channels.db import database_sync_to_async
 
 import spotify as spotify_auth
 from syncify import settings
-from urllib.parse import urlunsplit, urlencode
 
 from .models import *
 
@@ -16,8 +15,6 @@ from . import util, spotify
 
 client_id = os.environ.get('CLIENT_ID')
 client_secret = os.environ.get('CLIENT_SECRET')
-scheme = os.environ.get("API_SCHEME", "https")
-netloc = os.environ.get("API_NETLOC", "accounts.spotify.com")
 
 def index(request):
     if request.user.is_authenticated:
@@ -26,22 +23,27 @@ def index(request):
         return landing(request)
 
 def home(request):
-    spot = spotify_auth.SpotifyAPI(client_id, client_secret, request.user, '')
+    if request.POST:
+        print(request.POST)
 
-    redirect_uri = 'http://localhost:8000/callback/' if os.environ.get(
-        'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
+        name = request.POST.get('room-name')
+        description = request.POST.get('room-description')
+        id = request.POST.get('room-id')
 
-    path = f"/authorize"
-    
-    query = urlencode(dict(
-        response_type = 'code',
-        client_id = client_id,
-        scope = 'streaming app-remote-control user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative',
-        redirect_uri = redirect_uri,
-        state = 'null'
-    ))
+        if name and description and id:
+            while True:
+                new_code = get_random_string(length=6)
 
-    authorize_url = urlunsplit((scheme, netloc, path, query, ""))
+                rooms = Room.objects.filter(code = new_code)
+
+                if not rooms.exists():
+                    break
+            
+            room = Room(code = new_code, title = name, description = description, leader = request.user, playlist_id = id)
+            room.save()
+
+            room.users.add(request.user)
+            room.save()
 
     response = spotify.get(request.user, spotify.endpoints['current_user_playlists'])
 
@@ -49,7 +51,8 @@ def home(request):
         print(playlist['name'])
 
     return render(request, 'core/home.html', {
-        'authorize_url': authorize_url
+        'rooms': Room.objects.filter(users = request.user),
+        'playlists': response.json()['items']
     })
 
 def landing(request):
@@ -74,45 +77,30 @@ def room(request, room_code):
 
     if rooms.exists():
         room = rooms[0]
-    else:
-        '''while True:
-            new_code = get_random_string(length=6)
 
-            rooms = Room.objects.filter(code = room_code)
+        if request.user not in room.users.all():
+            room.users.add(request.user)
+            room.save()
 
-            if not rooms.exists():
-                break
+        if not Playlist.objects.filter(room = room).exists():
+            room.playlist = Playlist(room = room)
+            room.playlist.save()
 
-        room = Room(code = new_code, leader = request.user)
-        room.save()'''
+        request.user.userprofile.most_recent_room = room
+        request.user.userprofile.save()
 
-        room = Room(code = room_code, leader = request.user)
-        room.save()
+        offline_users = []
 
-    if request.user not in room.users.all():
-        room.users.add(request.user)
-        room.save()
+        for user in room.users.all():
+            if user not in room.active_users.all():
+                offline_users.append(user)
 
-    if not Playlist.objects.filter(room = room).exists():
-        room.playlist = Playlist(room = room)
-        room.playlist.save()
-
-    request.user.userprofile.most_recent_room = room
-    request.user.userprofile.save()
-
-    offline_users = []
-
-    for user in room.users.all():
-        if user not in room.active_users.all():
-            offline_users.append(user)
-
-    data['room'] = room
-    data['offline_users'] = offline_users
+        data['room'] = room
+        data['offline_users'] = offline_users
 
     return render(request, 'core/room.html', data)
 
 def account(request):
-    print(settings.BASE_DIR)
     path = os.path.join(settings.BASE_DIR, 'core', 'static', 'img', 'profile')
     file_list = os.listdir(path)
 
@@ -125,22 +113,21 @@ def account(request):
                 icon_color = request.POST.get('icon-color')
                 background_color = request.POST.get('background-color')
 
-                print(icon_color)
-
                 try:
                     int(icon_color, 16)
-
-                    print('is hex')
 
                     request.user.userprofile.icon_image = icon_image
                     request.user.userprofile.icon_color = icon_color
                     request.user.userprofile.background_color = background_color
                     request.user.userprofile.save()
                 except:
-                    print('is not hex')
+                    pass
+
+    authorized = spotify.refresh_token(request.user)
 
     return render(request, 'core/account.html', {
-        'images': file_list
+        'images': file_list,
+        'authorized': authorized
     })
 
 def login(request):

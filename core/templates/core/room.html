@@ -105,7 +105,7 @@
 		</div>
 
 		{% include 'core/blocks/tabs/room/chat.html' %}
-		{% include 'core/blocks/tabs/room/users.html' with selected=True offline_users=offline_users active_users=room.active_users.all %}
+		{% include 'core/blocks/tabs/room/users.html' with selected=True leader=room.leader offline_users=offline_users active_users=room.active_users.all %}
 	</div>
 
 {% endblock %}

@@ -15,16 +15,16 @@
 
 {% block panel_labels %}
 
-	<p class = "panel-label">Overview</p>
-	<p class = "panel-label selected">Personalization</p>
+	<p class = "panel-label selected">Overview</p>
+	<p class = "panel-label">Personalization</p>
 	<p class = "panel-label">Privacy</p>
 
 {% endblock %}
 
 {% block panel_container %}
 
-	{% include 'core/blocks/panels/account/overview.html' with selected=False %}
-	{% include 'core/blocks/panels/account/personalization.html' with selected=True %}
+	{% include 'core/blocks/panels/account/overview.html' with selected=True %}
+	{% include 'core/blocks/panels/account/personalization.html' %}
 	{% include 'core/blocks/panels/account/privacy.html' %}
 
 {% endblock %}

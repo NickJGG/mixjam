@@ -1,9 +1,9 @@
 :root{
 	--light-green: rgb(115, 208, 115);
 	--dark-green: rgb(0, 185, 94);
-	--black: #171717;
-	--medium-black: #1b1b1b;
-	--light-black: #222;
+	--black: #0b0b0b;
+	--medium-black: #141414;
+	--light-black: #1f1f1f;
 	--red: #ef3333;
 
 	--panel-padding: 20px;

@@ -1,35 +1,52 @@
 {% load static %}
 
 <div id = "panel-create" class = "panel {% if selected == True %}selected{% endif %}">
-    <div class = "settings-sections">
-        <div class = "settings-section">
-            <p class = "settings-label">Details</p>
-            <div class = "settings-list">
-                <div class = "setting">
-                    <p class = "setting-label">Name</p>
-                    <input type = "text" name = "room-name">
+    <form id = "create-room" method = "POST">
+        {% csrf_token %}
+        
+        <input id = "selected-room" name = "room-id" type = "hidden">
+
+        <div class = "settings-sections">
+            <div class = "settings-section">
+                <p class = "settings-label">Room Details</p>
+                <div class = "settings-list">
+                    <div class = "setting">
+                        <p class = "setting-label">Name</p>
+                        <input type = "text" name = "room-name">
+                    </div>
+                    <div class = "setting">
+                        <p class = "setting-label">Description</p>
+                        <textarea name = "room-description"></textarea>
+                    </div>
                 </div>
-                <div class = "setting">
-                    <p class = "setting-label">Description</p>
-                    <input type = "text" name = "room-description">
+            </div>
+            <div class = "settings-section">
+                <p class = "settings-label">Playlist</p>
+                <div class = "settings-list no-background no-padding">
+                    <div class = "setting">
+                        <div class = "widget-list">
+                            <div class = "widgets">
+                                {% for playlist in playlists %}
+                                    
+                                    <div class = "widget selector" style = "--background-image: url({{ playlist.images.0.url }})">
+                                        <input class = "room-id" type = "hidden" value = "{{ playlist.id }}">
+                                        <div class = "widget-image"></div>
+                                        <div class = "widget-info">
+                                            <div class = "widget-label"> 
+                                                <p class = "widget-name">{{ playlist.name }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class = "settings-section">
-            <p class = "settings-label">Playlist</p>
-            <div class = "settings-list">
-                <div class = "setting">
-                    <p class = "setting-label">Name</p>
-                    <input type = "text" name = "room-name">
-                </div>
-                <div class = "setting">
-                    <p class = "setting-label">Description</p>
-                    <input type = "text" name = "room-description">
-                </div>
-            </div>
+        <div class = "settings-actions">
+            <input type = "submit" value = "CREATE" style = "display: none">
         </div>
-    </div>
-    <div class = "settings-actions">
-        <input type = "submit" value = "CREATE">
-    </div>
+    </form>
 </div>

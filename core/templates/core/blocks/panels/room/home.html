@@ -3,7 +3,7 @@
 <div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
 	<div id = "playlist-info">
 		<div id = "playlist-cover">
-			<img src = "{{ room_state.playlist_state.images.0.url }}">
+			<img src = "{{ room.playlist_image_url }}">
 		</div>
 		<div id = "playlist-details">
 			<p id = "playlist-collab"><span id = "collab-bullet">○</span>Collaborative</p>
@@ -24,6 +24,7 @@
 					</div>
 				</div>
 			</div>
+			<p id = "playlist-description">{{ room.description }}</p>
 			<div id = "playlist-author">
 				<img src = "{% static 'img/icons/account-white-96.png' %}">
 				<p id = "playlist-creator"></p>
