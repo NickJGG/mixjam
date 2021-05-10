@@ -17,17 +17,20 @@ from . import util
 client_id = os.environ.get('CLIENT_ID')
 client_secret = os.environ.get('CLIENT_SECRET')
 
-player_endpoint = 'https://api.spotify.com/v1/me/player/'
+endpoints = {
+    'player': 'https://api.spotify.com/v1/me/player/',
+    'song': 'https://api.spotify.com/v1/me/player/currently-playing',
+    'current_user_playlists': 'https://api.spotify.com/v1/me/playlists',
+    'playlist': 'https://api.spotify.com/v1/playlists/',
+    'refresh': 'https://accounts.spotify.com/api/token',
+    'play': 'https://api.spotify.com/v1/me/player/play',
+    'pause': 'https://api.spotify.com/v1/me/player/pause',
+    'seek': 'https://api.spotify.com/v1/me/player/seek',
+    'previous': 'https://api.spotify.com/v1/me/player/previous',
+    'next': 'https://api.spotify.com/v1/me/player/next',
+}
 
-song_endpoint = 'https://api.spotify.com/v1/me/player/currently-playing'
-playlist_endpoint = 'https://api.spotify.com/v1/playlists/'
-refresh_endpoint = 'https://accounts.spotify.com/api/token'
-
-play_endpoint = 'https://api.spotify.com/v1/me/player/play'
-pause_endpoint = 'https://api.spotify.com/v1/me/player/pause'
-seek_endpoint = 'https://api.spotify.com/v1/me/player/seek'
-previous_endpoint = 'https://api.spotify.com/v1/me/player/previous'
-next_endpoint = 'https://api.spotify.com/v1/me/player/next'
+# region Room Player
 
 def update_playlist(user, room, request_data):
     action = request_data['action']
@@ -107,14 +110,14 @@ async def play(user, room, offset = None):
             'position': offset
         }
 
-    await put(user, play_endpoint, data = data)
+    await async_put(user, endpoints['play'], data = data)
 
 async def play_direct(user, room, action_data):
     await play(user, room, offset = action_data['offset'])
     await sync(user, room)
 
 async def pause(user, room):
-    await put(user, pause_endpoint)
+    await async_put(user, endpoints['pause'])
     await sync(user, room)
 
 async def sync(user, room, progress_ms = None):
@@ -129,38 +132,24 @@ async def seek(user, action_data):
         'position_ms': action_data['seek_ms']
     }
 
-    await put(user, seek_endpoint, params = params)
+    await async_put(user, endpoints['seek'], params = params)
 
 async def previous(user):
-    await post(user, previous_endpoint)
+    await async_post(user, endpoints['previous'])
 
 async def next(user):
-    await post(user, next_endpoint)
+    await async_post(user, endpoints['next'])
 
-async def refresh_token(user):
-    response = await requests_async.post(refresh_endpoint, data = {
-        'grant_type': 'refresh_token',
-        'refresh_token': user.userprofile.refresh_token
-    }, headers = get_token_headers())
+# endregion
 
-    r_json = response.json()
-
-    if response.status_code < 400:
-        user.userprofile.access_token = r_json['access_token']
-        user.userprofile.authorized = True
-    else:
-        user.userprofile.authorized = False
-    
-    user.userprofile.save()
-
-    return user.userprofile.authorized
+# region Get States
 
 async def get_playlist_data(user, playlist_id):
-    playlist_data = (await get(user, playlist_endpoint + playlist_id)).json()
+    playlist_data = (await async_get(user, endpoints['playlist'] + playlist_id)).json()
 
     if playlist_data['tracks']['total'] > 100:
         for x in range(math.floor(playlist_data['tracks']['total'] / 100)):
-            tracks = (await get(user, playlist_endpoint + playlist_id + '/tracks', params = {
+            tracks = (await async_get(user, endpoints['playlist'] + playlist_id + '/tracks', params = {
                 'offset': (x + 1) * 100
             })).json()
 
@@ -203,6 +192,10 @@ async def get_playlist_state(user, room_code):
 
     return playlist_data
 
+# endregion
+
+# region Authorization
+
 def get_headers(user):
     return {
         "Authorization": f"Bearer {user.userprofile.access_token}"
@@ -224,42 +217,104 @@ def get_client_credentials():
 
     return client_creds_b64.decode()
 
-async def get(user, endpoint, params = {}):
+async def async_refresh_token(user):
+    response = await requests_async.post(refresh_endpoint, data = {
+        'grant_type': 'refresh_token',
+        'refresh_token': user.userprofile.refresh_token
+    }, headers = get_token_headers())
+
+    r_json = response.json()
+
+    if response.status_code < 400:
+        user.userprofile.access_token = r_json['access_token']
+        user.userprofile.authorized = True
+    else:
+        user.userprofile.authorized = False
+    
+    user.userprofile.save()
+
+    return user.userprofile.authorized
+
+def refresh_token(user):
+    response = requests.post(refresh_endpoint, data = {
+        'grant_type': 'refresh_token',
+        'refresh_token': user.userprofile.refresh_token
+    }, headers = get_token_headers())
+
+    r_json = response.json()
+
+    if response.status_code < 400:
+        user.userprofile.access_token = r_json['access_token']
+        user.userprofile.authorized = True
+    else:
+        user.userprofile.authorized = False
+    
+    user.userprofile.save()
+
+    return user.userprofile.authorized
+
+# endregion
+
+# region Requests
+
+async def async_get(user, endpoint, params = {}):
     response = await requests_async.get(endpoint, params = params, headers = get_headers(user))
 
-    print(params)
-
     if response.status_code == 401:
-        authorized = await refresh_token(user)
+        authorized = await async_refresh_token(user)
 
         if authorized:
             response = await requests_async.get(endpoint, params = params, headers=get_headers(user))
 
     return response
 
-async def put(user, endpoint, data = {}, params = {}):
+def get(user, endpoint, params = {}):
+    response = requests.get(endpoint, params = params, headers = get_headers(user))
+
+    if response.status_code == 401:
+        authorized = refresh_token(user)
+
+        if authorized:
+            response = requests.get(endpoint, params = params, headers=get_headers(user))
+
+    return response
+
+async def async_put(user, endpoint, data = {}, params = {}):
     data = json.dumps(data)
 
     response = await requests_async.put(endpoint, params = params, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
-        authorized = await refresh_token(user)
+        authorized = await async_refresh_token(user)
 
         if authorized:
-            response = requests_async.put(endpoint, params = data, headers = get_headers(user))
+            response = await requests_async.put(endpoint, params = data, headers = get_headers(user))
 
     return response
 
-async def post(user, endpoint, data = {}):
+def put(user, endpoint, data = {}, params = {}):
+    data = json.dumps(data)
+
+    response = requests.put(endpoint, params = params, data = data, headers = get_headers(user))
+
+    if response.status_code == 401:
+        authorized = refresh_token(user)
+
+        if authorized:
+            response = requests.put(endpoint, params = data, headers = get_headers(user))
+
+    return response
+
+async def async_post(user, endpoint, data = {}):
     data = json.dumps(data)
 
     response = await requests_async.post(endpoint, data = data, headers = get_headers(user))
 
     if response.status_code == 401:
-        authorized = await refresh_token(user)
+        authorized = await async_refresh_token(user)
 
         if authorized:
-            response = requests_async.post(endpoint, data = data, headers = get_headers(user))
+            response = await requests_async.post(endpoint, data = data, headers = get_headers(user))
         else:
             response = {
                 'error': 'unauthorized',
@@ -267,3 +322,23 @@ async def post(user, endpoint, data = {}):
             }
 
     return response
+
+def post(user, endpoint, data = {}):
+    data = json.dumps(data)
+
+    response = requests.post(endpoint, data = data, headers = get_headers(user))
+
+    if response.status_code == 401:
+        authorized = refresh_token(user)
+
+        if authorized:
+            response = requests.post(endpoint, data = data, headers = get_headers(user))
+        else:
+            response = {
+                'error': 'unauthorized',
+                'error_message': 'User is unauthorized'
+            }
+
+    return response
+
+# endregion

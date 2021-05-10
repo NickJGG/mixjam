@@ -6,13 +6,13 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 
 from channels.db import database_sync_to_async
 
-import spotify
+import spotify as spotify_auth
 from syncify import settings
 from urllib.parse import urlunsplit, urlencode
 
 from .models import *
 
-from . import util
+from . import util, spotify
 
 client_id = os.environ.get('CLIENT_ID')
 client_secret = os.environ.get('CLIENT_SECRET')
@@ -26,7 +26,7 @@ def index(request):
         return landing(request)
 
 def home(request):
-    spot = spotify.SpotifyAPI(client_id, client_secret, request.user, '')
+    spot = spotify_auth.SpotifyAPI(client_id, client_secret, request.user, '')
 
     redirect_uri = 'http://localhost:8000/callback/' if os.environ.get(
         'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
@@ -36,14 +36,17 @@ def home(request):
     query = urlencode(dict(
         response_type = 'code',
         client_id = client_id,
-        scope = 'streaming app-remote-control user-modify-playback-state user-read-currently-playing',
+        scope = 'streaming app-remote-control user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative',
         redirect_uri = redirect_uri,
         state = 'null'
     ))
 
     authorize_url = urlunsplit((scheme, netloc, path, query, ""))
 
-    print(authorize_url)
+    response = spotify.get(request.user, spotify.endpoints['current_user_playlists'])
+
+    for playlist in response.json()['items']:
+        print(playlist['name'])
 
     return render(request, 'core/home.html', {
         'authorize_url': authorize_url
@@ -56,7 +59,7 @@ def landing(request):
 
 def callback(request):
     if request.GET and 'code' in request.GET:
-        spot = spotify.SpotifyAPI(client_id, client_secret, request.user, request.GET['code'])
+        spot = spotify_auth.SpotifyAPI(client_id, client_secret, request.user, request.GET['code'])
         spot.perform_user_auth()
 
         request.user.userprofile.authorized = True

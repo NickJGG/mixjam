@@ -1,0 +1,35 @@
+{% load static %}
+
+<div id = "panel-create" class = "panel {% if selected == True %}selected{% endif %}">
+    <div class = "settings-sections">
+        <div class = "settings-section">
+            <p class = "settings-label">Details</p>
+            <div class = "settings-list">
+                <div class = "setting">
+                    <p class = "setting-label">Name</p>
+                    <input type = "text" name = "room-name">
+                </div>
+                <div class = "setting">
+                    <p class = "setting-label">Description</p>
+                    <input type = "text" name = "room-description">
+                </div>
+            </div>
+        </div>
+        <div class = "settings-section">
+            <p class = "settings-label">Playlist</p>
+            <div class = "settings-list">
+                <div class = "setting">
+                    <p class = "setting-label">Name</p>
+                    <input type = "text" name = "room-name">
+                </div>
+                <div class = "setting">
+                    <p class = "setting-label">Description</p>
+                    <input type = "text" name = "room-description">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class = "settings-actions">
+        <input type = "submit" value = "CREATE">
+    </div>
+</div>

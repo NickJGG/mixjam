@@ -163,7 +163,7 @@
 .widget:hover .widget-name{
     text-decoration: underline;
 }
-.widget-list .widget:not(:first-child){
+.widgets > *:not(:first-child){
     margin-left: var(--panel-padding);
 }
 .widget.no-padding{
