@@ -5,7 +5,7 @@ $(document).ready(function(){
 	};
 	
 	$('.tab-selector').on('click', function(){
-		var label = $(this).text().trim().toLowerCase();
+		var label = $(this).find('p').text().trim().toLowerCase();
 		
 		$('.tab-selector.selected').removeClass('selected');
 		$(this).addClass('selected');

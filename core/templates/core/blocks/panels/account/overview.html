@@ -13,31 +13,36 @@
 			<input id = "upload-profile-picture" type = "file" hidden>
 		</div>
 	</div>
-	<div id = "settings-sections">
-		<div class = "settings-section">
-			<p class = "settings-label">Basic Info</p>
-			<div class = "settings-list">
-				<div class = "setting">
-					<p class = "setting-label">First Name</p>
-					<input type = "text" name = "first-name" value = "{{ user.first_name }}">
-				</div>
-				<div class = "setting">
-					<p class = "setting-label">Last Name</p>
-					<input type = "text" name = "last-name" value = "{{ user.last_name }}">
-				</div>
-				<div class = "setting">
-					<p class = "setting-label">Email</p>
-					<input type = "email" name = "email" value = "{{ user.email }}">
-				</div>
-				<div class = "setting">
-					<p class = "setting-label">Tag Line</p>
-					<input type = "text" name = "tag-line" value = "{{ user.userprofile.tag_line }}">
-				</div>
-				<div class = "settings-actions">
-					<input type = "submit" value = "Save">
+	<form method = "POST">
+		{% csrf_token %}
+
+		<input type = "hidden" name = "panel-label" value = "overview">
+		<div id = "settings-sections">
+			<div class = "settings-section">
+				<p class = "settings-label">Basic Info</p>
+				<div class = "settings-list">
+					<div class = "setting">
+						<p class = "setting-label">First Name</p>
+						<input type = "text" name = "first-name" value = "{{ user.first_name }}">
+					</div>
+					<div class = "setting">
+						<p class = "setting-label">Last Name</p>
+						<input type = "text" name = "last-name" value = "{{ user.last_name }}">
+					</div>
+					<div class = "setting">
+						<p class = "setting-label">Email</p>
+						<input type = "email" name = "email" value = "{{ user.email }}">
+					</div>
+					<div class = "setting">
+						<p class = "setting-label">Tag Line</p>
+						<input type = "text" name = "tag-line" value = "{{ user.userprofile.tag_line }}">
+					</div>
+					<div class = "settings-actions">
+						<input type = "submit" value = "Save">
+					</div>
 				</div>
 			</div>
-		</div>
+		</form>
 		<div class = "settings-section">
 			<p class = "settings-label">Spotify Link</p>
 			<div class = "settings-list">

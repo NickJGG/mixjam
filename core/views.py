@@ -105,6 +105,8 @@ def account(request):
     file_list = os.listdir(path)
 
     if request.POST:
+        print(request.POST)
+
         if 'panel-label' in request.POST:
             panel = request.POST.get('panel-label')
 
@@ -122,6 +124,20 @@ def account(request):
                     request.user.userprofile.save()
                 except:
                     pass
+            elif panel == 'overview':
+                first_name = request.POST.get('first-name')
+                last_name = request.POST.get('last-name')
+                email = request.POST.get('email')
+                tag_line = request.POST.get('tag-line')
+
+                if first_name and last_name and email and tag_line:
+                    request.user.first_name = first_name
+                    request.user.last_name = last_name
+                    request.user.email = email
+                    request.user.userprofile.tag_line = tag_line
+
+                    request.user.userprofile.save()
+                    request.user.save()
 
     authorized = spotify.refresh_token(request.user)
 

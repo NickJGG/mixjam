@@ -39,11 +39,11 @@ $(document).ready(function(){
 
 		if (newMessage){
 			$('#chat-messages').append(`
-				<div class = "chat-message ` + (self ? 'self' : '') + `">` + (self ? `` : `
+				<div class = "chat-message ` + (self ? 'self' : '') + `">
 					<div class = "chat-message-info">
 						<div class = "message-color" style = "--message-color: ` + messageColor + `"></div>
 						<p class = "message-username">` + username + `</p>
-					</div>`) + `
+					</div>
 					<div class = "chat-message-string">
 						<div class = "chat-message-text">
 							` + text + `
@@ -51,6 +51,13 @@ $(document).ready(function(){
 					</div>
 				</div>
 			`);
+		}
+
+		$('#chat-messages-wrapper').scrollTop($('#chat-messages-wrapper')[0].scrollHeight);
+
+		if (!$('#tab-label-chat').hasClass('selected')){
+			$('#unread-count').text(parseInt($('#unread-count').text()) + 1);
+			$('#unread-count').css('display', 'block');
 		}
 	}
 
@@ -321,6 +328,11 @@ $(document).ready(function(){
 
 				$(this).val('');
 			}
+		});
+
+		$('#tab-label-chat').on('click', function(){
+			$('#unread-count').text('0');
+			$('#unread-count').css('display', 'none');
 		});
 
 		socket.onclose = function(e){

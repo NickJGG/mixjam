@@ -483,6 +483,9 @@
 .chat-message.self{
 	align-items: flex-end;
 }
+.chat-message.self .chat-message-info{
+	display: none;
+}
 .chat-message.self .chat-message-string{
 	align-items: flex-end;
 }
@@ -545,6 +548,23 @@
 }
 #chat-box{
 	margin-top: var(--panel-padding);
+}
+
+#unread-count{
+	display: none;
+
+	margin-left: 3px;
+	padding: 1px 4px;
+
+	font-family: Roboto-Bold;
+	font-size: 10px;
+	color: white;
+
+	background-color: var(--red);
+
+	border-radius: 4px;
+
+	box-sizing: border-box;
 }
 
 /* #endregion */
