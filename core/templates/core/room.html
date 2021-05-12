@@ -1,6 +1,8 @@
 {% extends 'core/base_auth.html' %}
 {% load static %}
 
+{% block title %}{{ room.title }}{% endblock %}
+
 {% block css %}
 	{{ block.super }}
 

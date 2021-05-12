@@ -144,7 +144,7 @@ $(document).ready(function(){
 		
 		seek = !movingProgress;
 
-		$('#song-image img').prop('src', songState.track.album.images[0].url);
+		$('#song-image img').prop('src', songState.track.album.images[2].url);
 		$('#current-song-name').text(songState.track.name);
 		$('#current-song-artist').text(songState.track.artists[0].name);
 		
@@ -160,7 +160,7 @@ $(document).ready(function(){
 		updateProgress();
 		
 		if (playlistState != null){
-			$('#playlist-cover img').prop('src', playlistState.images[0].url);
+			$('#playlist-cover img').prop('src', playlistState.images[1].url);
 			$('#playlist-title').text(playlistState.name);
 			$('#playlist-song-count').text(playlistState.tracks.total);
 			
@@ -178,7 +178,7 @@ $(document).ready(function(){
 				
 				$('#playlist-songs').append(`<div class = "playlist-song ` + (songPlaying ? 'playing' : '') + `">
 												<div style = "display: flex; align-items: center;">
-													<img class = "song-cover" src = "` + song.track.album.images[songPlaying ? 1 : 2].url + `">
+													<img class = "song-cover" src = "` + song.track.album.images[2].url + `">
 													<p class = "song-title">` + song.track.name + `</p>
 												</div>
 												<p class = "song-artist">` + song.track.artists[0].name + `</p>
