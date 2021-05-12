@@ -84,8 +84,8 @@ input:not(input[type="submit"]), textarea{
 	margin-top: 3px;
 }
 input[type="submit"]{
-	margin-top: 20px;
-	margin-bottom: 10px;
+	margin-top: 0;
+	margin-bottom: 0;
 	padding-left: 30px;
 	padding-right: 30px;
 

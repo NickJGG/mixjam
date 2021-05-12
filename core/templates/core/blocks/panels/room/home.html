@@ -1,7 +1,7 @@
 {% load static %}
 
 <div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
-	<div id = "playlist-info">
+	<div id = "playlist-info" {% if room.banner_color != None %} style = "--banner-color: {{ room.banner_color }}" {% endif %}>
 		<div id = "playlist-cover">
 			<img src = "{{ room.playlist_image_url }}">
 		</div>
@@ -26,8 +26,9 @@
 			</div>
 			<p id = "playlist-description">{{ room.description }}</p>
 			<div id = "playlist-author">
-				<img src = "{% static 'img/icons/account-white-96.png' %}">
-				<p id = "playlist-creator"></p>
+				{% include 'core/blocks/profile-picture.html' with user=room.leader width='24px' height='24px' %}
+				
+				<p id = "playlist-creator">{{ room.leader.username }}</p>
 			</div>
 		</div>
 	</div>

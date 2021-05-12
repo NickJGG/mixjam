@@ -1,0 +1,21 @@
+<div class = "notification">
+    {% if before_subject %}
+        {{ before_subject }}
+    {% endif %}
+    
+    {% if subject %}
+        <p class = "notification-subject">{{ subject }}</p>
+    {% endif %}
+
+    {% if action %}
+        <p class = "notification-action">{{ action }}</p>
+    {% endif %}
+
+    {% if before_object %}
+        {{ before_object }}
+    {% endif %}
+
+    {% if object %}
+        <p class = "notification-object">{{ object }}</p>
+    {% endif %}
+</div>

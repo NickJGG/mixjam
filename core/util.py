@@ -13,3 +13,8 @@ def get_adjusted_progress(room):
 def update_playlist_image(room, url):
     room.playlist_image_url = url
     room.save()
+
+@database_sync_to_async
+def kick(room, kicked_user):
+    room.users.remove(kicked_user)
+    room.save()

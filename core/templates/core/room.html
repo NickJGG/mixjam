@@ -7,6 +7,7 @@
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/room.css' %}">
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/panel.css' %}">
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/subpanel.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/settings.css' %}">
 
 {% endblock %}
 
@@ -32,6 +33,9 @@
 
 {% block user_container_before %}
 
+	<div id = "notification-container">
+		
+	</div>
 	<div id = "connection-container" class = "subtitle-container" style = "--background-image: url({% static 'img/icons/connection-white-96.png' %})">
 		<div id = "connection-status" class = "subtitle-image colored"></div>
 		<div id = "connection-status-label" class = "subtitle-label">
@@ -47,7 +51,7 @@
 	{% include 'core/blocks/panels/room/activities.html' %}
 
 	{% if room.leader == user %}
-		{% include 'core/blocks/panels/room/settings.html' %}
+		{% include 'core/blocks/panels/room/settings.html' with room=room %}
 	{% endif %}
 	
 	<div id = "player-container">
@@ -106,7 +110,7 @@
 		</div>
 
 		{% include 'core/blocks/tabs/room/chat.html' %}
-		{% include 'core/blocks/tabs/room/users.html' with selected=True leader=room.leader offline_users=offline_users active_users=room.active_users.all %}
+		{% include 'core/blocks/tabs/room/users.html' with selected=True room=room offline_users=offline_users active_users=room.active_users.all %}
 	</div>
 
 {% endblock %}

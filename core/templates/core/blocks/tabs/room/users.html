@@ -1,48 +1,27 @@
 {% load static %}
+{% load util %}
 
 <div id = "tab-users" class = "tab {% if selected == True %}selected{% endif %}">
     <div id = "users-wrapper">
         <div id = "online-wrapper">
-            <p class = "section-label">Online</p>
+            <p class = "section-label">Online • <span id = "user-online-count">{{ active_users|length }}</span></p>
             <div id = "user-list">
-                {% for user in active_users %}
-    
-                    <div id = "user-{{ user.username }}" class = "user" style = "--background-color: {{ user.userprofile.background_color }}">
-                        {% include 'core/blocks/profile-picture.html' with width='var(--user-width)' height='var(--user-width)' %}
-                        
-                        <div class = "room-user-info">
-                            {% if user == leader %}
+                {% for other_user in active_users %}
+                    {% is_leader other_user room as is_leader %}
+                    {% is_leader user room as show_admin %}
 
-                                <img src = "{% static 'img/icons/crown-96.png' %}">
-
-                            {% endif %}
-
-                            <p>{{ user.username }}</p>
-                        </div>
-                    </div>
-    
+                    {% include 'core/blocks/room/user.html' with request_user=request.user user=other_user is_leader=is_leader show_admin=show_admin %}
                 {% endfor %}
             </div>
         </div>
         <div id = "offline-wrapper">
-            <p class = "section-label">Offline</p>
+            <p class = "section-label">Offline • <span id = "user-offline-count">{{ offline_users|length }}</span></p>
             <div id = "offline-user-list">
-                {% for user in offline_users %}
-    
-                    <div id = "user-{{ user.username }}" class = "user" style = "--background-color: {{ user.userprofile.background_color }}">
-                        {% include 'core/blocks/profile-picture.html' with width='var(--user-width)' height='var(--user-width)' %}
-                        
-                        <div class = "room-user-info">
-                            {% if user == leader %}
+                {% for other_user in offline_users %}
+                    {% is_leader other_user room as is_leader %}
+                    {% is_leader user room as show_admin %}
 
-                                <img src = "{% static 'img/icons/crown-96.png' %}">
-
-                            {% endif %}
-
-                            <p>{{ user.username }}</p>
-                        </div>
-                    </div>
-    
+                    {% include 'core/blocks/room/user.html' with request_user=request.user user=other_user is_leader=is_leader show_admin=show_admin %}
                 {% endfor %}
             </div>
         </div>

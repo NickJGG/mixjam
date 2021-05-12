@@ -120,8 +120,6 @@
     box-sizing: border-box;
 
     cursor: pointer;
-
-    transition: all .05s ease;
 }
 .widget.fake{
     background-color: unset;

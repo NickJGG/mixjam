@@ -37,3 +37,7 @@ def authorize_url():
     ))
 
     return urlunsplit((scheme, netloc, path, query, ""))
+
+@register.simple_tag
+def is_leader(user, room):
+    return user == room.leader

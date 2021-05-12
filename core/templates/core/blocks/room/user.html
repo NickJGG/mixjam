@@ -1,0 +1,34 @@
+{% load static %}
+
+<div id = "user-{{ user.username }}" class = "user" style = "--background-color: {{ user.userprofile.background_color }}">
+    <div class = "user-header">
+        {% include 'core/blocks/profile-picture.html' with width='var(--user-width)' height='var(--user-width)' %}
+
+        <div class = "user-blur"></div>
+        <div class = "user-options">
+            <div class = "user-option">
+                <div class = "option-blur"></div>
+                <p>View Profile</p>
+            </div>
+            
+            {% if show_admin and request_user != user %}
+
+                <div class = "user-option kick">
+                    <div class = "option-blur"></div>
+                    <p>Kick</p>
+                </div>
+
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class = "room-user-info">
+        {% if is_leader %}
+
+            <img src = "{% static 'img/icons/crown-96.png' %}">
+
+        {% endif %}
+
+        <p>{{ user.username }}</p>
+    </div>
+</div>

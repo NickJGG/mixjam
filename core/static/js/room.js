@@ -7,13 +7,90 @@ $(document).ready(function(){
 	/////////////////////////////////////////////////////////////////////////////////////
 	
 	const roomUrl = 'r/' + code + '/';
-	const socket = new WebSocket('ws://' + window.location.host + '/ws/' + roomUrl);
 	
-	var timer, fullscreen = false, seek = false, movingProgress = false;
+	var socket, timer, fullscreen = false, seek = false, movingProgress = false, reconnectTimer, notifications = [], notificationUpper = 4000, notificationLower = 2000, notificationTransition = 200, displayNotification = true;
 	
 	init();
 	
 // 	#region Main Functions
+
+	function updateNotification(data){
+		var block = data['response_data']['data']['block'],
+			action = data['response_data']['data']['request_action'];
+
+		switch(action){
+			case 'seek':
+				block = $(block);
+
+				block.append(`
+					<div class = "notification-object lone">
+						` + secondsToClock(roomState.song_state.progress_ms / 1000).split('.')[0] + `
+					</div>
+				`);
+
+				break;
+			case 'next':
+			case 'previous':
+			case 'play_direct':
+				block = $(block);
+
+				block.append(`
+					<div class = "notification-song-image notification-image" style = "--background-image: url(` + roomState.song_state.track.album.images[2].url + `)"></div>
+					<div class = "notification-object">
+						` + roomState.song_state.track.name + `
+					</div>
+				`);
+
+				break;
+			default:
+				break;
+		}
+
+		var length = notifications.push(block);
+
+		if (displayNotification){
+			startNotification();
+		}
+	}
+	function startNotification(){
+		displayNotification = false;
+
+		var block = notifications.shift();
+
+		$('#notification-container').empty();
+		$('#notification-container').append(block);
+		$('.notification').animate({
+			'opacity': '1'
+		}, notificationTransition);
+
+		var length = notifications.length > 0 ? notificationLower : notificationUpper;
+
+		setTimeout(function(){
+			$('.notification').animate({
+				'opacity': '0'
+			}, notificationTransition);
+
+			setTimeout(function(){
+				if (notifications.length > 0)
+					startNotification();
+				else {
+					displayNotification = true;
+
+					$('#notification-container').empty();
+				}
+			}, notificationTransition);
+		}, length);
+	}
+
+	function updateAdmin(data){
+		var action = data['response_data']['action'],
+			successful = data['response_data']['successful'];
+
+		if (action == 'kick'){
+			if (successful)
+				location.href = '/';
+		}
+	}
 
 	function updateChat(data){
 		var action = data['response_data']['action'],
@@ -85,7 +162,6 @@ $(document).ready(function(){
 		if (playlistState != null){
 			$('#playlist-cover img').prop('src', playlistState.images[0].url);
 			$('#playlist-title').text(playlistState.name);
-			$('#playlist-creator').text(playlistState.owner.display_name);
 			$('#playlist-song-count').text(playlistState.tracks.total);
 			
 			$('#playlist-songs').empty();
@@ -121,30 +197,31 @@ $(document).ready(function(){
 		}
 	}
 	function updateConnections(data){
-		var join = data['response_data']['data']['connection_state']['connection_type'] == 'join',
+		var type = data['response_data']['data']['connection_state']['connection_type'],
 			username = data['response_data']['data']['connection_state']['user']['username'],
 			is_leader = data['response_data']['data']['connection_state']['user']['is_leader'];
 
-		if (join){
-			$('#user-' + username).remove();
+		switch(type){
+			case 'join':
+				$('#user-' + username).remove();
 
-			var profilePicture = data['response_data']['data']['connection_state']['user']['profile_picture'],
-				color = data['response_data']['data']['connection_state']['user']['color'];
+				$('#user-list').append(data['response_data']['data']['connection_state']['user']['user_block']);
 
-			$('#user-list').append(`
-				<div id = "user-` + username + `" class = "user" style = "--background-color: ` + color + `">
-					` + profilePicture + `
-					<div class = "room-user-info">
-						` + (is_leader ? `<img src = "/static/img/icons/crown-96.png">` : ``) + `
-						<p>` + username + `</p>
-					</div>
-				</div>
-			`);
+				break;
+			case 'leave':
+				$('#user-' + username).appendTo('#offline-user-list');
 
-			$('#online-wrapper .user').last().find('.profile-picture-icon').width($('#online-wrapper .user').last().find('.profile-picture-icon').height());
-		} else {
-			$('#user-' + username).appendTo('#offline-user-list');
+				break;
+			case 'kick':
+				$('#user-' + username).remove();
+
+				break;
+			default:
+				break;
 		}
+
+		$('#user-online-count').text($('#user-list').children().length);
+		$('#user-offline-count').text($('#offline-user-list').children().length);
 	}
 	
 // 	#endregion
@@ -155,14 +232,25 @@ $(document).ready(function(){
 		setupSocket();
 		setupControls();
 		fixTimes();
-		
-		if (roomState != null)
-			updatePlaylist();
-		
-		console.log(roomState);
 	}
 	
 	function setupSocket(){
+		socket = new WebSocket('ws://' + window.location.host + '/ws/' + roomUrl);
+
+		socket.onopen = function(e){
+			$('#connection-status').css('--background-color', 'var(--dark-green)');
+			$('#connection-status-label p').text('Connected');
+		};
+
+		socket.onclose = function(e){
+			$('#connection-status').css('--background-color', 'var(--red)');
+			$('#connection-status-label p').text('Disconnected');
+
+			reconnectTimer = setTimeout(function(){
+				setupSocket();
+			}, 5000);
+		};
+
 		socket.onmessage = function(e){
 			const data = JSON.parse(e.data);
 			
@@ -181,6 +269,15 @@ $(document).ready(function(){
 					break;
 				case 'chat':
 					updateChat(data);
+
+					break;
+				case 'admin':
+					updateAdmin(data);
+
+					break;
+				case 'request_notification':
+				case 'notification':
+					updateNotification(data);
 
 					break;
 				default:
@@ -335,21 +432,20 @@ $(document).ready(function(){
 			$('#unread-count').css('display', 'none');
 		});
 
-		socket.onclose = function(e){
-			$('#connection-status').css('--background-color', 'var(--red)');
-			$('#connection-status-label p').text('Disconnected');
-		};
-
-		socket.onopen = function(e){
-			$('#connection-status').css('--background-color', 'var(--dark-green)');
-			$('#connection-status-label p').text('Connected');
-		};
+		$(document).on('click', '.user-option.kick', function(){
+			socketSend('admin', {
+				'action': 'kick',
+				'action_data': {
+					'user': $(this).parents('.user').find('.room-user-info p').text()
+				}
+			});
+		});
 	}
 
 // 	#endregion
 	
 // 	#region Helper Functions
-	
+
 	function staticFile(path){
 		return staticUrl + path;
 	}
@@ -374,7 +470,6 @@ $(document).ready(function(){
 				finished();
 				
 				socketPlaylist('song_end');
-				console.log(seconds);
 				
 				window.clearInterval(timer);
 			}
@@ -434,8 +529,6 @@ $(document).ready(function(){
 		if (seek){
 			var newPercentage = (100 - milli / roomState.song_state.track.duration_ms * 100),
 				diff = (($('#progress-complete').width() / ($('#progress-incomplete').width() + $('#progress-complete').width())) * 100) - newPercentage;
-
-			//console.log(diff);
 
 			if (diff > 5)
 				$('#progress-complete').css('transition', 'unset');

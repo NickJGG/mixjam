@@ -1,3 +1,20 @@
 <div id = "panel-settings" class = "panel {% if selected == True %}selected{% endif %}">
-	
+	<form method = "POST">
+		{% csrf_token %}
+
+		<div id = "settings-sections">
+			<div class = "settings-section">
+				<p class = "settings-label">Appearance</p>
+				<div class = "settings-list">
+					<div class = "setting">
+						<p class = "setting-label">Banner Color (HEX)</p>
+						<input type = "text" name = "banner-color" value = "{{ room.banner_color }}">
+					</div>
+					<div class = "settings-actions">
+						<input type = "submit" value = "Save">
+					</div>
+				</div>
+			</div>
+        </div>
+    </form>
 </div>

@@ -78,6 +78,19 @@ def room(request, room_code):
     if rooms.exists():
         room = rooms[0]
 
+        if request.POST:
+            print(request.POST)
+
+            banner_color = request.POST.get('banner-color')
+
+            try:
+                int(banner_color, 16)
+
+                room.banner_color = banner_color
+                room.save()
+            except:
+                pass
+
         if request.user not in room.users.all():
             room.users.add(request.user)
             room.save()

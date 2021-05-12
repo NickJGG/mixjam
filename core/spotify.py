@@ -61,6 +61,9 @@ def update_playlist(user, room, request_data):
     room.playlist.last_action = timezone.now()
     room.playlist.save()
 
+    print_update(room)
+
+def print_update(room):
     print('""""" PLAYLIST UPDATE """""')
     print('PLAYING: ' + str(room.playlist.playing))
     print('SONG INDEX: ' + str(room.playlist.song_index))
@@ -97,7 +100,7 @@ async def action(user, room, request_action, action_data = None):
     after = timezone.now()
 
 async def play(user, room, offset = None):
-    data = {}
+    data = {'progress_ms': 1000}
 
     if offset is not None:
         data['context_uri'] = 'spotify:playlist:' + str(room.playlist_id)

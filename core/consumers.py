@@ -19,6 +19,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
     post_methods = ['previous', 'next']
     playlist_notifications = []
 
+    playlist_to_notif = {
+        'play': 'resumed play',
+        'play_direct': 'played',
+        'pause': 'paused play',
+        'previous': 'skipped back to',
+        'next': 'skipped to',
+        'seek': 'seeked to',
+    }
+
     # CONNECT FUNCTION
     async def connect(self):
         room_code = self.scope['url_route']['kwargs']['room_code']
@@ -45,14 +54,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     'connection_state': {
                         'connection_type': 'join',
                         'user': {
-                            'username': user.username,
-                            'color': user.userprofile.background_color,
-                            'profile_picture': render_to_string('core/blocks/profile-picture.html', {
-                                'width': 'var(--user-width)',
-                                'height': 'var(--user-width)',
-                                'user': user
-                            }),
-                            'is_leader': user == room.leader
+                            'username': user.username
                         }
                     }
                 }
@@ -67,9 +69,23 @@ class RoomConsumer(AsyncWebsocketConsumer):
             }
         })
 
+        await self.send_notification('join', user, 'joined', before_subject = render_to_string('core/blocks/profile-picture.html', {
+            'width': '20px',
+            'height': '20px',
+            'user': user
+        }))
+
     # DISCONNECT FUNCTION
     async def disconnect(self, close_code):
         await self.offline()
+
+        user = self.scope['user']
+
+        await self.send_notification('leave', user, 'left', before_subject = render_to_string('core/blocks/profile-picture.html', {
+            'width': '20px',
+            'height': '20px',
+            'user': user
+        }))
 
         await self.channel_layer.group_send(
             self.group_name,
@@ -79,7 +95,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     'connection_state': {
                         'connection_type': 'leave',
                         'user': {
-                            'username': self.scope['user'].username
+                            'username': user.username
                         }
                     }
                 }
@@ -95,18 +111,29 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         request_data = json.loads(text_data)
 
-        if 'type' not in request_data or 'data' not in request_data:
-            pass
+        request_type = request_data['type']
+        request_action = request_data['data']['action']
 
-        if request_data['type'] == 'playlist' and request_data['data']['action'] not in self.playlist_notifications:
-            spotify.update_playlist(self.scope['user'], self.get_room(), request_data['data'])
+        user = self.scope['user']
+        room = self.get_room()
+
+        if request_type == 'playlist' and request_action not in self.playlist_notifications:
+            spotify.update_playlist(user, room, request_data['data'])
         elif request_data['type'] == 'chat':
-            user = self.scope['user']
-
             request_data['data']['action_data']['user'] = {
                 'username': user.username,
                 'color': user.userprofile.background_color
             }
+        elif request_type == 'admin':
+            if request_action == 'kick':
+                if user == room.leader:
+                    kicked_user = User.objects.get(username = request_data['data']['action_data']['user'])
+
+                    request_data['data']['successful'] = True
+
+                    await util.kick(room, kicked_user)
+                else:
+                    request_data['data']['successful'] = False
 
         self.print_request(request_data)
 
@@ -134,26 +161,127 @@ class RoomConsumer(AsyncWebsocketConsumer):
         method_data = {}
         method_params = {}
 
+        before_subject = None
+        before_object = None
+
         if request_action not in self.playlist_notifications:
             await spotify.action(user, room, request_action, request_action_data)
 
-            #if r.status_code not in range(200, 299):
-                #return False
+            if request_action in self.playlist_to_notif.keys():
+                before_subject = render_to_string('core/blocks/profile-picture.html', {
+                    'width': '20px',
+                    'height': '20px',
+                    'user': user
+                })
     
         room_state = await spotify.get_room_state(user, room.code)
 
         await self.response_send('playlist', room_state)
+
+        if before_subject is not None:
+            await self.send_notification_self(request_action, user, self.playlist_to_notif[request_action], before_subject = before_subject, before_object = before_object)
 
     async def request_chat(self, request_data):
         request_data['data']['action_data']['user']['self'] = request_data['data']['action_data']['user']['username'] == self.scope['user'].username
 
         await self.response_send('chat', request_data['data'])
 
+    async def request_admin(self, request_data):
+        request_data = request_data['data']
+
+        request_action = request_data['action']
+        request_action_data = request_data['action_data'] if 'action_data' in request_data else None
+
+        user = self.scope['user']
+        room = self.get_room()
+        
+        if request_data['successful']:
+            if request_action == 'kick':
+                if user.username == request_action_data['user']:
+                    await self.response_send('admin', request_data)
+                else:
+                    await self.channel_layer.group_send(
+                        self.group_name,
+                        {
+                            'type': 'request_connection',
+                            'data': {
+                                'connection_state': {
+                                    'connection_type': 'kick',
+                                    'user': {
+                                        'username': request_action_data['user']
+                                    }
+                                }
+                            }
+                        }
+                    )
+
+                    await self.send_notification(request_action, room.leader, 'kicked', request_action_data['user'], before_subject = render_to_string('core/blocks/profile-picture.html', {
+                        'width': '20px',
+                        'height': '20px',
+                        'user': room.leader
+                    }), before_object = render_to_string('core/blocks/profile-picture.html', {
+                        'width': '20px',
+                        'height': '20px',
+                        'user': User.objects.get(username = request_action_data['user'])
+                    }))
+
+    async def request_notification(self, request_data):
+        await self.response_send('notification', request_data)
+
     async def request_journey(self, request_data):
         pass
 
     async def request_connection(self, request_data):
+        if request_data['data']['connection_state']['connection_type'] != 'kick':
+            user = self.scope['user']
+            room = self.get_room()
+
+            connection_user = User.objects.get(username = request_data['data']['connection_state']['user']['username'])
+
+            request_data['data']['connection_state']['user']['user_block'] = render_to_string('core/blocks/room/user.html', {
+                'user': connection_user,
+                'request_user': user,
+                'is_leader': connection_user == room.leader,
+                'show_admin': user == room.leader
+            })
+
         await self.response_send('connection', request_data)
+
+    async def send_notification(self, request_action, subject, action, object = None, before_subject = None, before_object = None):
+        block_data = {
+            'subject': subject,
+            'action': action,
+            'object': object,
+            'before_subject': before_subject,
+            'before_object': before_object
+        }
+
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                'type': 'request_notification',
+                'data': {
+                    'request_action': request_action,
+                    'block': render_to_string('core/blocks/room/notification.html', block_data)
+                }
+            }
+        )
+
+    async def send_notification_self(self, request_action, subject, action, object = None, before_subject = None, before_object = None):
+        block_data = {
+            'subject': subject,
+            'action': action,
+            'object': object,
+            'before_subject': before_subject,
+            'before_object': before_object
+        }
+
+        await self.response_send('request_notification', {
+            'data': {
+                'request_action': request_action,
+                'block': render_to_string('core/blocks/room/notification.html', block_data)
+            }
+        })
 
     # HELPER FUNCTIONS
 
