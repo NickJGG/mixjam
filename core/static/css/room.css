@@ -722,10 +722,17 @@
 
 	box-sizing: border-box;
 
+	z-index: 5;
+
 	cursor: pointer;
 }
 .user-option:hover .option-blur{
 	display: block;
+}
+.user-option:last-child{
+	box-shadow: 0 0 6px rgba(0, 0, 0, .3);
+
+	z-index: 4;
 }
 .option-blur{
 	width: 100%;
