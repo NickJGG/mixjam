@@ -14,6 +14,24 @@ $(document).ready(function(){
 	
 // 	#region Main Functions
 
+	function updateUserAction(data){
+		var action = data['response_data']['action'];
+
+		switch(action){
+			case 'profile':
+				var block = data['response_data']['block'];
+
+				$('#users-overlay').css('display', 'flex');
+				$('#users-overlay .overlay-content').empty();
+
+				$('#users-overlay .overlay-content').append(block);
+
+				break;
+			default:
+				break;
+		}
+	}
+
 	function updateNotification(data){
 		var block = data['response_data']['data']['block'],
 			action = data['response_data']['data']['request_action'];
@@ -198,8 +216,7 @@ $(document).ready(function(){
 	}
 	function updateConnections(data){
 		var type = data['response_data']['data']['connection_state']['connection_type'],
-			username = data['response_data']['data']['connection_state']['user']['username'],
-			is_leader = data['response_data']['data']['connection_state']['user']['is_leader'];
+			username = data['response_data']['data']['connection_state']['user']['username'];
 
 		switch(type){
 			case 'join':
@@ -278,6 +295,10 @@ $(document).ready(function(){
 				case 'request_notification':
 				case 'notification':
 					updateNotification(data);
+
+					break;
+				case 'user_action':
+					updateUserAction(data);
 
 					break;
 				default:
@@ -432,13 +453,30 @@ $(document).ready(function(){
 			$('#unread-count').css('display', 'none');
 		});
 
-		$(document).on('click', '.user-option.kick', function(){
-			socketSend('admin', {
-				'action': 'kick',
-				'action_data': {
-					'user': $(this).parents('.user').find('.room-user-info p').text()
-				}
-			});
+		$(document).on('click', '.user-option', function(){
+			var username = $(this).parents('.user').find('.room-user-info p').text();
+
+			if ($(this).hasClass('kick')){
+				socketSend('admin', {
+					'action': 'kick',
+					'action_data': {
+						'user': username
+					}
+				});
+			} else if ($(this).hasClass('profile')){
+				socketSend('user_action', {
+					'action': 'profile',
+					'action_data': {
+						'user': username
+					}
+				});
+			}
+		});
+
+		$('.overlay-option').on('click', function(){
+			if ($(this).hasClass('close')){
+				$(this).parents('.tab-overlay').css('display', 'none');
+			}
 		});
 	}
 

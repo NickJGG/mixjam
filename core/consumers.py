@@ -117,6 +117,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
         room = self.get_room()
 
+        self.print_request(request_data)
+
         if request_type == 'playlist' and request_action not in self.playlist_notifications:
             spotify.update_playlist(user, room, request_data['data'])
         elif request_data['type'] == 'chat':
@@ -134,8 +136,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     await util.kick(room, kicked_user)
                 else:
                     request_data['data']['successful'] = False
+        elif request_type == 'user_action':
+            if request_action == 'profile':
+                profile_user = User.objects.get(username = request_data['data']['action_data']['user'])
 
-        self.print_request(request_data)
+                block = render_to_string('core/blocks/user-card.html', {
+                    'user': profile_user
+                })
+
+                request_data['data']['block'] = block
+
+                await self.send(text_data=json.dumps({
+                    'type': request_type,
+                    'response_data': request_data['data']
+                }))
+            
+            return
 
         request_data['type'] = 'request_' + request_data['type']
 

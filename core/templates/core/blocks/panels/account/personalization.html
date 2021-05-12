@@ -2,33 +2,8 @@
 {% load util %}
 
 <div id = "panel-personalization" class = "panel {% if selected == True %}selected{% endif %}">
-	<div id = "user-card">
-		<div id = "user-card-identity">
-			{% include 'core/blocks/profile-picture.html' with width='200px' height='200px' %}
+	{% include 'core/blocks/user-card.html' %}
 
-			<p id = "user-identity-username">{{ user.username }}</p>
-			<p id = "user-identity-tagline">{{ user.userprofile.tag_line }}</p>
-		</div>
-		<div id = "user-card-showcase" style = "--background-color: {{ user.userprofile.background_color }}">
-			<div class = "user-showcase-group">
-				{% get_rooms user as rooms %}
-				{% get_room_count user as room_count %}
-
-				<p class = "showcase-group-label">Rooms • {{ room_count }}</p>
-				<div id = "user-showcase-rooms" class = "showcase-group-content">
-					{% for room in rooms %}
-	
-						<a href = "{% url 'room' room_code=room.code %}">
-							<div class = "showcase-room" style = "--background-image: url({{ room.playlist_image_url }})">
-
-							</div>
-						</a>
-	
-					{% endfor %}
-				</div>
-			</div>
-		</div>
-	</div>
 	<div id = "settings-sections">
 		<form id = "form-personalization" method = "POST">
 			{% csrf_token %}
