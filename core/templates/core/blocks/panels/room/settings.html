@@ -7,10 +7,14 @@
 				<form method = "POST">
 					{% csrf_token %}
 	
-					<input type = "hidden" name = "section" value = "appearance">
+					<input type = "hidden" name = "section" value = "details">
 					
-					<p class = "settings-label">Appearance</p>
+					<p class = "settings-label">Details</p>
 					<div class = "settings-list">
+						<div class = "setting">
+							<p class = "setting-label">Description</p>
+							<textarea name = "description">{{ room.description }}</textarea>
+						</div>
 						<div class = "setting">
 							<p class = "setting-label">Banner Color (HEX)</p>
 							<input type = "text" name = "banner-color" value = "{{ room.banner_color }}">

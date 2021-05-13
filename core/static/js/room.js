@@ -178,7 +178,9 @@ $(document).ready(function(){
 		updateProgress();
 		
 		if (playlistState != null){
-			$('#playlist-cover img').prop('src', playlistState.images[1].url);
+			var imageIndex = playlistState.images.length > 1 ? 1 : 0;
+
+			$('#playlist-cover img').prop('src', playlistState.images[imageIndex].url);
 			$('#playlist-title').text(playlistState.name);
 			$('#playlist-song-count').text(playlistState.tracks.total);
 			

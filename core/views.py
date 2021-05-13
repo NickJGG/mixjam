@@ -16,6 +16,34 @@ from . import util, spotify
 client_id = os.environ.get('CLIENT_ID')
 client_secret = os.environ.get('CLIENT_SECRET')
 
+errors = {
+    'no_link': {
+        'error_title': 'Spotify Link Error',
+        'error_message': 'No Spotify account linked',
+        'error_code': 100
+    },
+    'non_member': {
+        'error_title': 'Room Error',
+        'error_message': 'You are not a member of this room',
+        'error_code': 101
+    },
+    'invalid_invite': {
+        'error_title': 'Invite Error',
+        'error_message': 'Invite code invalid',
+        'error_code': 102
+    },
+    'expired_invite': {
+        'error_title': 'Invite Error',
+        'error_message': 'Invite code expired',
+        'error_code': 103
+    },
+    'invalid_room': {
+        'error_title': 'Invite Error',
+        'error_message': 'Room does not exist',
+        'error_code': 104
+    }
+}
+
 def index(request):
     if request.user.is_authenticated:
         return home(request)
@@ -24,8 +52,6 @@ def index(request):
 
 def home(request):
     if request.POST:
-        print(request.POST)
-
         name = request.POST.get('room-name')
         description = request.POST.get('room-description')
         id = request.POST.get('room-id')
@@ -47,17 +73,37 @@ def home(request):
             room.playlist = Playlist(room = room)
             room.playlist.save()
 
+            response = spotify.get(request.user, spotify.endpoints['playlist'] + id)
+
+            try:
+                room.playlist_image_url = response.json()['images'][0]['url']
+            except:
+                pass
+
             room.new_invite()
             room.save()
 
+            return redirect('room', room_code = room.code)
+
+    rooms = Room.objects.filter(users = request.user).all()
+
+    if request.user.userprofile.most_recent_room is not None: 
+        if request.user not in request.user.userprofile.most_recent_room.users.all():
+            request.user.userprofile.most_recent_room = None
+            request.user.userprofile.save()
+        else:
+            rooms = [room for room in rooms if room.pk != request.user.userprofile.most_recent_room.pk]
+
     response = spotify.get(request.user, spotify.endpoints['current_user_playlists'])
 
-    for playlist in response.json()['items']:
-        print(playlist['name'])
+    if request.user.userprofile.authorized:
+        playlists = response.json()['items']
+    else:
+        return render(request, 'core/error.html', errors['no_link'])
 
     return render(request, 'core/home.html', {
-        'rooms': Room.objects.filter(users = request.user),
-        'playlists': response.json()['items']
+        'other_rooms': rooms,
+        'playlists': playlists
     })
 
 def landing(request):
@@ -73,14 +119,12 @@ def callback(request):
         request.user.userprofile.authorized = True
         request.user.userprofile.save()
 
-    return index(request)
+    return redirect('index')
 
 def room(request, room_code):
     data = {}
 
     rooms = Room.objects.filter(code = room_code)
-
-    print(rooms[0].banner_color)
 
     if rooms.exists():
         room = rooms[0]
@@ -90,14 +134,17 @@ def room(request, room_code):
 
             section = request.POST.get('section')
 
-            if section == 'appearance':
+            if section == 'details':
+                description = request.POST.get('description')
                 banner_color = request.POST.get('banner-color')
 
                 try:
                     int(banner_color, 16)
 
-                    room.banner_color = banner_color
-                    room.save()
+                    if description:
+                        room.description = description
+                        room.banner_color = banner_color
+                        room.save()
                 except:
                     pass
             elif section == 'privacy':
@@ -116,9 +163,7 @@ def room(request, room_code):
                 room.users.add(request.user)
                 room.save()
             else:
-                return render(request, 'core/error.html', {
-                    'error_message': 'You are not a member of this room'
-                })
+                return render(request, 'core/error.html', errors['non_member'])
 
         request.user.userprofile.most_recent_room = room
         request.user.userprofile.save()
@@ -134,9 +179,7 @@ def room(request, room_code):
         data['room'] = room
         data['offline_users'] = offline_users
     else:
-        return render(request, 'core/error.html', {
-            'error_message': 'Room does not exist'
-        })
+        return render(request, 'core/error.html', errors['invalid_room'])
 
     return render(request, 'core/room.html', data)
 
@@ -152,21 +195,15 @@ def invite(request, invite_code):
 
             return redirect('room', room_code = room.code)
         else:
-            return render(request, 'core/error.html', {
-                'error_message': 'Invite code expired'
-            })
+            return render(request, 'core/error.html', errors['expired_invite'])
     else:
-        return render(request, 'core/error.html', {
-            'error_message': 'Invite code either invalid or expired'
-        })
+        return render(request, 'core/error.html', errors['invalid_invite'])
 
 def account(request):
     path = os.path.join(settings.BASE_DIR, 'core', 'static', 'img', 'profile')
     file_list = os.listdir(path)
 
     if request.POST:
-        print(request.POST)
-
         if 'panel-label' in request.POST:
             panel = request.POST.get('panel-label')
 

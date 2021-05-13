@@ -35,9 +35,15 @@
 
     box-sizing: border-box;
 }
-.error-option:not(:first-child){
-    margin-left: 20px;
+.error-option.green{
+    background-color: var(--dark-green);
+}
+#error-options > *:not(:first-child){
+    margin-left: 6px;
 }
 .error-option:hover{
     background-color: #3f3f3f;
+}
+.error-option.green:hover{
+    background-color: #12ce71;
 }

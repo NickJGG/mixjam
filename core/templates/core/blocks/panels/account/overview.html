@@ -13,12 +13,13 @@
 			<input id = "upload-profile-picture" type = "file" hidden>
 		</div>
 	</div>
-	<form method = "POST">
-		{% csrf_token %}
-
-		<input type = "hidden" name = "panel-label" value = "overview">
-		<div id = "settings-sections">
-			<div class = "settings-section">
+	<div id = "settings-sections">
+		<div class = "settings-section">
+			<form method = "POST">
+				{% csrf_token %}
+		
+				<input type = "hidden" name = "panel-label" value = "overview">
+				
 				<p class = "settings-label">Basic Info</p>
 				<div class = "settings-list">
 					<div class = "setting">
@@ -41,8 +42,8 @@
 						<input type = "submit" value = "Save">
 					</div>
 				</div>
-			</div>
-		</form>
+			</form>
+		</div>
 		<div class = "settings-section">
 			<p class = "settings-label">Spotify Link</p>
 			<div class = "settings-list">

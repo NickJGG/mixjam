@@ -72,12 +72,12 @@ def print_update(room):
     print('"""""""""""""""""""""""""""')
 
 async def update_play(user, room):
-    if room.others_active(user):
-        progress_ms = room.playlist.get_progress(user)
+    await play_direct(user, room, {
+        'offset': room.playlist.song_index,
+    })
 
-        await play_direct(user, room, {
-            'offset': room.playlist.song_index,
-        })
+    if not room.playlist.playing:
+        await pause(user, room)
 
 async def action(user, room, request_action, action_data = None):
     before = timezone.now()

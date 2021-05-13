@@ -45,10 +45,11 @@
 	<div id = "container">
 		<div id = "room-list-container" class = "side-panel-container">
 			<div class = "list-section">
-				<p class = "section-label">Your Rooms</p>
+				{% get_rooms user as rooms %}
+				{% get_room_count user as room_count %}
+
+				<p class = "section-label">Your Rooms • {{ room_count }}</p>
 				<div class = "section-items">
-					{% get_rooms user as rooms %}
-				
 					{% for room in rooms %}
 						
 						<a class = "no-underline" href = "{% url 'room' room_code=room.code %}">

@@ -3,24 +3,13 @@
 
 <div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
 	<div class = "widget-container" style = "--rows: 2; --columns: 4">
-        {% if user.userprofile.authorized == False %}
-            
-            <div class = "widget-list">
-                <p class = "widget-list-label">Authorization</p>
-                <div class = "widgets">
-                    <a id = "authorize-link" href = "{% authorize_url %}">
-                        <input type = "submit" value = "Authorize">
-                    </a>
-                </div>
+        <div class = "widget-list">
+            <div class = "widget-list-header">
+                <p class = "widget-list-label">Rooms</p>
             </div>
+            <div class = "widgets">
+                {% if user.userprofile.most_recent_room %}
 
-        {% else %}
-        
-            <div class = "widget-list">
-                <div class = "widget-list-header">
-                    <p class = "widget-list-label">Rooms</p>
-                </div>
-                <div class = "widgets">
                     <a class = "no-underline" href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}">
                         <div class = "widget link" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }})">
                             <div class = "widget-image">
@@ -38,30 +27,34 @@
                         </div>
                     </a>
 
-                    {% for room in rooms %}
-                        {% if room != user.userprofile.most_recent_room %}
+                {% endif %}
 
-                            <a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
-                                <div class = "widget link" style = "--background-image: url({{ room.playlist_image_url }})">
-                                    <div class = "widget-image">
-        
-                                    </div>
-                                    <div class = "widget-info">
-                                        <div class = "widget-label"> 
-                                            <p class = "widget-name">{{ room.title }}</p>
-                                        </div>
-                                    </div>
+                {% for room in other_rooms %}
+
+                    <a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
+                        <div class = "widget link" style = "--background-image: url({{ room.playlist_image_url }})">
+                            <div class = "widget-image">
+
+                            </div>
+                            <div class = "widget-info">
+                                <div class = "widget-label"> 
+                                    <p class = "widget-name">{{ room.title }}</p>
                                 </div>
-                            </a>
+                            </div>
+                        </div>
+                    </a>
 
-                        {% endif %}
-                    {% endfor %}
-                    <!-- <div class = "widget fake action">
-                        <div class = "widget-action-image" style = "--background-image: url({% static 'img/icons/plus-white-96.png' %})"></div>
-                    </div> -->
-                </div>
+                {% endfor %}
             </div>
-
-        {% endif %}
+        </div>
     </div>
+
+    {% if room_count == 0 %}
+        
+        <div id = "no-rooms-container">
+            <img src = "{% static 'img/not-found-96.png' %}">
+            <p id = "error-message">There doesn't seem to be anything here...</p>
+        </div>
+
+    {% endif %}
 </div>

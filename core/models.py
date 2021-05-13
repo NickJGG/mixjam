@@ -115,7 +115,7 @@ class Playlist(models.Model):
     playing = models.BooleanField(default = False, blank = True)
 
     def get_progress(self, user):
-        if self.room.others_active(user):
+        if self.playing:
             progress_ms = util.get_adjusted_progress(self.room)
         else:
             progress_ms = self.progress_ms

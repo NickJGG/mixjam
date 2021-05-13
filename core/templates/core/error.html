@@ -10,7 +10,15 @@
 
 {% endblock %}
 
-{% block page_name %}Error{% endblock %}
+{% block page_name %}
+
+    {% if error_title %}
+        {{ error_title }}
+    {% else %}
+        Error
+    {% endif %}
+
+{% endblock %}
 
 {% block panel_container %}
 	
@@ -21,6 +29,14 @@
             <a href = "{% url 'index' %}">
                 <div class = "error-option">Home</div>
             </a>
+
+            {% if error_code == 100 %}
+
+                <a href = "{% url 'account' %}">
+                    <div class = "error-option green">Link</div>
+                </a>
+
+            {% endif %}
         </div>
     </div>
 

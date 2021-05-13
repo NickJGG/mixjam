@@ -25,11 +25,9 @@
 
 {% block panel_container %}
 
-	{% include 'core/blocks/panels/home/home.html' with selected=True %}
+	{% include 'core/blocks/panels/home/home.html' with rooms=rooms selected=True %}
 	{% include 'core/blocks/panels/home/create.html' %}
 	{% include 'core/blocks/panels/home/faq.html' %}
-
-	<!--<a href = "{{ authorize_url }}">Authorize</a>-->
 
 {% endblock %}
 
