@@ -6,8 +6,9 @@
 
 	overflow: unset !important;
 }
-#panel-personalization{
-	//align-items: center;
+
+#user-card{
+	margin-bottom: var(--panel-padding);
 }
 
 #picture-choices-container{

@@ -92,17 +92,82 @@ body{
 
 #user-section{
 	justify-content: flex-end;
+
+	position: relative;
 }
 #user-container{
 	display: flex;
+	align-items: center;
+
+	background-color: var(--light-black);
+
+	border-radius: 10px;
+
+	cursor: pointer;
 }
-#user-profile-picture{
-	width: 30px;
-	height: 30px;
-	
-	background-color: white;
-	
-	border-radius: 100%;
+#user-container-username{
+	margin: 0 15px;
+
+	font-family: Roboto-Bold;
+	font-size: 14px;
+	color: white;
+}
+#user-container:hover{
+	background-color: #292929;
+}
+#user-dropdown:hover #user-container{
+	background-color: var(--light-black) !important;
+}
+#user-dropdown{
+	display: none;
+
+	position: absolute;
+	top: calc(100% + var(--panel-padding) / 2);
+	right: 0;
+
+	background-color: var(--light-black);
+
+	border-radius: var(--border-radius) 0 var(--border-radius) var(--border-radius);
+
+	box-shadow: 0 0 14px rgba(0, 0, 0, .3);
+
+	overflow: hidden;
+
+	cursor: auto;
+
+	z-index: 20;
+}
+#user-dropdown-options{
+	display: flex;
+	justify-content: flex-end;
+	flex-direction: column;
+	flex: 1;
+
+	box-sizing: border-box;
+}
+.dropdown-option{
+	width: 100%;
+
+	padding: 14px calc(var(--panel-padding) * 4);
+
+	font-size: 12px;
+	text-transform: uppercase;
+	text-align: center;
+	color: white;
+
+	background-color: #181818;
+
+	box-sizing: border-box;
+}
+.dropdown-option.logout{
+	font-family: Roboto-Bold;
+	font-size: 12px;
+}
+.dropdown-option:hover{
+	background-color: #212121;
+}
+#user-section #user-card{
+	border-radius: var(--border-radius) 0 0 var(--border-radius);
 }
 
 #container{
@@ -260,8 +325,6 @@ body{
 	display: flex;
 	align-self: center;
 	flex-direction: column;
-
-	margin-bottom: var(--panel-padding);
 
 	background-color: var(--medium-black);
 
