@@ -1,4 +1,8 @@
-#page-link{
+:root{
+	--banner-color: #2e2e2e;
+}
+
+#invite-link{
 	width: 20px;
 	height: 20px;
 	
@@ -17,6 +21,10 @@
 }
 #right-side-panel{
 	--side-panel-width: 350px;
+}
+
+.panel-label.selected{
+	background-color: var(--banner-color) !important;
 }
 
 /* #region Playlist Info */

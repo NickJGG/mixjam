@@ -1,0 +1,43 @@
+#panel-container{
+    align-items: center;
+    justify-content: center;
+}
+
+#error-container{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    box-sizing: border-box;
+}
+#error-message{
+    margin: 10px 0 15px 0;
+
+    font-family: Roboto-Bold;
+    font-size: 28px;
+    color: white;
+}
+#error-options{
+    display: flex;
+}
+.error-option{
+    padding: 12px 20px;
+
+    font-family: Roboto-Medium;
+    font-size: 14px;
+    color: white;
+
+    background-color: #333;
+
+    border-radius: var(--border-radius);
+
+    text-decoration: none !important;
+
+    box-sizing: border-box;
+}
+.error-option:not(:first-child){
+    margin-left: 20px;
+}
+.error-option:hover{
+    background-color: #3f3f3f;
+}

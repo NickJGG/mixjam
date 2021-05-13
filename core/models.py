@@ -1,6 +1,10 @@
+import os
+
+from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 
 from channels.db import database_sync_to_async
 
@@ -19,6 +23,17 @@ class ProfilePicture(models.Model):
         (ELF, 'Elf'),
         (BENDER, 'Bender'),
         (SCREAM, 'Scream'),
+    ]
+
+class RoomMode(models.Model):
+    PUBLIC = 'public'
+    PRIVATE = 'private'
+    CLOSED = 'closed'
+
+    MODE_CHOICES = [
+        (PUBLIC, 'Public'),
+        (PRIVATE, 'Private'),
+        (CLOSED, 'Closed'),
     ]
 
 class UserProfile(models.Model):
@@ -41,10 +56,17 @@ class Room(models.Model):
     title = models.CharField(max_length=150, default="New Room")
     description = models.CharField(max_length = 1000, default = "")
     banner_color = models.CharField(max_length = 6, null = True, blank = True)
+    mode = models.CharField(max_length = 50, choices = RoomMode.MODE_CHOICES, default = RoomMode.PRIVATE)
+
+    invite_code = models.CharField(max_length = 6, null = True, blank = True)
+    invite_time = models.DateTimeField(blank = True, null = True)
+
     leader = models.ForeignKey(User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
+
     playlist_id = models.CharField(max_length = 50, null = True)
     playlist_image_url = models.CharField(max_length = 250, null = True, blank = True)
+
     users = models.ManyToManyField(User, blank = True, related_name = 'users')
     active_users = models.ManyToManyField(User, blank = True, related_name = 'active_users')
 
@@ -56,6 +78,33 @@ class Room(models.Model):
     
     def others_active(self, user):
         return (self.active_users.count() - 1 if user in self.active_users.all() else 0) > 0
+    
+    def get_site_url(self):
+        return 'http://localhost:8000' if os.environ.get(
+            'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com'
+
+    def get_invite_link(self):
+        self.check_invite()
+
+        return self.get_site_url() + reverse('invite', kwargs = {
+            'invite_code': self.invite_code
+        })
+
+    def new_invite(self):
+        self.invite_code = get_random_string(length=6)
+        self.invite_time = timezone.now()
+
+        self.save()
+
+    def check_invite(self):
+        if self.mode == RoomMode.PUBLIC:
+            return True
+        elif self.invite_time is not None and (timezone.now() - self.invite_time).total_seconds() / 3600 < 24:
+            return True
+        else:
+            self.new_invite()
+        
+        return False
 
 class Playlist(models.Model):
     room = models.OneToOneField(Room, on_delete = models.CASCADE)

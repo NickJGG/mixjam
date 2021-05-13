@@ -4,6 +4,7 @@
 {% load util %}
 
 {% block css %}
+	{{ block.super }}
 
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/base_auth.css' %}">
 
@@ -14,7 +15,9 @@
 	
 	<div id = "nav">
 		<div class = "nav-section">
-			<a href = "{% url 'index' %}"><img id = "logo" src = "{% static 'img/icons/logo/logo-green-377.png' %}"></a>
+			<a href = "{% url 'index' %}">
+				<img id = "logo" src = "{% static 'img/icons/logo/logo-green-377.png' %}">
+			</a>
 			
 			<div id = "page-info">
 				<p id = "page-name">{% block page_name %}Home{% endblock %}</p>
@@ -27,9 +30,6 @@
 					{% endblock %}
 				</div>
 			</div>
-		</div>
-		<div class = "nav-section">
-			
 		</div>
 		<div id = "user-section" class = "nav-section">
 			{% block user_container_before %}

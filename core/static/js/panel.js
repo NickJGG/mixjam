@@ -7,7 +7,7 @@ $(document).ready(function(){
 		'privacy': 'privacy',
 		'overview': 'overview',
 		'activities': 'activities',
-		'create room': 'create'
+		'create room': 'create',
 	};
 	
 	$('.subpanel-label').on('click', function(){

@@ -1,47 +1,31 @@
+{% extends 'core/base_unauth.html' %}
 {% load static %}
 
-<html>
-<head>
-	<title>Sign Up - Syncify</title>
-	
-	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/base.css' %}">
-	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/landing.css' %}">
-	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/login.css' %}">
-	
-	<style>
-		@font-face {
-			font-family: Roboto-Thin;
-			src: url({% static 'font/roboto/Roboto-Thin.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Light;
-			src: url({% static 'font/roboto/Roboto-Light.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Regular;
-			src: url({% static 'font/roboto/Roboto-Regular.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Medium;
-			src: url({% static 'font/roboto/Roboto-Medium.ttf' %});
-		}
-	</style>
-</head>
-	<img id = "logo" src = "{% static 'img/icons/spotify-384.png' %}">
-<body>
-	<form id = "post" method = "POST">
-		{% csrf_token %}
-	
-		<p id = "header">Sign Up</p>
-		<hr>
-		<input type = "text" name = "username" placeholder = "Username">
-		<input type = "email" name = "email" placeholder = "Email">
-		<input type = "password" name = "password" placeholder = "Password">
-		<input type = "password" name = "confirm-password" placeholder = "Confirm Password">
-		<input class = "blue" type = "submit" value = "REGISTER">
-		<p class = "alt-message">Already have an account? <a class = "alt-link green" href = "{% url 'login' %}">Login</a></p>
-	</form>
-	
-	<script src = "{% static 'js/jquery.js' %}"></script>
-</body>
-</html>
+{% block title %}Sign Up{% endblock %}
+
+{% block css %}
+	{{ block.super }}
+
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'css/login.css' %}">
+
+{% endblock %}
+
+{% block content %}
+	{{ block.super }}
+
+	<div id = "main-content">
+		<form id = "post" method = "POST">
+			{% csrf_token %}
+		
+			<p id = "page-header">Sign Up</p>
+			<hr>
+			<input type = "text" name = "username" placeholder = "Username">
+			<input type = "email" name = "email" placeholder = "Email">
+			<input type = "password" name = "password" placeholder = "Password">
+			<input type = "password" name = "confirm-password" placeholder = "Confirm Password">
+			<input class = "blue" type = "submit" value = "REGISTER">
+			<p class = "alt-message">Already have an account? <a class = "alt-link green" href = "{% url 'login' %}">Login</a></p>
+		</form>
+	</div>
+
+{% endblock %}

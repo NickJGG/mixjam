@@ -15,7 +15,7 @@ def get_rooms(user):
 @register.simple_tag
 def get_room_count(user):
     return Room.objects.filter(users = user).count()
-    
+
 @register.simple_tag
 def authorize_url():
     client_id = os.environ.get('CLIENT_ID')

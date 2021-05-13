@@ -4,16 +4,59 @@
 
 		<div id = "settings-sections">
 			<div class = "settings-section">
-				<p class = "settings-label">Appearance</p>
-				<div class = "settings-list">
-					<div class = "setting">
-						<p class = "setting-label">Banner Color (HEX)</p>
-						<input type = "text" name = "banner-color" value = "{{ room.banner_color }}">
+				<form method = "POST">
+					{% csrf_token %}
+	
+					<input type = "hidden" name = "section" value = "appearance">
+					
+					<p class = "settings-label">Appearance</p>
+					<div class = "settings-list">
+						<div class = "setting">
+							<p class = "setting-label">Banner Color (HEX)</p>
+							<input type = "text" name = "banner-color" value = "{{ room.banner_color }}">
+						</div>
+						<div class = "settings-actions">
+							<input type = "submit" value = "Save">
+						</div>
 					</div>
-					<div class = "settings-actions">
-						<input type = "submit" value = "Save">
+				</form>
+			</div>
+				
+			<div class = "settings-section">
+				<form method = "POST">
+					{% csrf_token %}
+	
+					<input type = "hidden" name = "section" value = "privacy">
+					
+					<p class = "settings-label">Privacy</p>
+					<div class = "settings-list">
+						<div class = "setting">
+							<p class = "setting-label">Mode</p>
+							<div class = "radio-buttons">
+								<div class = "radio-button {% if room.mode == 'public' %}checked{% endif %}">
+									<input type = "radio" name = "mode" id = "radio-public" value = "public" {% if room.mode == 'public' %}checked{% endif %}>
+									<input type = "hidden" class = "message" value = "Anyone can join without an invite link">
+									<p>Public</p>
+								</div>
+								<div class = "radio-button {% if room.mode == 'private' %}checked{% endif %}">
+									<input type = "radio" name = "mode" id = "radio-private" value = "private" {% if room.mode == 'private' %}checked{% endif %}>
+									<input type = "hidden" class = "message" value = "Anyone can join with an invite link, which the whole room has access to">
+									<p>Private</p>
+								</div>
+								<div class = "radio-button {% if room.mode == 'closed' %}checked{% endif %}">
+									<input type = "radio" name = "mode" id = "radio-closed" value = "closed" {% if room.mode == 'closed' %}checked{% endif %}>
+									<input type = "hidden" class = "message" value = "Anyone can join with an invite link, which only you have access to">
+									<p>Closed</p>
+								</div>
+								<p class = "radio-message">This is the message</p>
+							</div>
+						</div>
+						<div class = "settings-actions">
+							<input class = "blue" type = "submit" name = "new-code" value = "Generate New Invite Code">
+							<input type = "submit" value = "Save">
+						</div>
 					</div>
-				</div>
+				</form>
 			</div>
         </div>
     </form>

@@ -1,6 +1,6 @@
 :root{
-	--light-green: rgb(115, 208, 115);
-	--dark-green: rgb(0, 185, 94);
+	--light-green: #73d073;
+	--dark-green: #00b95e;
 	--black: #0b0b0b;
 	--medium-black: #141414;
 	--light-black: #1f1f1f;
@@ -9,40 +9,9 @@
 	--panel-padding: 20px;
 	--border-radius: 20px;
 }
-
-input{
-	width: 300px;
-	
-	padding: 10px 16px;
-	
-	font-family: Roboto-Regular;
-	
-	outline: none;
-	border: none;
-	
-	background-color: #eee;
-	
-	border-radius: 20px;
-}
-input:not(:first-child){
-	margin-top: 10px;
-}
-input[type="submit"]{
-	margin-top: 20px;
-	margin-bottom: 10px;
-	
-	font-family: Roboto-Medium;
-	color: white;
-	
-	background-color: var(--light-green);
-	
-	cursor: pointer;
-}
-input[type="submit"].blue{
-	background-color: #07ace5;
-}
-input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus{
-	border-color: white;
+*{
+	margin: 0;
+	padding: 0;
 }
 
 hr{

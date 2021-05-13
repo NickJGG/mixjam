@@ -421,11 +421,9 @@ $(document).ready(function(){
 			fullscreen = !fullscreen;
 		});
 		
-		$('#page-link').on('click', function(){
-			$('#page-url').val(window.location.href);
-			
-			$('#page-url').focus();
-			$('#page-url')[0].setSelectionRange(0, 99999);
+		$('#invite-link').on('click', function(){
+			$('#invite-url').focus();
+			$('#invite-url')[0].setSelectionRange(0, 99999);
 			
 			document.execCommand("copy");
 			

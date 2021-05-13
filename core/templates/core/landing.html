@@ -1,45 +1,56 @@
+{% extends 'core/base_unauth.html' %}
 {% load static %}
 
-<html>
-<head>
-	<title>Syncify</title>
-	
-	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/landing.css' %}">
-	
-	<style>
-		@font-face {
-			font-family: Roboto-Thin;
-			src: url({% static 'font/roboto/Roboto-Thin.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Light;
-			src: url({% static 'font/roboto/Roboto-Light.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Regular;
-			src: url({% static 'font/roboto/Roboto-Regular.ttf' %});
-		}
-		@font-face {
-			font-family: Roboto-Medium;
-			src: url({% static 'font/roboto/Roboto-Medium.ttf' %});
-		}
-	</style>
-</head>
-	<img id = "logo" src = "{% static 'img/icons/spotify-384.png' %}">
-<body>
-	<p id = "welcome-message">Listen to your favorite music, together</p>
-	<div id = "account-buttons">
-		<a href = "{% url 'login' %}"><div class = "account-button login">
-			<img src = "{% static 'img/icons/add-user-white-96.png' %}">
-			<p>Login</p>
-		</div></a>
-		<p id = "button-separator">or</p>
-		<a href = "{% url 'register' %}"><div class = "account-button register">
-			<img src = "{% static 'img/icons/add-user-white-96.png' %}">
-			<p>Sign Up</p>
-		</div></a>
+{% block css %}
+	{{ block.super }}
+
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'css/landing.css' %}">
+
+{% endblock %}
+
+{% block content %}
+	{{ block.super }}
+
+	<div id = "main-content">
+		<div id = "welcome">
+			<p id = "welcome-message">Listen to your favorite music, together</p>
+			<div id = "account-buttons">
+				<a href = "{% url 'login' %}"><div class = "account-button login">
+					<img src = "{% static 'img/icons/add-user-white-96.png' %}">
+					<p>Login</p>
+				</div></a>
+				<p id = "button-separator">or</p>
+				<a href = "{% url 'register' %}"><div class = "account-button register">
+					<img src = "{% static 'img/icons/add-user-white-96.png' %}">
+					<p>Sign Up</p>
+				</div></a>
+			</div>
+		</div>
+		<div id = "welcome-image">
+			<a href = "{% static 'img/landing-3.png' %}"><img src = "{% static 'img/landing-3.png' %}"></a>
+		</div>
 	</div>
-	
-	<script src = "{% static 'js/jquery.js' %}"></script>
-</body>
-</html>
+	<div id = "site-information">
+		<div id = "site-showcase">
+			<div>
+				<p class = "label">Create a room</p>
+				<p class = "sublabel">Select one of your playlists</p>
+				<a href = "{% static 'img/landing-1.png' %}"><img src = "{% static 'img/landing-1.png' %}"></a>
+			</div>
+			<div>
+				<p class = "label">Invite your friends</p>
+				<p class = "sublabel">Only people you invite can join</p>
+				<a href = "{% static 'img/landing-2.png' %}"><img src = "{% static 'img/landing-2.png' %}"></a>
+			</div>
+			<div>
+				<p class = "label">Start listening</p>
+				<p class = "sublabel">The music is completely synced</p>
+				<a href = "{% static 'img/landing-3.png' %}"><img src = "{% static 'img/landing-3.png' %}"></a>
+			</div>
+		</div>
+	</div>
+	<div id = "footer">
+
+	</div>
+
+{% endblock %}

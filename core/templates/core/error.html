@@ -1,0 +1,27 @@
+{% extends 'core/base_auth.html' %}
+{% load static %}
+
+{% block title %}Error{% endblock %}
+
+{% block css %}
+	{{ block.super }}
+
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/error.css' %}">
+
+{% endblock %}
+
+{% block page_name %}Error{% endblock %}
+
+{% block panel_container %}
+	
+	<div id = "error-container">
+        <img src = "{% static 'img/not-found-96.png' %}">
+        <p id = "error-message">{{ error_message }}</p>
+        <div id = "error-options">
+            <a href = "{% url 'index' %}">
+                <div class = "error-option">Home</div>
+            </a>
+        </div>
+    </div>
+
+{% endblock %}

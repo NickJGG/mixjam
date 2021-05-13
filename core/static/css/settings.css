@@ -4,6 +4,9 @@
 	display: flex;
 	justify-content: flex-end;
 }
+.settings-actions > *:not(:first-child){
+	margin-left: 6px;
+}
 .settings-sections{
 	display: flex;
 	flex-direction: column;
@@ -77,10 +80,10 @@ textarea{
     width: 400px;
     height: 100px;
 }
-input:not(input[type="submit"]){
+input[type="text"], input[type="email"]{
 	width: 300px;
 }
-input:not(input[type="submit"]), textarea{
+input[type='text'], textarea, .radio-buttons{
 	margin-top: 3px;
 }
 input[type="submit"]{
@@ -102,6 +105,63 @@ input[type="submit"]:hover{
 input[type="submit"].blue{
 	background-color: #07ace5;
 }
+input[type="submit"].blue:hover{
+	background-color: #0598c9;
+}
 input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus{
 	border-color: white;
+}
+input[type="radio"]{
+	visibility: hidden;
+}
+
+.radio-buttons{
+	width: fit-content;
+
+	display: flex;
+	align-items: center;
+
+	margin-top: 5px;
+}
+.radio-button{
+	width: calc(fit-content);
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	padding: 10px 14px;
+
+	background-color: var(--light-black);
+
+	border-radius: 10px;
+
+	box-sizing: border-box;
+
+	cursor: pointer;
+}
+.radio-button.checked{
+	background-color: var(--dark-green);
+}
+.radio-button:not(:first-child){
+	margin-left: 6px;
+}
+.radio-button:not(.checked):hover{
+	background-color: #292929;
+}
+.radio-button p{
+	position: relative;
+	top: 0;
+	left: -6px;
+
+	font-family: Roboto-Medium;
+	font-size: 12px;
+	text-transform: uppercase;
+	color: white;
+}
+.radio-message{
+	margin-left: 12px;
+
+	font-size: 12px;
+	color: #ccc;
 }

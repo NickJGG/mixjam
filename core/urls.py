@@ -25,6 +25,7 @@ urlpatterns = [
     path('callback/', views.callback, name = 'callback'),
 
     path('r/<str:room_code>/', views.room, name = 'room'),
+    path('i/<str:invite_code>/', views.invite, name = 'invite'),
 
     path('account/', views.account, name = 'account'),
     path('login/', views.login, name = 'login'),

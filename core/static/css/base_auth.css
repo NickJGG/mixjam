@@ -15,16 +15,13 @@ body{
 	
 	box-sizing: border-box;
 }
-*{
-	margin: 0;
-	padding: 0;
-}
 
 #nav{
 	width: 100%;
 	
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	
 	padding: 20px;
 	
@@ -91,40 +88,6 @@ body{
 
 	background-color: var(--icon-color);
 	-webkit-mask-box-image: var(--background-image);
-}
-
-#panel-labels{
-	display: flex;
-	align-items: center;
-	
-	position: relative;
-	top: 2px;
-	
-	margin-left: 30px;
-	
-	font-size: 12px;
-	text-transform: uppercase;
-	color: white;
-}
-.panel-label{
-	padding: 10px 15px;
-	
-	cursor: pointer;
-	
-	transition: all .05s ease;
-	
-	box-sizing: border-box;
-}
-.panel-label.selected{
-	font-family: Roboto-Medium;
-	font-size: 14px;
-}
-.panel-label:hover{
-	text-decoration: underline;
-	text-underline-offset: 2px;
-}
-.panel-label:not(:first-child){
-	margin-left: 10px;
 }
 
 #user-section{

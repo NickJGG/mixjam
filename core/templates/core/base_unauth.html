@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block css %}
+
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'css/base_unauth.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+    <div id = "header">
+        <a href = "{% url 'index' %}">
+            <img id = "logo" src = "{% static 'img/icons/logo/logo-green-377.png' %}">
+        </a>
+    </div>
+
+{% endblock %}

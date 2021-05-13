@@ -11,14 +11,34 @@
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/subpanel.css' %}">
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/settings.css' %}">
 
+	{% if room.banner_color != None %}
+
+		<style>
+			:root{
+				--banner-color: {{ room.banner_color }};
+			}
+		</style>
+
+	{% endif %}
+
 {% endblock %}
 
 {% block page_name %}{{ room.title }}{% endblock %}
 
 {% block page_name_after %}
 
-	<img id = "page-link" src = "{% static 'img/icons/link-white-50.png' %}">
-	<input id = "page-url" type = "text" style = "position: absolute; top: -1000px; left: -1000px;">
+	{% if room.mode != 'closed' or room.leader == user %}
+
+		<div class = "subtitle-container">
+			<img id = "invite-link" src = "{% static 'img/icons/link-white-50.png' %}">
+			<div class = "subtitle-label" style = "width: 600%; left: -250%">
+				<p>Copy Invite Link</p>
+			</div>
+		</div>
+		
+		<input id = "invite-url" type = "text" style = "position: absolute; top: -1000px; left: -1000px;" value = "{{ room.get_invite_link }}">
+
+	{% endif %}
 
 {% endblock %}
 
@@ -130,6 +150,7 @@
 	<script src = "{% static 'js/room.js' %}"></script>
 	<script src = "{% static 'js/panel.js' %}"></script>
 	<script src = "{% static 'js/tab.js' %}"></script>
+	<script src = "{% static 'js/settings.js' %}"></script>
 	<script type = "text/javascript">
 		var code = JSON.parse(document.getElementById('code').textContent),
 			staticUrl = '{{ static_url }}',

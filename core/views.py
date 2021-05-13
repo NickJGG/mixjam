@@ -1,6 +1,6 @@
 import os
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, reverse, redirect
 from django.utils.crypto import get_random_string
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
@@ -43,6 +43,11 @@ def home(request):
             room.save()
 
             room.users.add(request.user)
+
+            room.playlist = Playlist(room = room)
+            room.playlist.save()
+
+            room.new_invite()
             room.save()
 
     response = spotify.get(request.user, spotify.endpoints['current_user_playlists'])
@@ -75,32 +80,50 @@ def room(request, room_code):
 
     rooms = Room.objects.filter(code = room_code)
 
+    print(rooms[0].banner_color)
+
     if rooms.exists():
         room = rooms[0]
 
         if request.POST:
             print(request.POST)
 
-            banner_color = request.POST.get('banner-color')
+            section = request.POST.get('section')
 
-            try:
-                int(banner_color, 16)
+            if section == 'appearance':
+                banner_color = request.POST.get('banner-color')
 
-                room.banner_color = banner_color
-                room.save()
-            except:
-                pass
+                try:
+                    int(banner_color, 16)
+
+                    room.banner_color = banner_color
+                    room.save()
+                except:
+                    pass
+            elif section == 'privacy':
+                if request.user == room.leader:
+                    mode = request.POST.get('mode')
+                    new_code = request.POST.get('new-code')
+
+                    if new_code is not None:
+                        room.new_invite()
+
+                    room.mode = mode
+                    room.save()
 
         if request.user not in room.users.all():
-            room.users.add(request.user)
-            room.save()
-
-        if not Playlist.objects.filter(room = room).exists():
-            room.playlist = Playlist(room = room)
-            room.playlist.save()
+            if room.mode == RoomMode.PUBLIC:
+                room.users.add(request.user)
+                room.save()
+            else:
+                return render(request, 'core/error.html', {
+                    'error_message': 'You are not a member of this room'
+                })
 
         request.user.userprofile.most_recent_room = room
         request.user.userprofile.save()
+
+        room.check_invite()
 
         offline_users = []
 
@@ -110,8 +133,32 @@ def room(request, room_code):
 
         data['room'] = room
         data['offline_users'] = offline_users
+    else:
+        return render(request, 'core/error.html', {
+            'error_message': 'Room does not exist'
+        })
 
     return render(request, 'core/room.html', data)
+
+def invite(request, invite_code):
+    room = Room.objects.filter(invite_code = invite_code)
+
+    if room.exists():
+        room = room[0]
+
+        if room.check_invite():
+            room.users.add(request.user)
+            room.save()
+
+            return redirect('room', room_code = room.code)
+        else:
+            return render(request, 'core/error.html', {
+                'error_message': 'Invite code expired'
+            })
+    else:
+        return render(request, 'core/error.html', {
+            'error_message': 'Invite code either invalid or expired'
+        })
 
 def account(request):
     path = os.path.join(settings.BASE_DIR, 'core', 'static', 'img', 'profile')
