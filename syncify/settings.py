@@ -142,8 +142,6 @@ if os.environ.get('DJANGO_DEVELOPMENT'):
         },
     }
 else:
-    DEBUG = False
-
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
     }
