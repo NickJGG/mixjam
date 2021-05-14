@@ -68,10 +68,6 @@ body{
 	margin: 0 15px;
 }
 #welcome-image{
-	height: 420px;
-
-	position: relative;
-	
 	background-color: var(--medium-black);
 
 	box-shadow: 0 0 14px rgba(0, 0, 0, .2);

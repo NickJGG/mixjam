@@ -42,7 +42,7 @@ class UserProfile(models.Model):
     access_token = models.CharField(max_length = 200)
     refresh_token = models.CharField(max_length = 200)
     authorized = models.BooleanField(default = False)
-    most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.CASCADE, related_name = 'most_recent_name')
+    most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.SET_NULL, related_name = 'most_recent_name')
 
     icon_image = models.CharField(max_length = 100, choices = ProfilePicture.IMAGE_CHOICES, default = ProfilePicture.BABY_YODA)
     icon_color = models.CharField(max_length = 6, default = 'ffffff')

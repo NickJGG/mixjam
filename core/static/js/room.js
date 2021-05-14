@@ -27,6 +27,15 @@ $(document).ready(function(){
 				$('#users-overlay .overlay-content').append(block);
 
 				break;
+			case 'leave':
+				var username = data['response_data']['action_data']['user'];
+
+				$('#user-' + username).remove();
+
+				$('#user-online-count').text($('#user-list').children().length);
+				$('#user-offline-count').text($('#offline-user-list').children().length);
+
+				break;
 			default:
 				break;
 		}
@@ -107,6 +116,8 @@ $(document).ready(function(){
 		if (action == 'kick'){
 			if (successful)
 				location.href = '/';
+		} else if (action == 'delete'){
+			location.href = '/';
 		}
 	}
 
@@ -477,6 +488,62 @@ $(document).ready(function(){
 			if ($(this).hasClass('close')){
 				$(this).parents('.tab-overlay').css('display', 'none');
 			}
+		});
+
+		$('#delete-room').on('click', function(e){
+			if ($('#dont-delete').css('display') == 'none'){
+				e.preventDefault();
+
+				$(this).parents('form').find('.sure-label').css('display', 'block');
+				$(this).val('Yes, Delete');
+				$('#dont-delete').css('display', 'block');
+			} else {
+				$(this).parents('form').submit();
+
+				socketSend('admin', {
+					'action': 'delete',
+					'action_data': {
+						
+					}
+				});
+			}
+		});
+		$('#leave-room').on('click', function(e){
+			if ($('#dont-leave').css('display') == 'none'){
+				e.preventDefault();
+
+				$(this).parents('form').find('.sure-label').css('display', 'block');
+				$(this).val('Yes, Leave');
+				$(this).addClass('red');
+				$('#dont-leave').css('display', 'block');
+			} else {
+				$(this).parents('form').submit();
+
+				socketSend('user_action', {
+					'action': 'leave',
+					'action_data': {
+						
+					}
+				});
+			}
+		});
+
+		$('#dont-delete').on('click', function(e){
+			e.preventDefault();
+
+			$(this).css('display', 'none');
+			$(this).parents('form').find('.sure-label').css('display', 'none');
+
+			$('#delete-room').val('Delete Room');
+		});
+		$('#dont-leave').on('click', function(e){
+			e.preventDefault();
+
+			$(this).css('display', 'none');
+			$(this).parents('form').find('.sure-label').css('display', 'none');
+
+			$('#leave-room').val('Leave Room');
+			$('#leave-room').removeClass('red');
 		});
 	}
 

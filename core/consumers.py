@@ -80,6 +80,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.offline()
 
         user = self.scope['user']
+        room = self.get_room()
 
         await self.send_notification('leave', user, 'left', before_subject = render_to_string('core/blocks/profile-picture.html', {
             'width': '20px',
@@ -87,20 +88,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
             'user': user
         }))
 
-        await self.channel_layer.group_send(
-            self.group_name,
-            {
-                'type': 'request_connection',
-                'data': {
-                    'connection_state': {
-                        'connection_type': 'leave',
-                        'user': {
-                            'username': user.username
+        if user in room.users.all():
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'request_connection',
+                    'data': {
+                        'connection_state': {
+                            'connection_type': 'leave',
+                            'user': {
+                                'username': user.username
+                            }
                         }
                     }
                 }
-            }
-        )
+            )
 
         await self.channel_layer.group_discard(
             self.group_name,
@@ -151,7 +153,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     'response_data': request_data['data']
                 }))
             
-            return
+                return
+            elif request_action == 'leave':
+                request_data['data']['action_data']['user'] = user.username
 
         request_data['type'] = 'request_' + request_data['type']
 
@@ -211,8 +215,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
         room = self.get_room()
         
-        if request_data['successful']:
-            if request_action == 'kick':
+        if request_action == 'kick':
+            if request_data['successful']:
                 if user.username == request_action_data['user']:
                     await self.response_send('admin', request_data)
                 else:
@@ -240,12 +244,16 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         'height': '20px',
                         'user': User.objects.get(username = request_action_data['user'])
                     }))
+        elif request_action == 'delete':
+            await self.response_send('admin', request_data)
 
     async def request_notification(self, request_data):
         await self.response_send('notification', request_data)
 
-    async def request_journey(self, request_data):
-        pass
+    async def request_user_action(self, request_data):
+        request_data = request_data['data']
+
+        await self.response_send('user_action', request_data)
 
     async def request_connection(self, request_data):
         if request_data['data']['connection_state']['connection_type'] != 'kick':

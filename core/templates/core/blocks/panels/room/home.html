@@ -25,10 +25,28 @@
 				</div>
 			</div>
 			<p id = "playlist-description">{{ room.description }}</p>
-			<div id = "playlist-author">
-				{% include 'core/blocks/profile-picture.html' with user=room.leader width='24px' height='24px' %}
+			<div id = "playlist-info-end">
+				<div id = "playlist-author">
+					{% include 'core/blocks/profile-picture.html' with user=room.leader width='24px' height='24px' %}
+					
+					<p id = "playlist-creator">{{ room.leader.username }}</p>
+				</div>
+
+				{% if user != room.leader %}
+
+					<div id = "leave-room-container">
+						<form method = "POST">
+							{% csrf_token %}
+			
+							<input type = "hidden" name = "section" value = "leave">
+							
+							<p class = "sure-label" style = "margin-right: 12px">Are you sure?</p>
+							<input id = "leave-room" class = "gray" type = "submit" value = "Leave Room">
+							<input id = "dont-leave" class = "gray" type = "submit" value = "No">
+						</form>
+					</div>
 				
-				<p id = "playlist-creator">{{ room.leader.username }}</p>
+				{% endif %}
 			</div>
 		</div>
 	</div>

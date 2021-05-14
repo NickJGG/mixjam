@@ -27,7 +27,7 @@ SECRET_KEY = 'ydh#&zkf&ru@j*5_nxitp1w=uj2m$h9_y!#(@#t_j+(m=j9$y#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'syncified.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', 'syncified.herokuapp.com', '10.0.0.53']
 
 
 # Application definition
@@ -142,6 +142,8 @@ if os.environ.get('DJANGO_DEVELOPMENT'):
         },
     }
 else:
+    DEBUG = False
+
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
     }

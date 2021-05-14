@@ -92,6 +92,7 @@ input[type="submit"]{
 	padding-left: 30px;
 	padding-right: 30px;
 
+	font-family: Roboto-Medium;
 	text-transform: capitalize;
 	color: white;
 	
@@ -99,15 +100,21 @@ input[type="submit"]{
 	
 	cursor: pointer;
 }
-input[type="submit"]:hover{
-	background-color: #00a453;
+input[type="submit"]:hover{ background-color: #03d16c; }
+input[type="submit"].blue{ background-color: #07ace5; }
+input[type="submit"].blue:hover{ background-color: #0bc0ff; }
+input[type="submit"].gray{ background-color: var(--light-black); }
+input[type="submit"].gray:hover{ background-color: #292929; }
+input[type="submit"].light-gray{ background-color: #313131; }
+input[type="submit"].light-gray:hover{ background-color: #3d3d3d; }
+input[type="submit"].dark-gray{ background-color: var(--medium-black); }
+input[type="submit"].dark-gray:hover{ background-color: #191919; }
+input[type="submit"].red{ 
+	font-family: Roboto-Medium;
+
+	background-color: #c33a3a; 
 }
-input[type="submit"].blue{
-	background-color: #07ace5;
-}
-input[type="submit"].blue:hover{
-	background-color: #0598c9;
-}
+input[type="submit"].red:hover{ background-color: #da4242; }
 input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus{
 	border-color: white;
 }

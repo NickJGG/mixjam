@@ -157,6 +157,15 @@ def room(request, room_code):
 
                     room.mode = mode
                     room.save()
+            elif section == 'delete':
+                room.delete()
+
+                return redirect('index')
+            elif section == 'leave':
+                if request.user != room.leader:
+                    room.users.remove(request.user)
+
+                    return redirect('index')
 
         if request.user not in room.users.all():
             if room.mode == RoomMode.PUBLIC:
