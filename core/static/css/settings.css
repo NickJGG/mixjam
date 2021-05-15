@@ -83,7 +83,7 @@ textarea{
 input[type="text"], input[type="email"]{
 	width: 300px;
 }
-input[type='text'], textarea, .radio-buttons{
+input[type='text'], input[type="email"], textarea, .radio-buttons{
 	margin-top: 3px;
 }
 input[type="submit"]{

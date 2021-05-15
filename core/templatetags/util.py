@@ -27,7 +27,7 @@ def authorize_url():
         'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
 
     path = f"/authorize"
-    
+
     query = urlencode(dict(
         response_type = 'code',
         client_id = client_id,
