@@ -20,9 +20,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
     playlist_notifications = []
 
     playlist_to_notif = {
-        'play': 'resumed play',
+        'play': 'resumed',
         'play_direct': 'played',
-        'pause': 'paused play',
+        'pause': 'paused',
         'previous': 'skipped back to',
         'next': 'skipped to',
         'seek': 'seeked to',
