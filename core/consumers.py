@@ -124,7 +124,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if request_type == 'playlist' and request_action not in self.playlist_notifications:
             spotify.update_playlist(user, room, request_data['data'])
 
-            request_data['data']['action_data']['user'] = user
+            request_data['data']['action_data']['user'] = user.username
         elif request_data['type'] == 'chat':
             request_data['data']['action_data']['user'] = {
                 'username': user.username,
@@ -193,7 +193,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 before_subject = render_to_string('core/blocks/profile-picture.html', {
                     'width': '20px',
                     'height': '20px',
-                    'user': request_action_data['user']
+                    'user': User.objects.get(username = request_action_data['user'])
                 })
     
         room_state = await spotify.get_room_state(user, room.code)
@@ -201,7 +201,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.response_send('playlist', room_state)
 
         if before_subject is not None:
-            await self.send_notification_self(request_action, request_action_data['user'].username, self.playlist_to_notif[request_action], before_subject = before_subject, before_object = before_object)
+            await self.send_notification_self(request_action, request_action_data['user'], self.playlist_to_notif[request_action], before_subject = before_subject, before_object = before_object)
 
     async def request_chat(self, request_data):
         request_data['data']['action_data']['user']['self'] = request_data['data']['action_data']['user']['username'] == self.scope['user'].username
