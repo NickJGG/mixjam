@@ -25,6 +25,26 @@
 
 {% block panel_container %}
 
+	{% if new_user %}
+
+		<div id = "user-message-container">
+			<div id = "new-user-message">
+				<img src = "{% static 'img/icons/logo/logo-green-377.png' %}">
+				
+				<p id = "message-title">Welcome to Syncify, {{ user.username }}</p>
+				<p id = "message-body">Create or join a room to start listening to music with friends. Any room you are apart of will show up here, as well as the sidebar.</p>
+				<div id = "message-tips">
+					<div class = "message-tip">Create a room by going to the Create Room tab</div>
+					<div class = "message-tip">Join a room by clicking on an invite link from a friend</div>
+				</div>
+				<div class = "settings-actions">
+					<input id = "close-message" class = "gray" type = "submit" value = "Got It">
+				</div>
+			</div>
+		</div>
+
+	{% endif %}
+
 	{% include 'core/blocks/panels/home/home.html' with rooms=rooms selected=True %}
 	{% include 'core/blocks/panels/home/create.html' %}
 	{% include 'core/blocks/panels/home/faq.html' %}

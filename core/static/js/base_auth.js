@@ -20,4 +20,8 @@ $(document).ready(function(){
         } else
             $('#user-dropdown').css('display', 'none');
     });
+
+    $('#close-message').on('click', function(){
+        $('#user-message-container').css('display', 'none');
+    });
 });

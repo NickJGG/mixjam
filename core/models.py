@@ -48,6 +48,8 @@ class UserProfile(models.Model):
     icon_color = models.CharField(max_length = 6, default = 'ffffff')
     background_color = models.CharField(max_length = 6, default = '07ace5')
 
+    new_user = models.BooleanField(default = True)
+
     def __str__(self):
         return self.user.username
 
@@ -69,6 +71,8 @@ class Room(models.Model):
 
     users = models.ManyToManyField(User, blank = True, related_name = 'users')
     active_users = models.ManyToManyField(User, blank = True, related_name = 'active_users')
+
+    new_room = models.BooleanField(default = True)
 
     def __str__(self):
         return self.code

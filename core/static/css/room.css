@@ -6,6 +6,9 @@
 	width: 20px;
 	height: 20px;
 	
+	position: relative;
+	top: 2px;
+
 	margin-left: 5px;
 	
 	transition: all .1s ease;
@@ -21,6 +24,8 @@
 }
 #right-side-panel{
 	--side-panel-width: 350px;
+
+	display: initial;
 }
 
 .panel-label.selected{
@@ -373,8 +378,6 @@
 	position: relative;
 	
 	background-color: var(--dark-green);
-	
-	transition: all 1s linear;
 }
 #song-progress-container:hover #progress-thumb{
 	transform: scale(1);

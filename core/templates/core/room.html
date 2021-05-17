@@ -15,7 +15,7 @@
 
 		<style>
 			:root{
-				--banner-color: {{ room.banner_color }};
+				--banner-color: #{{ room.banner_color }};
 			}
 		</style>
 
@@ -68,6 +68,43 @@
 {% endblock %}
 
 {% block panel_container %}
+	{% if new_room %}
+
+		<div id = "user-message-container">
+			<div id = "new-user-message">
+				<img src = "{{ room.playlist_image_url }}">
+				
+				{% if user == room.leader %}
+
+					<p id = "message-title">Welcome to your new room</p>
+					<p id = "message-body">Its a little lonely in here, why don't we change that?</p>
+					<div id = "message-tips">
+						<div class = "message-tip">Get the invite link by clicking on the link icon next to your room name</div>
+						<div class = "message-tip">Click on any song to start playback for everyone</div>
+						<div class = "message-tip">To change things like the privacy mode and banner color, head to the Settings tab</div>
+						<div class = "message-tip">Make sure you're connected (top right corner) to use the controls</div>
+					</div>
+					<div class = "settings-actions">
+						<input id = "close-message" class = "gray" type = "submit" value = "Got It">
+					</div>
+
+				{% else %}
+
+					<p id = "message-title">Welcome to {{ room.title }}</p>
+					<p id = "message-body">Put on some music and enjoy your stay</p>
+					<div id = "message-tips">
+						<div class = "message-tip">Click on any song to start playback for everyone</div>
+						<div class = "message-tip">Make sure you're connected (top right corner) to use the controls</div>
+					</div>
+					<div class = "settings-actions">
+						<input id = "close-message" class = "gray" type = "submit" value = "Got It">
+					</div>
+
+				{% endif %}
+			</div>
+		</div>
+
+	{% endif %}
 
 	{% include 'core/blocks/panels/room/home.html' with selected=True %}
 	{% include 'core/blocks/panels/room/activities.html' %}

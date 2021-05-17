@@ -60,18 +60,16 @@
 			</form>
 		</div>
 
-		<div class = "settings-section">
-			<form method = "POST">
-				{% csrf_token %}
+		<form method = "POST">
+			{% csrf_token %}
 
-				<input type = "hidden" name = "section" value = "delete">
+			<input type = "hidden" name = "section" value = "delete">
 
-				<div class = "settings-actions" style = "align-items: center;">
-					<p class = "sure-label">Are you sure?</p>
-					<input id = "delete-room" class = "red" type = "submit" value = "Delete Room">
-					<input id = "dont-delete" class = "light-gray" type = "submit" value = "No">
-				</div>
-			</form>
-		</div>
+			<div class = "settings-actions" style = "align-items: center;">
+				<p class = "sure-label">Are you sure?</p>
+				<input id = "delete-room" class = "red" type = "submit" value = "Delete Room">
+				<input id = "dont-delete" class = "light-gray" type = "submit" value = "No">
+			</div>
+		</form>
 	</div>
 </div>

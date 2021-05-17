@@ -92,21 +92,23 @@ $(document).ready(function(){
 
 		var length = notifications.length > 0 ? notificationLower : notificationUpper;
 
-		setTimeout(function(){
-			$('.notification').animate({
-				'opacity': '0'
-			}, notificationTransition);
+		setTimeout(hideNotification, length);
+	}
+	function hideNotification(){
+		$('.notification').animate({
+			'opacity': '0'
+		}, notificationTransition);
 
-			setTimeout(function(){
-				if (notifications.length > 0)
-					startNotification();
-				else {
-					displayNotification = true;
+		setTimeout(showNextNotification, notificationTransition);
+	}
+	function showNextNotification(){
+		if (notifications.length > 0)
+			startNotification();
+		else {
+			displayNotification = true;
 
-					$('#notification-container').empty();
-				}
-			}, notificationTransition);
-		}, length);
+			$('#notification-container').empty();
+		}
 	}
 
 	function updateAdmin(data){
@@ -368,7 +370,7 @@ $(document).ready(function(){
 			seek = false;
 
 			$('#progress-complete').css({
-				'transition': 'unset',
+				//'transition': 'unset',
 				'width': 'calc(' + (percentage * 100) + '%)'
 			});
 
@@ -408,7 +410,7 @@ $(document).ready(function(){
 				$(document).unbind('mouseup');
 				$(document).unbind('mousemove');
 
-				$('#progress-complete').css('transition', 'all 1s linear');
+				//$('#progress-complete').css('transition', 'all 1s linear');
 			});
 		});
 		
@@ -635,17 +637,12 @@ $(document).ready(function(){
 			var newPercentage = (100 - milli / roomState.song_state.track.duration_ms * 100),
 				diff = (($('#progress-complete').width() / ($('#progress-incomplete').width() + $('#progress-complete').width())) * 100) - newPercentage;
 
-			if (diff > 5)
-				$('#progress-complete').css('transition', 'unset');
+			/*if (diff > 5)
+				$('#progress-complete').css('transition', 'unset');*/
 
 			$('#progress-complete').css({
 				'width': 'calc(' + (100 - milli / roomState.song_state.track.duration_ms * 100) + '%)'
 			});
-
-			setTimeout(function(){
-				if (seek)
-					$('#progress-complete').css('transition', 'all 1s linear');
-			}, 1000);
 		}
 
 		$('#song-progress-time').text(pure_clock);

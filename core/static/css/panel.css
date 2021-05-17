@@ -1,17 +1,17 @@
 .panel{
 	width: 100%;
-	max-height: 100%;
 	
 	display: none;
 	flex-direction: column;
 	flex: 1;
 	
-	overflow: hidden;
-	
 	box-sizing: border-box;
 }
 .panel.selected{
 	display: flex;
+}
+.panel.no-scrolling{
+	overflow: hidden;
 }
 
 #panel-labels{

@@ -1,6 +1,7 @@
 import os
 
 from django.shortcuts import render, reverse, redirect
+from django.urls import resolve
 from django.utils.crypto import get_random_string
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
@@ -101,9 +102,18 @@ def home(request):
     else:
         return render(request, 'core/error.html', errors['no_link'])
 
+    if request.user.userprofile.new_user:
+        new_user = True
+
+        request.user.userprofile.new_user = False
+        request.user.userprofile.save()
+    else:
+        new_user = False
+
     return render(request, 'core/home.html', {
         'other_rooms': rooms,
-        'playlists': playlists
+        'playlists': playlists,
+        'new_user': new_user
     })
 
 def landing(request):
@@ -130,8 +140,6 @@ def room(request, room_code):
         room = rooms[0]
 
         if request.POST:
-            print(request.POST)
-
             section = request.POST.get('section')
 
             if section == 'details':
@@ -165,6 +173,8 @@ def room(request, room_code):
                 if request.user != room.leader:
                     room.users.remove(request.user)
 
+                    request.session['visited-' + room.code] = False
+
                     return redirect('index')
 
         if request.user not in room.users.all():
@@ -185,7 +195,12 @@ def room(request, room_code):
             if user not in room.active_users.all():
                 offline_users.append(user)
 
+        new_room = not request.session.get('visited-' + room_code, False)
+
+        request.session['visited-' + room_code] = True
+
         data['room'] = room
+        data['new_room'] = new_room
         data['offline_users'] = offline_users
     else:
         return render(request, 'core/error.html', errors['invalid_room'])

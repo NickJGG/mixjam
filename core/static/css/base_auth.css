@@ -175,6 +175,7 @@ body{
 	height: 100%;
 	
 	display: flex;
+	flex: 1;
 	
 	overflow: hidden;
 	
@@ -196,6 +197,9 @@ body{
 	background-color: var(--medium-black);
 	
 	box-sizing: border-box;
+}
+#right-side-panel{
+	display: none;
 }
 .list-section{
 	width: 100%;
@@ -260,16 +264,16 @@ body{
 
 #panel-container{
 	width: 100%;
-	height: 100%;
 	
 	display: flex;
 	flex-direction: column;
+	flex: 1;
 	
-	padding: 20px;
+	padding: var(--panel-padding);
 	
 	background-color: var(--light-black);
 	
-	overflow: hidden;
+	overflow: auto;
 	
 	box-sizing: border-box;
 }
@@ -404,6 +408,93 @@ body{
 	background-repeat: no-repeat;
 
 	border-radius: 10px;
+}
+
+#user-message-container{
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background-color: rgba(0, 0, 0, .6);
+
+    z-index: 10;
+}
+#new-user-message{
+    max-width: 500px;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    padding: 20px 30px;
+
+    background-color: var(--medium-black);
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+
+    box-sizing: border-box;
+}
+#new-user-message img{
+    height: 75px;
+
+	border-radius: var(--border-radius);
+}
+#message-title{
+    margin-top: 10px;
+
+    font-family: Roboto-Bold;
+    font-size: 32px;
+    text-align: center;
+    color: white;
+}
+#message-body{
+    margin: 15px 0;
+
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #bbb;
+}
+.inline-tab{
+    margin: 10px 0;
+    padding: 10px 14px;
+
+    text-transform: uppercase;
+    color: white;
+
+    background-color: var(--light-black);
+}
+#message-tips{
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+.message-tip{
+    padding: 8px 10px;
+
+    font-size: 12px;
+	text-align: center;
+    color: #ccc;
+
+    background-color: var(--light-black);
+
+    border-radius: 10px;
+}
+.message-tip:not(:first-child){
+    margin-top: 5px;
+}
+#new-user-message .settings-actions{
+    justify-content: center;
 }
 
 a{

@@ -7,7 +7,7 @@
 	overflow: unset !important;
 }
 
-#user-card{
+#panel-container #user-card{
 	margin-bottom: var(--panel-padding);
 }
 

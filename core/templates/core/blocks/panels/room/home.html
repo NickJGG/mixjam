@@ -1,7 +1,7 @@
 {% load static %}
 
-<div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
-	<div id = "playlist-info" {% if room.banner_color != None %} style = "--banner-color: {{ room.banner_color }}" {% endif %}>
+<div id = "panel-home" class = "panel no-scrolling {% if selected == True %}selected{% endif %}">
+	<div id = "playlist-info" {% if room.banner_color != None %} style = "--banner-color: #{{ room.banner_color }}" {% endif %}>
 		<div id = "playlist-cover">
 			<img src = "{{ room.playlist_image_url }}">
 		</div>

@@ -1,10 +1,28 @@
 {% load static %}
 
-<html>
+<!doctype html>
+<html lang = "en">
 <head>
-	<title>{% block title %}Syncify{% endblock %}</title>
+	<meta charset = "utf-8">
 	
-	<link rel = "shortcut icon" href = "{% static 'img/icons/ico/logo-gray-379.ico' %}" />
+	<meta name="title" content="Syncify - Listen to your favorite music, together">
+	<meta name="description" content="Connect your Spotify account, invite your friends, and start listening to your favorite music - completely synced.">
+
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://spotsync.io/">
+	<meta property="og:title" content="Syncify - Listen to your favorite music, together">
+	<meta property="og:description" content="Connect your Spotify account, invite your friends, and start listening to your favorite music - completely synced.">
+	<meta property="og:image" content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png">
+
+	<meta property="twitter:card" content="summary_large_image">
+	<meta property="twitter:url" content="https://spotsync.io/">
+	<meta property="twitter:title" content="Syncify - Listen to your favorite music, together">
+	<meta property="twitter:description" content="Connect your Spotify account, invite your friends, and start listening to your favorite music - completely synced.">
+	<meta property="twitter:image" content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png">
+
+	<title>{% block title %}Syncify - Listen to your favorite music, together{% endblock %}</title>
+	
+	<link rel = "shortcut icon" type = "image/x-icon" href = "{% static 'img/icons/ico/logo-gray-379.ico' %}" />
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/base.css' %}">
 	
 	{% block css %}

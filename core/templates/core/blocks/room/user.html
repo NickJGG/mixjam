@@ -1,6 +1,6 @@
 {% load static %}
 
-<div id = "user-{{ user.username }}" class = "user" style = "--background-color: {{ user.userprofile.background_color }}">
+<div id = "user-{{ user.username }}" class = "user" style = "--background-color: #{{ user.userprofile.background_color }}">
     <div class = "user-header">
         {% include 'core/blocks/profile-picture.html' with width='var(--user-width)' height='var(--user-width)' %}
 
