@@ -8,12 +8,12 @@
 
 {% endblock %}
 
-{% block content %}
-	{{ block.super }}
+{% block visible_content %}
 
 	<div id = "main-content">
 		<div id = "welcome">
 			<p id = "welcome-message">Listen to your favorite music, together</p>
+			<p id = "welcome-para">Syncify connects to your Spotify account and controls it through rooms. </p>
 			<div id = "account-buttons">
 				<a href = "{% url 'login' %}"><div class = "account-button login">
 					<img src = "{% static 'img/icons/add-user-white-96.png' %}">
@@ -48,9 +48,6 @@
 				<a href = "{% static 'img/landing-3.png' %}"><img src = "{% static 'img/landing-3.png' %}"></a>
 			</div>
 		</div>
-	</div>
-	<div id = "footer">
-
 	</div>
 
 {% endblock %}

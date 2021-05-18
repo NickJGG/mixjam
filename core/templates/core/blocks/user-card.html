@@ -7,7 +7,7 @@
         <p id = "user-identity-username">{{ user.username }}</p>
         <p id = "user-identity-tagline">{{ user.userprofile.tag_line }}</p>
     </div>
-    <div id = "user-card-showcase" style = "--background-color: {{ user.userprofile.background_color }}">
+    <div id = "user-card-showcase" style = "--background-color: #{{ user.userprofile.background_color }}">
         <div class = "user-showcase-group">
             {% get_rooms user as rooms %}
             {% get_room_count user as room_count %}

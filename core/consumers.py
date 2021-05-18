@@ -122,7 +122,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.print_request(request_data)
 
         if request_type == 'playlist' and request_action not in self.playlist_notifications:
-            spotify.update_playlist(user, room, request_data['data'])
+            return_data = spotify.update_playlist(user, room, request_data['data'])
+
+            if request_action == 'song_end' and not return_data:
+                return
 
             request_data['data']['action_data']['user'] = user.username
         elif request_data['type'] == 'chat':

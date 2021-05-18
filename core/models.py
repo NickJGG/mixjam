@@ -71,8 +71,7 @@ class Room(models.Model):
 
     users = models.ManyToManyField(User, blank = True, related_name = 'users')
     active_users = models.ManyToManyField(User, blank = True, related_name = 'active_users')
-
-    new_room = models.BooleanField(default = True)
+    inactive_users = models.ManyToManyField(User, blank = True, related_name = 'inactive_users')
 
     def __str__(self):
         return self.code

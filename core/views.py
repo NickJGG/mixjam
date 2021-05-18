@@ -70,6 +70,7 @@ def home(request):
             room.save()
 
             room.users.add(request.user)
+            room.inactive_users.add(request.user)
 
             room.playlist = Playlist(room = room)
             room.playlist.save()
@@ -180,6 +181,7 @@ def room(request, room_code):
         if request.user not in room.users.all():
             if room.mode == RoomMode.PUBLIC:
                 room.users.add(request.user)
+                room.inactive_users.add(request.user)
                 room.save()
             else:
                 return render(request, 'core/error.html', errors['non_member'])
@@ -195,9 +197,11 @@ def room(request, room_code):
             if user not in room.active_users.all():
                 offline_users.append(user)
 
-        new_room = not request.session.get('visited-' + room_code, False)
+        new_room = request.user in room.inactive_users.all()
 
-        request.session['visited-' + room_code] = True
+        if new_room:
+            room.inactive_users.remove(request.user)
+            room.save()
 
         data['room'] = room
         data['new_room'] = new_room
@@ -215,6 +219,7 @@ def invite(request, invite_code):
 
         if room.check_invite():
             room.users.add(request.user)
+            room.inactive_users.add(request.user)
             room.save()
 
             return redirect('room', room_code = room.code)

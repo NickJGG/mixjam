@@ -36,6 +36,8 @@ def update_playlist(user, room, request_data):
     action = request_data['action']
     action_data = request_data['action_data']
 
+    return_data = None
+
     if action == 'play':
         room.playlist.playing = True
     elif action == 'pause':
@@ -56,12 +58,14 @@ def update_playlist(user, room, request_data):
     elif action == 'seek':
         room.playlist.progress_ms = action_data['seek_ms']
     elif action == 'song_end':
-        room.playlist.song_end()
+        return_data = room.playlist.song_end()
     
     room.playlist.last_action = timezone.now()
     room.playlist.save()
 
     print_update(room)
+
+    return return_data
 
 def print_update(room):
     print('""""" PLAYLIST UPDATE """""')

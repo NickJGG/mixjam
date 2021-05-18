@@ -11,8 +11,38 @@
 
     <div id = "header">
         <a href = "{% url 'index' %}">
-            <img id = "logo" src = "{% static 'img/icons/logo/logo-green-377.png' %}">
+            <div id = "logo">
+                <img src = "{% static 'img/icons/logo/logo-red.png' %}">
+                <p>Syncify</p>
+            </div>
         </a>
     </div>
+
+    {% block visible_content %}
+    {% endblock %}
+
+    <div id = "footer">
+        <div id = "footer-safe">
+            <div id = "footer-logo">
+                <img src = "{% static 'img/icons/logo/logo-red.png' %}">
+                <p>Syncify</p>
+            </div>
+            <div id = "footer-links">
+                <a href = "https://github.com/NickJGG">
+                    <div class = "footer-link">
+                        <img src = "{% static 'img/icons/github-white-96.png' %}">
+                    </div>
+                </a>
+                <a href = "https://icons8.com/">
+                    <div class = "footer-link">
+                        <img src = "{% static 'img/icons/icons8-white-96.png' %}">
+                    </div>
+                </a>
+            </div>
+            <div id = "footer-copyright">
+                © 2021 Nicholas Gilliam
+            </div>
+        </div>
+	</div>
 
 {% endblock %}
