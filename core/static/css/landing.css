@@ -13,6 +13,7 @@ body{
 
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	grid-gap: 20px;
 }
 #welcome{
 	display: flex;
@@ -24,11 +25,13 @@ body{
 
 	font-family: Roboto-Bold;
 	font-size: 38px;
+	text-align: center;
 }
 #welcome-para{
 	margin: 10px 0;
 
 	font-size: 14px;
+	text-align: center;
 	color: #ccc;
 }
 #account-buttons{
