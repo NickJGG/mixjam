@@ -40,6 +40,8 @@
     color: white;
 }
 
+/* #region Widgets */
+
 .widget-container{
     display: flex;
     flex-direction: column;
@@ -62,20 +64,6 @@
     
     margin-bottom: 10px;
 }
-.widget-list-actions{
-    height: 20px;
-
-    display: flex;
-    align-items: center;
-
-    margin-left: 10px;
-}
-.widget-list-action{
-    height: 100%;
-}
-.widget-list-action img{
-    height: 100%;
-}
 .widget-list-label{
     margin-left: 10px;
 
@@ -91,7 +79,7 @@
 }
 .widgets{
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     grid-gap: var(--panel-padding);
 }
 .widget{
@@ -117,28 +105,9 @@
 
     border-radius: 20px;
 
-    overflow: hidden;
-
     box-sizing: border-box;
 
     cursor: pointer;
-}
-.widget.fake{
-    background-color: unset;
-}
-.widget.action{
-    --initial-color: #656565;
-    --hover-color: var(--dark-green);
-
-    align-items: center;
-    justify-content: center;
-
-    border: 2px solid var(--initial-color);
-
-    transition: all .05s ease;
-}
-.widget.green{
-    --background-color: var(--dark-green);
 }
 .widget.link{
     background-color: var(--background-color);
@@ -159,17 +128,13 @@
 
     border-color: #2f7d56;
 }
-.widget.action:hover{
-    border-color: var(--hover-color);
-}
-.widget.action:hover .widget-action-image{
-    background-color: var(--hover-color);
-}
 .widget:hover{
     background-color: #2b2b2b;
 }
 .widget-image{
     width: 100%;
+
+    position: relative;
 
     padding-top: 100%;
 
@@ -180,18 +145,135 @@
     background-repeat: no-repeat;
 
     border-radius: calc(var(--border-radius) - 5px);
+
+    box-sizing: border-box;
 }
-.widget-action-image{
+.room-playing:hover{
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
+
+    border-radius: 15px;
+
+    box-shadow: 0 0 8px rgba(0, 0, 0, .4);
+
+    overflow: visible;
+}
+.room-playing{
     width: 50px;
     height: 50px;
 
-    background-color: var(--initial-color);
-	-webkit-mask-box-image: var(--background-image);
+    display: flex;
+    flex-direction: column;
+
+    position: absolute;
+    top: -1px;
+    left: -1px;
+
+    padding: 12.5px;
+
+    background-color: var(--medium-black);
+    
+    border-radius: 15px 0 15px 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    transition: all .15s ease;
+}
+.playing-image{
+    width: 25px;
+    height: 25px;
+}
+.room-users-container{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    margin-top: var(--panel-padding);
+
+    overflow-y: hidden;
+}
+.room-users-wrapper{
+    width: 100%;
+    
+    flex: 1;
+
+    margin-top: 8px;
+
+    overflow-y: scroll;
+}
+.room-users{
+    --container-width: calc(100% / 3);
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-gap: 10px;
+}
+.room-user{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    position: relative;
+	
+	border-radius: 12px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    z-index: 9;
+}
+.room-user p{
+    width: 100%;
+
+    padding: 5px 10px;
+
+    font-family: Roboto-Medium;
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+    color: white;
+
+    overflow: hidden;
+
+    z-index: 9;
+
+    box-sizing: border-box;
+}
+.room-user-background{
+	width: 100%;
+    height: 100%;
+
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	background-color: var(--user-color);
+
+	filter: brightness(.7) saturate(.8);
+
+	z-index: 1;
+}
+.pfp-wrapper{
+    width: 100%;
+
+    position: relative;
+
+    padding-top: 100%;
+
+    z-index: 10;
+}
+.pfp-wrapper .profile-picture-container{
+    position: absolute;
+    top: 0;
+    left: 0;
 
     transition: all .05s ease;
-}
-.widget.no-padding{
-    padding: 0;
+
+    border-radius: 12px 12px 0 0;
 }
 
 .widget-info{
@@ -200,128 +282,41 @@
     display: flex;
     flex-direction: column;
 
-    margin-top: var(--panel-padding);
+    margin-top: calc(var(--panel-padding) / 2);
 
     box-sizing: border-box;
 
     overflow: hidden;
 }
-.widget-type{
+.widget-label{
     display: flex;
     align-items: center;
-}
-.widget-type img{
-    height: 14px;
-
-    display: none;
-
-    margin-right: 2px;
-}
-.widget-type p{
-    font-family: Roboto-Medium;
-    font-size: 10px;
-    text-transform: uppercase;
-    color: var(--light-green);
 }
 .widget-name{
     font-family: Roboto-Medium;
     font-size: 22px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     color: white;
+
+    overflow: hidden;
 }
-.widget-list.small .widget-name{
-    font-size: 18px;
-}
-
-.widget-button-list{
-    width: 100%;
-
-    display: flex;
-    justify-content: center;
-}
-.widget-button{
-    --background-color: var(--dark-green);
-
-    padding: 10px;
-
-    background-color: var(--background-color);
-
-    border-radius: 100%;
-
-    box-sizing: border-box;
-}
-.widget-button:not(:first-child){
-    margin-left: 10px;
-}
-.widget-button img{
-    height: 32px;
-}
-
-#widget-user-info .user-icon{
-    height: 60px;
-}
-#widget-user-cover{
-    width: 100%;
-    height: 100px;
-
-    position: relative;
-
-    background-color: var(--background-color);
-}
-#widget-user-cover .profile-picture-container{
-    position: absolute;
-    top: calc(100% - var(--height) / 2);
-    left: calc(50% - var(--width) / 2);
-
-    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
-}
-#widget-user-details{
-    width: 100%;
-
+.room-creator{
     display: flex;
     align-items: center;
-    flex-direction: column;
-
-    margin-top: 55px;
 }
-#widget-user-name{
+.room-creator img{
+    height: 20px;
+}
+.room-creator p{
+    margin-left: 3px;
+
     font-family: Roboto-Medium;
-    font-size: 28px;
-}
-.user-username-container{
-    font-size: 10px;
-    color: #bbb;
-}
-.user-username{
-    margin-left: 1px;
-
     font-size: 12px;
-}
-
-.quick-action{
-    width: 150px;
-    height: 150px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-
-    background-color: var(--dark-green);
-
-    border-radius: var(--border-radius);
-
-    box-sizing: border-box;
-}
-.action-image{
-    height: 40px;
-
-    margin: 10px 0 10px 0;
-}
-.action-label{
-    font-family: Roboto-Medium;
-    font-size: 14px;
     color: white;
 }
+
+/* #endregion */
 
 #no-rooms-container{
     width: 100%;

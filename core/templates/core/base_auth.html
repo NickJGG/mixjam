@@ -67,7 +67,12 @@
 						
 						<a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
 							<div class = "section-item room">
-								<div class = "item-picture" style = "--background-image: url({{ room.playlist_image_url }})"></div>
+								<div class = "item-picture" style = "--background-image: url({{ room.playlist_image_url }})">
+									{% if room.playlist.playing %}
+										<div class = "playing-overlay" style = "--background-image: url({% static 'img/icons/logo.gif' %})"></div>
+									{% endif %}
+								</div>
+
 								<p class = "item-label no-underline">{{ room.title }}</p>
 							</div>
 						</a>

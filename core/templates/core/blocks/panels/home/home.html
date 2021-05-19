@@ -13,15 +13,40 @@
                     <a class = "no-underline" href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}">
                         <div class = "widget link" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }})">
                             <div class = "widget-image">
+                                {% if user.userprofile.most_recent_room.playlist.playing %}
 
+                                    <div class = "room-playing">
+                                        <img class = "playing-image" src = "{% static 'img/icons/logo.gif' %}">
+                                        <div class = "room-users-container">
+                                            <p class = "section-label">Listening • {{ user.userprofile.most_recent_room.active_users.all|length }}</p>
+                                            <div class = "room-users-wrapper">
+                                                <div class = "room-users">
+                                                    {% for user in user.userprofile.most_recent_room.active_users.all %}
+        
+                                                    <div class = "room-user" style = "--user-color: #{{ user.userprofile.background_color }}">
+                                                        <div class = "room-user-background"></div>
+                                                        <div class = "pfp-wrapper">
+                                                            {% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
+                                                        </div>
+                                                        <p>{{ user.username }}</p>
+                                                    </div>
+        
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endif %}
                             </div>
                             <div class = "widget-info">
-                                <div class = "widget-type">
-                                    <img src = "{% static 'img/icons/recent-white-24.png' %}">
-                                    <p>Most Recent</p>
-                                </div>
                                 <div class = "widget-label"> 
-                                    <p class = "widget-name">{{ user.userprofile.most_recent_room.title }}</p>
+                                    <p class = "widget-name" title = "{{ user.userprofile.most_recent_room.title }}">{{ user.userprofile.most_recent_room.title }}</p>
+                                </div>
+                                <div class = "room-creator">
+                                    <img src = "{% static 'img/icons/crown-96.png' %}">
+					
+					                <p>{{ user.userprofile.most_recent_room.leader.username }}</p>
                                 </div>
                             </div>
                         </div>
@@ -34,11 +59,39 @@
                     <a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
                         <div class = "widget link" style = "--background-image: url({{ room.playlist_image_url }})">
                             <div class = "widget-image">
+                                {% if room.playlist.playing %}
 
+                                    <div class = "room-playing">
+                                        <img class = "playing-image" src = "{% static 'img/icons/logo.gif' %}">
+                                        <div class = "room-users-container">
+                                            <p class = "section-label">Listening • {{ room.active_users.all|length }}</p>
+                                            <div class = "room-users-wrapper">
+                                                <div class = "room-users">
+                                                    {% for user in room.active_users.all %}
+                                                        <div class = "room-user" style = "--user-color: #{{ user.userprofile.background_color }}">
+                                                            <div class = "room-user-background"></div>
+                                                            <div class = "pfp-wrapper">
+                                                                {% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
+                                                            </div>
+                                                            <p>{{ user.username }}</p>
+                                                        </div>
+        
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endif %}
                             </div>
                             <div class = "widget-info">
-                                <div class = "widget-label"> 
+                                <div class = "widget-label">
                                     <p class = "widget-name">{{ room.title }}</p>
+                                </div>
+                                <div class = "room-creator">
+                                    <img src = "{% static 'img/icons/crown-96.png' %}">
+					
+					                <p>{{ room.leader.username }}</p>
                                 </div>
                             </div>
                         </div>
