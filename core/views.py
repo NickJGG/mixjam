@@ -1,9 +1,9 @@
 import os
 
-from django.shortcuts import render, reverse, redirect
-from django.urls import resolve
+from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.templatetags.static import static
 
 from channels.db import database_sync_to_async
 
@@ -312,3 +312,6 @@ def register(request):
             return redirect('index')
 
     return render(request, 'core/register.html')
+
+def ssl_validation(request):
+    return redirect(to=static('8A3D973566FBB24256364C68D5B03A1F.txt'))

@@ -31,4 +31,6 @@ urlpatterns = [
     path('login/', views.login, name = 'login'),
     path('logout/', views.logout, name = 'logout'),
     path('register/', views.register, name = 'register'),
+
+    path('.well-known/pki-validation/8A3D973566FBB24256364C68D5B03A1F.txt/', views.ssl_validation, name = 'ssl_validation'),
 ]
