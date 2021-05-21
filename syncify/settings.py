@@ -142,6 +142,9 @@ if os.environ.get('DJANGO_DEVELOPMENT'):
         },
     }
 else:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
     }
