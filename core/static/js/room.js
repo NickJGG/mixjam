@@ -5,7 +5,8 @@ $(document).ready(function(){
 	//                                    VARIABLES                                    //
 	//                                                                                 //
 	/////////////////////////////////////////////////////////////////////////////////////
-	
+
+	const ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 	const roomUrl = 'r/' + code + '/';
 	
 	var socket, timer, fullscreen = false, seek = false, movingProgress = false, reconnectTimer, notifications = [], notificationUpper = 4000, notificationLower = 2000, notificationTransition = 200, displayNotification = true;
@@ -267,7 +268,7 @@ $(document).ready(function(){
 	}
 	
 	function setupSocket(){
-		socket = new WebSocket('ws://' + window.location.host + '/ws/' + roomUrl);
+		socket = new WebSocket(ws_scheme + '://' + window.location.host + '/ws/' + roomUrl);
 
 		socket.onopen = function(e){
 			$('#connection-status').css('--background-color', 'var(--dark-green)');
