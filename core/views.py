@@ -1,4 +1,5 @@
 import os
+import random
 
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
@@ -312,6 +313,18 @@ def register(request):
             return redirect('index')
 
     return render(request, 'core/register.html')
+
+def password_reset(request):
+    return render(request, 'core/password_reset/reset.html')
+
+def password_done(request):
+    return render(request, 'core/password_reset/done.html')
+
+def password_confirm(request):
+    return render(request, 'core/password_reset/confirm.html')
+
+def password_complete(request):
+    return render(request, 'core/password_reset/complete.html')
 
 def ssl_validation(request):
     return redirect(to=static('8A3D973566FBB24256364C68D5B03A1F.txt'))

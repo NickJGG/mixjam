@@ -100,6 +100,8 @@
 
 	position: relative;
 	top: -5px;
+
+	margin-top: 6px;
 }
 #playlist-info-end{
 	display: flex;
@@ -663,9 +665,10 @@
 #offline-wrapper{
 	margin-top: var(--panel-padding);
 }
-.user{
+#tab-users .user{
 	--user-width: calc((var(--side-panel-width) - var(--panel-padding) * 3) / 2);
-
+}
+.user{
 	width: fit-content;
 
 	display: flex;
@@ -725,8 +728,6 @@
 	z-index: 2;
 }
 .user .profile-picture-container{
-	//box-shadow: 0 0 10px rgba(0, 0, 0, .3);
-	
 	border-radius: var(--border-radius) var(--border-radius) 0 0;
 
 	z-index: 2;
@@ -891,6 +892,146 @@
 
 	font-size: 12px;
 	color: white;
+}
+
+/* #endregion */
+
+/* #region Activities */
+
+.activity-section{
+	display: flex;
+	flex-direction: column;
+}
+.activity-section:not(:first-child){
+	margin-top: calc(var(--panel-padding) * 2);
+}
+.activity-section-label{
+	font-family: Roboto-Bold;
+	font-size: 32px;
+	color: white;
+}
+.activity-list{
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.activity-section-content{
+	margin-top: 10px;
+}
+.activity-widget-wrapper{
+	position: relative;
+
+	padding-top: 100%;
+
+	background-color: #9939b0;
+
+	border-radius: var(--border-radius);
+
+	overflow: hidden;
+
+	box-sizing: border-box;
+}
+.activity-widget{
+	width: 100%;
+	height: 100%;
+
+	display: flex;
+	justify-content: flex-end;
+	flex-direction: column;
+
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	padding: 15px;
+
+	box-sizing: border-box;
+
+	cursor: pointer;
+}
+.activity-widget:hover{
+	background-color: rgba(0, 0, 0, .1);
+}
+.activity-widget-header{
+	width: 100%;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	box-sizing: border-box;
+}
+.activity-widget-type{
+	height: 24px;
+
+	padding: 15px;
+
+	background-color: rgba(0, 0, 0, .4);
+
+	box-shadow: 0 0 8px rgba(0, 0, 0, .3);
+
+	border-radius: 0 0 var(--border-radius) 0;
+}
+.activity-widget-players{
+	display: flex;
+	align-items: center;
+
+	font-family: Roboto-Medium;
+	font-size: 14px;
+	color: white;
+
+	padding: 15px;
+}
+.activity-widget-players img{
+	height: 20px;
+}
+.activity-widget-players p{
+	margin-right: 4px;
+}
+
+.activity-widget-info{
+	display: flex;
+	flex-direction: column;
+}
+.activity-widget-name{
+	font-family: Roboto-Bold;
+	font-size: 22px;
+	color: white;
+}
+.activity-widget-creator{
+	display: flex;
+	align-items: center;
+
+	font-family: Roboto-Bold;
+	font-size: 12px;
+	color: #eee;
+}
+.activity-widget-creator img{
+	height: 18px;
+
+	margin-right: 3px;
+}
+
+.activity-list-container{
+	display: flex;
+	flex-direction: column;
+}
+.activity-list-container:not(:first-child){
+	margin-top: 20px;
+}
+.activity-list-label{
+	margin-left: 10px;
+	margin-bottom: 10px;
+
+	font-family: Roboto-Medium;
+	font-size: 20px;
+	color: white;
+}
+.activity-list-container .activity-list{
+
 }
 
 /* #endregion */

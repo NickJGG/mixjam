@@ -22,14 +22,7 @@
                                             <div class = "room-users-wrapper">
                                                 <div class = "room-users">
                                                     {% for user in user.userprofile.most_recent_room.active_users.all %}
-                                                        <div class = "room-user" style = "--user-color: #{{ user.userprofile.background_color }}">
-                                                            <div class = "room-user-background"></div>
-                                                            <div class = "pfp-wrapper">
-                                                                {% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
-                                                            </div>
-                                                            <p>{{ user.username }}</p>
-                                                        </div>
-        
+                                                        {% include 'core/blocks/user-lite.html' with user=user %}
                                                     {% endfor %}
                                                 </div>
                                             </div>
@@ -71,14 +64,7 @@
                                             <div class = "room-users-wrapper">
                                                 <div class = "room-users">
                                                     {% for user in room.active_users.all %}
-                                                        <div class = "room-user" style = "--user-color: #{{ user.userprofile.background_color }}">
-                                                            <div class = "room-user-background"></div>
-                                                            <div class = "pfp-wrapper">
-                                                                {% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
-                                                            </div>
-                                                            <p>{{ user.username }}</p>
-                                                        </div>
-        
+                                                        {% include 'core/blocks/user-lite.html' with user=user %}
                                                     {% endfor %}
                                                 </div>
                                             </div>

@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	var labelToPanelId = {
 		'home': 'home',
-		'toke journey': 'journey',
+		'journey': 'journey',
 		'settings': 'settings',
 		'personalization': 'personalization',
 		'privacy': 'privacy',
@@ -10,7 +10,7 @@ $(document).ready(function(){
 		'create room': 'create',
 	};
 	
-	$('.subpanel-label').on('click', function(){
+	$(document).on('click', '.subpanel-label', function(){
 		var label = $(this).text().trim().toLowerCase();
 		
 		$('.subpanel-label.selected').removeClass('selected');
@@ -19,7 +19,7 @@ $(document).ready(function(){
 		$('.subpanel.selected').removeClass('selected');
 		$('#subpanel-' + label).addClass('selected');
 	});
-	$('.panel-label').on('click', function(){
+	$(document).on('click', '.panel-label', function(){
 		var label = $(this).text().trim().toLowerCase();
 		
 		$('.panel-label.selected').removeClass('selected');

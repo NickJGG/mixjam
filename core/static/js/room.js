@@ -15,6 +15,16 @@ $(document).ready(function(){
 	
 // 	#region Main Functions
 
+	function updateActivity(data){
+		var action = data['response_data']['action'],
+			action_data = data['response_data']['action_data'];
+
+		switch (action){
+			default:
+				break;
+		}
+	}
+
 	function updateUserAction(data){
 		var action = data['response_data']['action'];
 
@@ -317,6 +327,10 @@ $(document).ready(function(){
 					updateUserAction(data);
 
 					break;
+				case 'activity':
+					updateActivity(data);
+
+					break;
 				default:
 					break;
 			}
@@ -548,6 +562,15 @@ $(document).ready(function(){
 			$('#leave-room').val('Leave Room');
 			$('#leave-room').removeClass('red');
 		});
+
+		$('.activity-widget-wrapper.journey').on('click', function(){
+			var journeyId = $(this).find('.activity-id').val();
+
+			socketActivity('open', action_data = {
+				'activity_type': 'journey',
+				'id': journeyId
+			});
+		});
 	}
 
 // 	#endregion
@@ -670,6 +693,12 @@ $(document).ready(function(){
 	}
 	function socketChat(action, action_data = {}){
 		socketSend('chat', {
+			'action': action,
+			'action_data': action_data
+		});
+	}
+	function socketActivity(action, action_data = {}){
+		socketSend('activity', {
 			'action': action,
 			'action_data': action_data
 		});
