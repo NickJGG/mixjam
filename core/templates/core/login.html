@@ -13,15 +13,18 @@
 {% block visible_content %}
 
 	<div id = "main-content">
-		<form method = "POST">
+		<form id = "form-centered" method = "POST">
 			{% csrf_token %}
 			
 			<p id = "page-header">Login</p>
 			<hr>
 			<input type = "text" name = "username" placeholder = "Username">
 			<input type = "password" name = "password" placeholder = "Password">
-			<input type = "submit" value = "LOGIN">
-			<p class = "alt-message">Don't have an account? <a class = "alt-link" href = "{% url 'register' %}">Sign up</a></p>
+			<input type = "submit" value = "Login">
+			<div id = "alt-messages">
+				<p class = "alt-message">Don't have an account? <a class = "alt-link" href = "{% url 'register' %}">Sign up</a></p>
+				<p class = "alt-message">Forgot password? <a class = "alt-link gray" href = "{% url 'password_reset' %}">Reset password</a></p>
+			</div>
 		</form>
 	</div>
 

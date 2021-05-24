@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['localhost', 'syncified.herokuapp.com', 'www.mixjam.io', 'mixja
 INSTALLED_APPS = [
     'channels',
     'core',
+    'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -143,7 +144,7 @@ if os.environ.get('DJANGO_DEVELOPMENT'):
         },
     }
 
-    MAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -170,5 +171,12 @@ else:
             }
         }
     }
+
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'mail.smtp2go.com'
+    EMAIL_HOST_USER = 'mixjam.io'
+    EMAIL_HOST_PASSWORD = 'GVVaTxgsaMub'
+    EMAIL_PORT = 2525
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"

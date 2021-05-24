@@ -1,5 +1,6 @@
-form{
+#form-centered{
 	display: flex;
+	align-items: center;
 	flex-direction: column;
 }
 
@@ -12,14 +13,61 @@ form{
 	font-size: 36px;
 	color: white;
 }
+#page-subheader{
+	margin: 7px 0;
+
+	font-size: 14px;
+	text-align: center;
+	color: #ccc;
+}
+
+.message-hints{
+    width: 300px;
+
+    display: flex;
+    flex-direction: column;
+
+	margin-top: 10px;
+}
+.message-hints p{
+    padding: 8px 10px;
+
+    font-size: 12px;
+	text-align: center;
+    color: #ccc;
+
+    background-color: #333;
+
+    border-radius: 10px;
+}
+.message{
+	color: white !important;
+}
+.message.error{ background-color: #d34242; }
+.message-hints p:not(:first-child){
+	margin-top: 4px;
+}
+
+#alt-message{
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
 .alt-message{
 	align-self: center;
 	
 	font-size: 12px;
+	text-align: center;
+}
+.alt-message:not(:first-child){
+	margin-top: 2px;
 }
 .alt-link{
 	font-family: Roboto-Medium;
 	color: #07ace5;
+}
+.alt-link.gray{
+	color: #aaa;
 }
 .alt-link.green{
 	color: var(--dark-green);
@@ -27,4 +75,24 @@ form{
 .alt-link:hover{
 	text-decoration: underline;
 	text-underline-offset: 1px;
+}
+
+.login-option{
+	margin-top: 5px;
+    padding: 9px 20px;
+
+    font-family: Roboto-Medium;
+    font-size: 14px;
+    color: white;
+
+    background-color: var(--dark-green);
+
+    border-radius: var(--border-radius);
+
+    text-decoration: none !important;
+
+    box-sizing: border-box;
+}
+.login-option:hover{
+    background-color: #12ce71;
 }

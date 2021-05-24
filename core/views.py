@@ -1,10 +1,19 @@
 import os
 import random
 
+from django.core.mail import send_mail, BadHeaderError
+from django.db.models.query_utils import Q
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib import messages
 from django.templatetags.static import static
+from django.template.loader import render_to_string
 
 from channels.db import database_sync_to_async
 
@@ -315,16 +324,43 @@ def register(request):
     return render(request, 'core/register.html')
 
 def password_reset(request):
-    return render(request, 'core/password_reset/reset.html')
+    if request.method == 'POST':
+        password_reset_form = PasswordResetForm(request.POST)
 
-def password_done(request):
-    return render(request, 'core/password_reset/done.html')
+        if password_reset_form.is_valid(): 
+            data = password_reset_form.cleaned_data['email']
+            associated_users = User.objects.filter(Q(email=data))
+			
+            if associated_users.exists():
+                for user in associated_users:
+                    subject = 'Password Reset Requested'
+                    
+                    c = {
+                        'email': user.email,
+                        'domain':'mixjam.io',
+                        'site_name': 'MixJam',
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'user': user,
+                        'token': default_token_generator.make_token(user),
+                        'protocol': 'https',
+				    }
 
-def password_confirm(request):
-    return render(request, 'core/password_reset/confirm.html')
+                    email = render_to_string('core/password_reset/password_reset_email.txt', c)
+					
+                    try:
+                        send_mail(subject, email, 'admin@mixjam.io' , [user.email], fail_silently=False)
+                    except BadHeaderError:
+                        return HttpResponse('Invalid header found.')
+					
+                    return redirect("password_reset_done")
+            else:
+                messages.error(request, 'The email you entered is not associated with any account')
+    
+    password_reset_form = PasswordResetForm()
 
-def password_complete(request):
-    return render(request, 'core/password_reset/complete.html')
+    return render(request, 'core/password_reset/password_reset.html', {
+        'password_reset_form': password_reset_form
+    })
 
 def ssl_validation(request):
     return redirect(to=static('8A3D973566FBB24256364C68D5B03A1F.txt'))

@@ -13,7 +13,7 @@
 {% block visible_content %}
 
 	<div id = "main-content">
-		<form id = "post" method = "POST">
+		<form id = "form-centered" method = "POST">
 			{% csrf_token %}
 		
 			<p id = "page-header">Sign Up</p>
@@ -22,7 +22,7 @@
 			<input type = "email" name = "email" placeholder = "Email">
 			<input type = "password" name = "password" placeholder = "Password">
 			<input type = "password" name = "confirm-password" placeholder = "Confirm Password">
-			<input class = "blue" type = "submit" value = "REGISTER">
+			<input class = "blue" type = "submit" value = "Register">
 			<p class = "alt-message">Already have an account? <a class = "alt-link green" href = "{% url 'login' %}">Login</a></p>
 		</form>
 	</div>

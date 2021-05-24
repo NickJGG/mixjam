@@ -137,9 +137,9 @@ input[type="submit"]{
 	
 	cursor: pointer;
 }
-input[type="submit"].blue{
-	background-color: #07ace5;
-}
+input[type="submit"]:hover{ background-color: #03d16c; }
+input[type="submit"].blue{ background-color: #07ace5; }
+input[type="submit"].blue:hover{ background-color: #0bc0ff; }
 input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus{
 	border-color: white;
 }
