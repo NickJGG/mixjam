@@ -1,3 +1,26 @@
 <div id = "panel-privacy" class = "panel {% if selected == True %}selected{% endif %}">
-	
+	<div id = "settings-sections">
+		<div class = "settings-section">
+			<form method = "POST">
+				{% csrf_token %}
+		
+				<input type = "hidden" name = "panel-label" value = "privacy">
+				
+				<p class = "settings-label">Password</p>
+				<div class = "settings-list">
+					<div class = "setting">
+						<p class = "setting-label">New Password</p>
+						<input type = "password" name = "password1">
+					</div>
+					<div class = "setting">
+						<p class = "setting-label">Confirm Password</p>
+						<input type = "password" name = "password2">
+					</div>
+					<div class = "settings-actions">
+						<input type = "submit" value = "Save">
+					</div>
+				</div>
+			</form>
+		</div>
+    </div>
 </div>

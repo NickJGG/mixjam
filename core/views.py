@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
@@ -274,6 +274,22 @@ def account(request):
 
                     request.user.userprofile.save()
                     request.user.save()
+            elif panel == 'privacy':
+                password1 = request.POST.get('password1')
+                password2 = request.POST.get('password2')
+
+                if password1 and password2:
+                    if password1 == password2:
+                        request.user.set_password(password1)
+                        request.user.save()
+
+                        update_session_auth_hash(request, request.user)
+
+                        messages.success(request, 'Password changed')
+                    else:
+                        messages.error(request, 'Passwords do not match')
+                else:
+                    messages.error(request, 'Please enter a new password')
 
     authorized = spotify.refresh_token(request.user)
 

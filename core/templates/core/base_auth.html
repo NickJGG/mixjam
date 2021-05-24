@@ -7,6 +7,7 @@
 	{{ block.super }}
 
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/base_auth.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/messages.css' %}">
 
 {% endblock %}
 	
@@ -100,6 +101,21 @@
 			</div>
 		</div>
 		<div id = "panel-container">
+			{% if messages %}
+				
+				<div id = "messages-container">
+					{% for message in messages %}
+
+						<div class = "message {% if message.tags %}{{ message.tags }}{% endif %}">
+							<p>{{ message }}</p>
+							<img src = "{% static 'img/icons/close-white-96.png' %}">
+						</div>
+
+					{% endfor %}
+				</div>
+			
+			{% endif %}
+
 			{% block panel_container %}
 			{% endblock %}
 		</div>

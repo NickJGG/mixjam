@@ -24,4 +24,12 @@ $(document).ready(function(){
     $('#close-message').on('click', function(){
         $('#user-message-container').css('display', 'none');
     });
+
+    $('.message img').on('click', function(){
+        $(this).parent().remove();
+
+        if ($('#messages-container').children().length == 0){
+            $('#messages-container').remove();
+        }
+    });
 });
