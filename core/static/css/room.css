@@ -632,6 +632,8 @@
 	width: 100%;
 
 	margin-top: var(--panel-padding);
+
+	box-sizing: border-box;
 }
 
 #unread-count{

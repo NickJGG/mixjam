@@ -20,7 +20,7 @@
 								{% for image in images %}
 						
 									{% with 'img/profile//'|add:image as path %}
-										<div class = "picture-choice {% if user.userprofile.icon_image in path %}selected{% endif %}" style = "--highlight-color: {{ user.userprofile.background_color }}; --icon: url({% static path %})"></div>
+										<div class = "picture-choice {% if user.userprofile.icon_image in path %}selected{% endif %}" style = "--highlight-color: #{{ user.userprofile.background_color }}; --icon: url({% static path %})"></div>
 									{% endwith %}
 						
 								{% endfor %}
