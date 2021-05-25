@@ -2,6 +2,7 @@ import os
 import random
 
 from django.core.mail import send_mail, BadHeaderError
+from django.core.exceptions import ValidationError
 from django.db.models.query_utils import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -9,6 +10,7 @@ from django.utils.crypto import get_random_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, update_session_auth_hash
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
@@ -417,6 +419,8 @@ def login(request):
             auth_login(request, user)
 
             return redirect('index')
+        else:
+            messages.error(request, 'Either username or password are invalid')
 
     return render(request, 'core/login.html')
 
@@ -433,13 +437,21 @@ def register(request):
         confirm_password = request.POST.get('confirm-password')
 
         if password == confirm_password:
-            user = User.objects.create_user(username, email, password)
-            auth_login(request, user)
+            try:
+                validate_password(password)
 
-            userprofile = UserProfile(user = user)
-            userprofile.save()
+                user = User.objects.create_user(username, email, password)
+                auth_login(request, user)
 
-            return redirect('index')
+                userprofile = UserProfile(user = user)
+                userprofile.save()
+
+                return redirect('index')
+            except ValidationError as error:
+                for e in error:
+                    messages.error(request, e)
+        else:
+            messages.error(request, 'Passwords must match')
 
     return render(request, 'core/register.html')
 

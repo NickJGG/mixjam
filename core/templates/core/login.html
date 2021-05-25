@@ -18,6 +18,19 @@
 			
 			<p id = "page-header">Login</p>
 			<hr>
+
+			{% if messages %}
+
+                <div class = "message-hints">
+                    {% for message in messages %}
+
+                        <p class = "message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+
+                    {% endfor %}
+                </div>
+
+            {% endif %}
+
 			<input type = "text" name = "username" placeholder = "Username">
 			<input type = "password" name = "password" placeholder = "Password">
 			<input type = "submit" value = "Login">

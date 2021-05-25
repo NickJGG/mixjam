@@ -18,9 +18,27 @@
 		
 			<p id = "page-header">Sign Up</p>
 			<hr>
+
+			{% if messages %}
+
+                <div class = "message-hints">
+                    {% for message in messages %}
+
+                        <p class = "message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+
+                    {% endfor %}
+                </div>
+
+            {% endif %}
+
 			<input type = "text" name = "username" placeholder = "Username">
 			<input type = "email" name = "email" placeholder = "Email">
 			<input type = "password" name = "password" placeholder = "Password">
+			<div class = "message-hints">
+                <p>Your password must contain at least 8 characters.</p>
+                <p>Your password can’t be a commonly used password.</p>
+                <p>Your password can’t be entirely numeric.</p>
+            </div>
 			<input type = "password" name = "confirm-password" placeholder = "Confirm Password">
 			<input class = "blue" type = "submit" value = "Register">
 			<p class = "alt-message">Already have an account? <a class = "alt-link green" href = "{% url 'login' %}">Login</a></p>
