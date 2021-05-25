@@ -9,12 +9,16 @@
 				<p class = "settings-label">Details</p>
 				<div class = "settings-list">
 					<div class = "setting">
+						<p class = "setting-label">Name</p>
+						<input type = "text" name = "name" value = "{{ room.title }}">
+					</div>
+					<div class = "setting">
 						<p class = "setting-label">Description</p>
 						<textarea name = "description">{{ room.description }}</textarea>
 					</div>
 					<div class = "setting">
 						<p class = "setting-label">Banner Color (HEX)</p>
-						<input type = "text" name = "banner-color" value = "{{ room.banner_color }}">
+						<input type = "text" name = "banner-color" value = "{% if room.banner_color %}{{ room.banner_color }}{% endif %}">
 					</div>
 					<div class = "settings-actions">
 						<input type = "submit" value = "Save">

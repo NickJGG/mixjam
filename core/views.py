@@ -156,22 +156,46 @@ def room(request, room_code):
             section = request.POST.get('section')
 
             if section == 'details':
+                changed = False
+
+                title = request.POST.get('name')
                 description = request.POST.get('description')
                 banner_color = request.POST.get('banner-color')
+
+                if title and len(title) > 0:
+                    if not changed and title != room.title:
+                        changed = True
+
+                    room.title = title
+                else:
+                    messages.error(request, 'Title is too short')
+                
+                if description and len(description) > 0:
+                    if not changed and description != room.description:
+                        changed = True
+
+                    room.description = description
+                else:
+                    messages.error(request, 'Description is too short')
 
                 try:
                     int(banner_color, 16)
 
-                    if description:
-                        room.description = description
-                        room.banner_color = banner_color
-                        room.save()
+                    if not changed and banner_color != room.banner_color:
+                        changed = True
 
-                        messages.success(request, 'Details changed')
+                    room.banner_color = banner_color
                 except:
-                    pass
+                    messages.error(request, 'Banner color is in the wrong format (Hex)')
+
+                if changed:
+                    messages.success(request, 'Details updated')
+
+                room.save()
             elif section == 'privacy':
                 if request.user == room.leader:
+                    changed = False
+
                     mode = request.POST.get('mode')
                     new_code = request.POST.get('new-code')
 
@@ -180,7 +204,15 @@ def room(request, room_code):
 
                         messages.success(request, 'New invite code generated')
 
-                    room.mode = mode
+                    if mode:
+                        if not changed and mode != room.mode:
+                            changed = True
+
+                        room.mode = mode
+                    
+                    if changed:
+                        messages.success(request, 'Privacy mode updated')
+
                     room.save()
             elif section == 'delete':
                 room_name = room.title
@@ -258,38 +290,93 @@ def account(request):
         if 'panel-label' in request.POST:
             panel = request.POST.get('panel-label')
 
+            changed = False
+
             if panel == 'personalization':
                 icon_image = request.POST.get('icon-image')
                 icon_color = request.POST.get('icon-color')
                 background_color = request.POST.get('background-color')
 
-                try:
-                    int(icon_color, 16)
-                    int(background_color, 16)
+                if icon_image:
+                    if not changed and icon_image != request.user.userprofile.icon_image:
+                        changed = True
 
-                    request.user.userprofile.icon_image = icon_image
-                    request.user.userprofile.icon_color = icon_color
-                    request.user.userprofile.background_color = background_color
-                    request.user.userprofile.save()
+                        request.user.userprofile.icon_image = icon_image
 
+                if icon_color:
+                    try:
+                        int(icon_color, 16)
+                        
+                        if len(icon_color) > 6:
+                            raise ValueError
+
+                        if not changed and icon_color != request.user.userprofile.icon_color:
+                            changed = True
+
+                        request.user.userprofile.icon_color = icon_color
+                    except:
+                        messages.error(request, 'Icon color is in the wrong format (Hex)')
+                
+                if background_color:
+                    try:
+                        int(background_color, 16)
+
+                        if len(background_color) > 6:
+                            raise ValueError
+
+                        if not changed and background_color != request.user.userprofile.background_color:
+                            changed = True
+
+                        request.user.userprofile.background_color = background_color
+                    except:
+                        messages.error(request, 'Background color is in the wrong format (Hex)')
+
+                if changed:
                     messages.success(request, 'Details updated')
-                except:
-                    messages.error(request, 'One of your colors is in the wrong format (Hex)')
+
+                request.user.userprofile.save()
             elif panel == 'overview':
                 first_name = request.POST.get('first-name')
                 last_name = request.POST.get('last-name')
                 email = request.POST.get('email')
                 tag_line = request.POST.get('tag-line')
 
-                if first_name and last_name and email and tag_line:
+                if first_name and len(first_name) > 0:
+                    if not changed and first_name != request.user.first_name:
+                        changed = True
+
                     request.user.first_name = first_name
+                else:
+                    messages.error(request, 'First name is too short')
+                
+                if last_name and len(last_name) > 0:
+                    if not changed and last_name != request.user.last_name:
+                        changed = True
+
                     request.user.last_name = last_name
+                else:
+                    messages.error(request, 'Last name is too short')
+
+                if email and len(email) > 0:
+                    if not changed and email != request.user.email:
+                        changed = True
+
                     request.user.email = email
+                else:
+                    messages.error(request, 'Email is too short')
+                
+                if tag_line and len(tag_line) > 0:
+                    if not changed and tag_line != request.user.userprofile.tag_line:
+                        changed = True
+
                     request.user.userprofile.tag_line = tag_line
+                else:
+                    messages.error(request, 'Tag line is too short')
 
-                    request.user.userprofile.save()
-                    request.user.save()
+                request.user.userprofile.save()
+                request.user.save()
 
+                if changed:
                     messages.success(request, 'Details updated')
             elif panel == 'privacy':
                 password1 = request.POST.get('password1')

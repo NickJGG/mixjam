@@ -57,7 +57,7 @@ class Room(models.Model):
     code = models.CharField(max_length = 30)
     title = models.CharField(max_length=150, default="New Room")
     description = models.CharField(max_length = 1000, default = "")
-    banner_color = models.CharField(max_length = 6, null = True, blank = True)
+    banner_color = models.CharField(max_length = 6, null = True, blank = True, default = '141414')
     mode = models.CharField(max_length = 50, choices = RoomMode.MODE_CHOICES, default = RoomMode.PRIVATE)
 
     invite_code = models.CharField(max_length = 6, null = True, blank = True)
