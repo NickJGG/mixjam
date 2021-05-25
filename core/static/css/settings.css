@@ -82,10 +82,10 @@ textarea{
     width: 400px;
     height: 100px;
 }
-input:not(input[type="submit"]){
+input:not(input[type="submit"]):not(input[type="radio"]){
 	width: 300px;
 }
-input:not(input[type="submit"]), textarea, .radio-buttons{
+input:not(input[type="submit"]):not(input[type="radio"]), textarea, .radio-buttons{
 	margin-top: 5px;
 }
 input[type="submit"]{

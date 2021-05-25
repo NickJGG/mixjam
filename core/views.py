@@ -140,6 +140,8 @@ def callback(request):
         request.user.userprofile.authorized = True
         request.user.userprofile.save()
 
+        messages.success(request, 'Spotify account linked')
+
     return redirect('index')
 
 def room(request, room_code):
@@ -164,6 +166,8 @@ def room(request, room_code):
                         room.description = description
                         room.banner_color = banner_color
                         room.save()
+
+                        messages.success(request, 'Details changed')
                 except:
                     pass
             elif section == 'privacy':
@@ -174,10 +178,16 @@ def room(request, room_code):
                     if new_code is not None:
                         room.new_invite()
 
+                        messages.success(request, 'New invite code generated')
+
                     room.mode = mode
                     room.save()
             elif section == 'delete':
+                room_name = room.title
+
                 room.delete()
+
+                messages.success(request, room_name + ' deleted')
 
                 return redirect('index')
             elif section == 'leave':
@@ -185,6 +195,8 @@ def room(request, room_code):
                     room.users.remove(request.user)
 
                     request.session['visited-' + room.code] = False
+
+                    messages.success(request, 'Left ' + room.title)
 
                     return redirect('index')
 
@@ -253,13 +265,16 @@ def account(request):
 
                 try:
                     int(icon_color, 16)
+                    int(background_color, 16)
 
                     request.user.userprofile.icon_image = icon_image
                     request.user.userprofile.icon_color = icon_color
                     request.user.userprofile.background_color = background_color
                     request.user.userprofile.save()
+
+                    messages.success(request, 'Details updated')
                 except:
-                    pass
+                    messages.error(request, 'One of your colors is in the wrong format (Hex)')
             elif panel == 'overview':
                 first_name = request.POST.get('first-name')
                 last_name = request.POST.get('last-name')
@@ -274,6 +289,8 @@ def account(request):
 
                     request.user.userprofile.save()
                     request.user.save()
+
+                    messages.success(request, 'Details updated')
             elif panel == 'privacy':
                 password1 = request.POST.get('password1')
                 password2 = request.POST.get('password2')
