@@ -84,7 +84,7 @@ class Room(models.Model):
     
     def get_site_url(self):
         return 'http://localhost:8000' if os.environ.get(
-            'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com'
+            'DJANGO_DEVELOPMENT') else 'https://mixjam.io'
 
     def get_invite_link(self):
         self.check_invite()
