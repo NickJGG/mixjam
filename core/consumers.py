@@ -1,4 +1,5 @@
 import json
+from django.shortcuts import render
 import requests
 import time
 
@@ -61,7 +62,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
             }
         )
 
-        await spotify.update_play(user, room)
+        response = await spotify.update_play(user, room)
+
+        devices, active, volume = await self.get_devices()
+
+        await self.send(text_data=json.dumps({
+            'type': 'devices',
+            'response_data': {
+                'devices': devices,
+                'active': active,
+                'volume': volume
+            }
+        }))
 
         await self.request_playlist({
             'data': {
@@ -161,6 +173,48 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 return
             elif request_action == 'leave':
                 request_data['data']['action_data']['user'] = user.username
+            elif request_action == 'select_device':
+                device_id = request_data['data']['action_data']['device_id']
+
+                response = spotify.select_device(user, device_id)
+
+                try:
+                    if response.status_code == 204:
+                        await spotify.update_play(user, room)
+                except:
+                    pass
+
+                devices, active, volume = await self.get_devices()
+
+                await self.send(text_data=json.dumps({
+                    'type': 'devices',
+                    'response_data': {
+                        'devices': devices,
+                        'active': active,
+                        'volume': volume
+                    }
+                }))
+
+                return
+            elif request_action == 'get_devices':
+                devices, active, volume = await self.get_devices()
+
+                await self.send(text_data=json.dumps({
+                    'type': 'devices',
+                    'response_data': {
+                        'devices': devices,
+                        'active': active,
+                        'volume': volume
+                    }
+                }))
+
+                return
+            elif request_action == 'set_volume':
+                volume_percent = request_data['data']['action_data']['volume_percent']
+
+                response = await spotify.set_volume(user, volume_percent)
+
+                return
 
         request_data['type'] = 'request_' + request_data['type']
 
@@ -347,3 +401,29 @@ class RoomConsumer(AsyncWebsocketConsumer):
         print('\nType: ' + request_data['type'])
         print('Data: ' + json.dumps(request_data['data'], indent = 4))
         print('==================== END REQUEST ===\n')
+    
+    async def get_devices(self):
+        active = False
+        volume = 0
+
+        user = self.scope['user']
+
+        raw_devices = await spotify.get_devices(user)
+
+        devices = []
+
+        for device in raw_devices.json()['devices']:
+            if device['is_active']:
+                devices = [(render_to_string('core/blocks/room/device.html', {
+                    'device': device
+                }))] + devices
+                
+                active = True
+
+                volume = device['volume_percent']
+            else:
+                devices.append(render_to_string('core/blocks/room/device.html', {
+                    'device': device
+                }))
+        
+        return devices, active, volume

@@ -28,6 +28,8 @@ endpoints = {
     'seek': 'https://api.spotify.com/v1/me/player/seek',
     'previous': 'https://api.spotify.com/v1/me/player/previous',
     'next': 'https://api.spotify.com/v1/me/player/next',
+    'devices': 'https://api.spotify.com/v1/me/player/devices',
+    'volume': 'https://api.spotify.com/v1/me/player/volume',
 }
 
 # region Room Player
@@ -76,35 +78,60 @@ def print_update(room):
     print('"""""""""""""""""""""""""""')
 
 async def update_play(user, room):
-    await play_direct(user, room, {
+    response = await play_direct(user, room, {
         'offset': room.playlist.song_index,
     })
 
     if not room.playlist.playing:
-        await pause(user, room)
+        return await pause(user, room)
+    
+    if response is not None:
+        try:
+            code = response.status_code
+
+            if code == 404:
+                return 404
+        except:
+            pass
+    
+    return response
 
 async def action(user, room, request_action, action_data = None):
-    before = timezone.now()
+    response = None
 
     if request_action == 'play':
-        await play(user, room)
+        response = await play(user, room)
     elif request_action == 'play_direct':
-        await play_direct(user, room, action_data)
+        response = await play_direct(user, room, action_data)
     elif request_action == 'pause':
-        await pause(user, room)
+        response = await pause(user, room)
     elif request_action == 'seek':
-        await seek(user, action_data)
+        response = await seek(user, action_data)
     elif request_action == 'previous':
-        await previous(user)
+        response = await previous(user)
     elif request_action == 'next':
-        await next(user)
+        response = await next(user)
     elif request_action == 'song_end':
-        await sync(user, room)
+        response = await sync(user, room)
 
-    after = timezone.now()
+    return response
+
+async def get_devices(user):
+    return await async_get(user, endpoints['devices'])
+
+def select_device(user, device_id):
+    return put(user, endpoints['player'], data = {
+        'device_ids': [device_id],
+        'play': True
+    })
+
+async def set_volume(user, volume_percent):
+    return await async_put(user, endpoints['volume'], params = {
+        'volume_percent': volume_percent
+    })
 
 async def play(user, room, offset = None):
-    data = {'progress_ms': 1000}
+    data = {}
 
     if offset is not None:
         data['context_uri'] = 'spotify:playlist:' + str(room.playlist_id)
@@ -112,20 +139,20 @@ async def play(user, room, offset = None):
             'position': offset
         }
 
-    await async_put(user, endpoints['play'], data = data)
+    return await async_put(user, endpoints['play'], data = data)
 
 async def play_direct(user, room, action_data):
     await play(user, room, offset = action_data['offset'])
-    await sync(user, room)
+    return await sync(user, room)
 
 async def pause(user, room):
     await async_put(user, endpoints['pause'])
-    await sync(user, room)
+    return await sync(user, room)
 
 async def sync(user, room, progress_ms = None):
     seek_ms = progress_ms if progress_ms is not None else room.playlist.get_progress(user)
 
-    await seek(user, {
+    return await seek(user, {
         'seek_ms': seek_ms
     })
 
@@ -134,13 +161,13 @@ async def seek(user, action_data):
         'position_ms': action_data['seek_ms']
     }
 
-    await async_put(user, endpoints['seek'], params = params)
+    return await async_put(user, endpoints['seek'], params = params)
 
 async def previous(user):
-    await async_post(user, endpoints['previous'])
+    return await async_post(user, endpoints['previous'])
 
 async def next(user):
-    await async_post(user, endpoints['next'])
+    return await async_post(user, endpoints['next'])
 
 # endregion
 
@@ -265,6 +292,11 @@ async def async_get(user, endpoint, params = {}):
 
         if authorized:
             response = await requests_async.get(endpoint, params = params, headers=get_headers(user))
+        else:
+            response = {
+                'error': 'unauthorized',
+                'error_message': 'User is unauthorized'
+            }
 
     return response
 
@@ -276,6 +308,11 @@ def get(user, endpoint, params = {}):
 
         if authorized:
             response = requests.get(endpoint, params = params, headers=get_headers(user))
+        else:
+            response = {
+                'error': 'unauthorized',
+                'error_message': 'User is unauthorized'
+            }
 
     return response
 
@@ -289,6 +326,11 @@ async def async_put(user, endpoint, data = {}, params = {}):
 
         if authorized:
             response = await requests_async.put(endpoint, params = data, headers = get_headers(user))
+        else:
+            response = {
+                'error': 'unauthorized',
+                'error_message': 'User is unauthorized'
+            }
 
     return response
 
@@ -302,6 +344,11 @@ def put(user, endpoint, data = {}, params = {}):
 
         if authorized:
             response = requests.put(endpoint, params = data, headers = get_headers(user))
+        else:
+            response = {
+                'error': 'unauthorized',
+                'error_message': 'User is unauthorized'
+            }
 
     return response
 

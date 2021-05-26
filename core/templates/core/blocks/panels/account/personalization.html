@@ -4,6 +4,8 @@
 <div id = "panel-personalization" class = "panel {% if selected == True %}selected{% endif %}">
 	{% include 'core/blocks/user-card.html' %}
 
+	<p>{% authorize_url %}</p>
+
 	<div id = "settings-sections">
 		<form id = "form-personalization" method = "POST">
 			{% csrf_token %}

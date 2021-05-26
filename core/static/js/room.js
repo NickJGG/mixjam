@@ -9,11 +9,40 @@ $(document).ready(function(){
 	const ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 	const roomUrl = 'r/' + code + '/';
 	
-	var socket, timer, fullscreen = false, seek = false, movingProgress = false, reconnectTimer, notifications = [], notificationUpper = 4000, notificationLower = 2000, notificationTransition = 200, displayNotification = true;
+	var socket, timer, seek = false, movingProgress = false;
+	var notifications = [], notificationUpper = 4000, notificationLower = 2000, notificationTransition = 200, displayNotification = true;
+	var deviceActive;
 	
 	init();
 	
 // 	#region Main Functions
+
+	function updateDevices(data){
+		var devices = data['response_data']['devices'],
+			volume = data['response_data']['volume'];
+
+		deviceActive = data['response_data']['active'];
+
+		$('#device-list').empty();
+
+		devices.forEach(function(device){
+			$('#device-list').append(device);
+		});
+
+		if (deviceActive){
+			$('#devices-image').addClass('active').removeClass('inactive');
+			$('#volume-image').addClass('active').removeClass('inactive');
+
+			$('#volume-container').find('.progress-complete').css({
+				'height': 'calc(' + (volume) + '%)'
+			});
+		} else {
+			$('#devices-image').removeClass('active').addClass('inactive');
+			$('#volume-image').removeClass('active').addClass('inactive');
+
+			$('#volume-container').css('display', 'none');
+		}
+	}
 
 	function updateActivity(data){
 		var action = data['response_data']['action'],
@@ -331,6 +360,10 @@ $(document).ready(function(){
 					updateActivity(data);
 
 					break;
+				case 'devices':
+					updateDevices(data);
+
+					break;
 				default:
 					break;
 			}
@@ -367,88 +400,127 @@ $(document).ready(function(){
 			socketPlaylist('get_state');
 		});
 		
-		$('#song-progress').on('mousedown', function(fe){
-			var progress = this,
-				x = fe.pageX - $(progress).offset().left,
-				total = $(progress).width();
+		$('.progress-container').on('mousedown', function(fe){
+			var progressContainer = this,
+				containerStart = 0;
+				total = 0,
+				id = $(this).prop('id'),
+				row = $(this).hasClass('row');
+
+			if (row){
+				containerStart = fe.pageX - $(progressContainer).offset().left;
+				total = $(progressContainer).width();
+			} else {
+				containerStart = fe.pageY - $(progressContainer).offset().top;
+				total = $(progressContainer).height();
+			}
 			
-			if (x < 0)
-				x = 0;
-			else if (x > total)
-				x = total;
+			if (containerStart < 0)
+				containerStart = 0;
+			else if (containerStart > total)
+				containerStart = total;
 			
-			var percentage = x / total;
+			var percentage = containerStart / total;
 			
 			fe.preventDefault();
 
 			movingProgress = true;
 			seek = false;
 
-			$('#progress-complete').css({
-				//'transition': 'unset',
-				'width': 'calc(' + (percentage * 100) + '%)'
-			});
-
-			$(document).on('mousemove', function(e){
-				var x = e.pageX - $(progress).offset().left,
-					total = $(progress).width();
-			
-				if (x < 0)
-					x = 0;
-				else if (x > total)
-					x = total;
-				
-				var percentage = x / total;
-
-				$('#progress-complete').css({
+			if (row){
+				$(progressContainer).find('.progress-complete').css({
 					'width': 'calc(' + (percentage * 100) + '%)'
 				});
+			} else {
+				percentage = 1 - percentage;
+
+				$(progressContainer).find('.progress-complete').css({
+					'height': 'calc(' + (percentage * 100) + '%)'
+				});
+			}
+
+			$(document).on('mousemove', function(e){
+				var containerStart = 0,
+					total = 0;
+			
+				if (row){
+					containerStart = e.pageX - $(progressContainer).offset().left;
+					total = $(progressContainer).width();
+				} else {
+					containerStart = e.pageY - $(progressContainer).offset().top;
+					total = $(progressContainer).height();
+				}
+				
+				if (containerStart < 0)
+					containerStart = 0;
+				else if (containerStart > total)
+					containerStart = total;
+				
+				var percentage = containerStart / total;
+
+				if (row){
+					$(progressContainer).find('.progress-complete').css({
+						'width': 'calc(' + (percentage * 100) + '%)'
+					});
+				} else {
+					percentage = 1 - percentage;
+
+					$(progressContainer).find('.progress-complete').css({
+						'height': 'calc(' + (percentage * 100) + '%)'
+					});
+				}
 			});
 			$(document).on('mouseup', function(e){
-				var x = e.pageX - $(progress).offset().left,
-					total = $(progress).width();
+				var containerStart = 0,
+					total = 0;
+
+				if (row){
+					containerStart = e.pageX - $(progressContainer).offset().left;
+					total = $(progressContainer).width();
+				} else {
+					containerStart = e.pageY - $(progressContainer).offset().top;
+					total = $(progressContainer).height();
+				}
+				
+				if (containerStart < 0)
+					containerStart = 0;
+				else if (containerStart > total)
+					containerStart = total;
+				
+				var percentage = containerStart / total;
 			
-				if (x < 0)
-					x = 0;
-				else if (x > total)
-					x = total;
-				
-				var percentage = x / total,
-					seekProgress = Math.round(roomState.song_state.track.duration_ms * percentage);
-				
-				socketPlaylist('seek', action_data = {
-					'seek_ms': seekProgress
-				});
+				if (!row)
+					percentage = 1 - percentage;
+
+				switch(id){
+					case 'song-progress':
+						var seekProgress = Math.round(roomState.song_state.track.duration_ms * percentage);
+					
+						socketPlaylist('seek', action_data = {
+							'seek_ms': seekProgress
+						});
+
+						break;
+					case 'volume-progress':
+						var volume_percent = Math.round(percentage * 100);
+
+						socketSend('user_action', {
+							'action': 'set_volume',
+							'action_data': {
+								'volume_percent': volume_percent
+							}
+						});
+
+						break;
+					default:
+						break;
+				}
 
 				movingProgress = false;
 				
 				$(document).unbind('mouseup');
 				$(document).unbind('mousemove');
-
-				//$('#progress-complete').css('transition', 'all 1s linear');
 			});
-		});
-		
-		$('#fullscreen').on('click', function(){
-			var el = document.documentElement;
-			
-			var enterFullscreen = el.requestFullscreen
-					|| el.webkitRequestFullScreen
-					|| el.mozRequestFullScreen
-					|| el.msRequestFullscreen;
-			
-			if (fullscreen){
-				if (document.exitFullscreen){
-					document.exitFullscreen();
-				} else if (document.webkitExitFullscreen){
-					document.webkitExitFullscreen();
-				} else if (document.msExitFullscreen){
-					document.msExitFullscreen();
-				}
-			} else
-				enterFullscreen.call(el);
-				
-			fullscreen = !fullscreen;
 		});
 		
 		$('#invite-link').on('click', function(){
@@ -571,6 +643,66 @@ $(document).ready(function(){
 				'id': journeyId
 			});
 		});
+
+		$(document).on('click', '.device, .device *', function(){
+			var deviceId = 0;
+
+			if ($(this).hasClass('device'))
+				deviceId = $(this).find('.device-id').val();
+			else
+				deviceId = $(this).parents('.device').find('.device-id').val();
+
+			socketSend('user_action', {
+				'action': 'select_device',
+				'action_data': {
+					'device_id': deviceId
+				}
+			});
+		});
+
+		$('#devices-refresh').on('click', function(){
+			socketSend('user_action', {
+				'action': 'get_devices',
+				'action_data': {
+					
+				}
+			});
+		});
+
+		$(document).on('click', ':not(#devices-container)', function(e){
+			if ($(this).prop('id') == 'devices-container' || $(this).parents('#devices-container').length > 0){
+				e.stopPropagation();
+	
+				return;
+			}
+	
+			if ($(this).prop('id') == 'devices' || $(this).parents('#devices').length > 0){
+				if ($('#devices-container').css('display') == 'flex')
+					$('#devices-container').css('display', 'none');
+				else
+					$('#devices-container').css('display', 'flex');
+				
+				e.stopPropagation();
+			} else
+				$('#devices-container').css('display', 'none');
+		});
+		$(document).on('click', ':not(#volume-container)', function(e){
+			if ($(this).prop('id') == 'volume-container' || $(this).parents('#volume-container').length > 0){
+				e.stopPropagation();
+	
+				return;
+			}
+	
+			if ($(this).prop('id') == 'volume' || $(this).parents('#volume').length > 0){
+				if ($('#volume-container').css('display') == 'flex')
+					$('#volume-container').css('display', 'none');
+				else if (deviceActive)
+					$('#volume-container').css('display', 'flex');
+				
+				e.stopPropagation();
+			} else
+				$('#volume-container').css('display', 'none');
+		});
 	}
 
 // 	#endregion
@@ -659,12 +791,12 @@ $(document).ready(function(){
 		
 		if (seek){
 			var newPercentage = (100 - milli / roomState.song_state.track.duration_ms * 100),
-				diff = (($('#progress-complete').width() / ($('#progress-incomplete').width() + $('#progress-complete').width())) * 100) - newPercentage;
+				diff = (($('#song-progress-container .progress-complete').width() / ($('#song-progress-container .progress-incomplete').width() + $('#song-progress-container .progress-complete').width())) * 100) - newPercentage;
 
 			/*if (diff > 5)
 				$('#progress-complete').css('transition', 'unset');*/
 
-			$('#progress-complete').css({
+			$('#song-progress-container .progress-complete').css({
 				'width': 'calc(' + (100 - milli / roomState.song_state.track.duration_ms * 100) + '%)'
 			});
 		}

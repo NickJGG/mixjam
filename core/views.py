@@ -436,22 +436,25 @@ def register(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm-password')
 
-        if password == confirm_password:
-            try:
-                validate_password(password)
+        if not User.objects.filter(username = username).exists():
+            if password == confirm_password:
+                try:
+                    validate_password(password)
 
-                user = User.objects.create_user(username, email, password)
-                auth_login(request, user)
+                    user = User.objects.create_user(username, email, password)
+                    auth_login(request, user)
 
-                userprofile = UserProfile(user = user)
-                userprofile.save()
+                    userprofile = UserProfile(user = user)
+                    userprofile.save()
 
-                return redirect('index')
-            except ValidationError as error:
-                for e in error:
-                    messages.error(request, e)
+                    return redirect('index')
+                except ValidationError as error:
+                    for e in error:
+                        messages.error(request, e)
+            else:
+                messages.error(request, 'Passwords must match')
         else:
-            messages.error(request, 'Passwords must match')
+            messages.error(request, 'That username is already taken')
 
     return render(request, 'core/register.html')
 

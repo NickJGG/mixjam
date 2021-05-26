@@ -19,7 +19,6 @@ def get_room_count(user):
 @register.simple_tag
 def authorize_url():
     client_id = os.environ.get('CLIENT_ID')
-    client_secret = os.environ.get('CLIENT_SECRET')
     scheme = os.environ.get("API_SCHEME", "https")
     netloc = os.environ.get("API_NETLOC", "accounts.spotify.com")
 
@@ -31,7 +30,7 @@ def authorize_url():
     query = urlencode(dict(
         response_type = 'code',
         client_id = client_id,
-        scope = 'streaming app-remote-control user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative',
+        scope = 'streaming app-remote-control user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-read-playback-state',
         redirect_uri = redirect_uri,
         state = 'null'
     ))

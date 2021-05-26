@@ -136,20 +136,54 @@
 		</div>
 		<div id = "song-progress-container">
 			<p id = "song-progress-time">- : - -</p>
-			<div id = "song-progress">
-				<div id = "progress-complete">
-					<div id = "progress-thumb">
+			<div id = "song-progress" class = "progress-container row">
+				<div class = "progress-complete">
+					<div class = "progress-thumb">
 						
 					</div>
 				</div>
-				<div id = "progress-incomplete">
+				<div class = "progress-incomplete">
 					
 				</div>
 			</div>
 			<p id = "song-total-time">- : - -</p>
 		</div>
 		<div id = "extra-controls-container">
-			<img id = "fullscreen" class = "extra-control" src = "{% static 'img/icons/fullscreen-white-24.png' %}">
+			<div id = "devices-container">
+				<div id = "devices-header">
+					<p>Devices</p>
+					<div id = "devices-options">
+						<div id = "devices-refresh" class = "devices-option">
+							<img src = "{% static 'img/icons/refresh-white-96.png' %}">
+						</div>
+					</div>
+				</div>
+				<div id = "device-list">
+					
+				</div>
+			</div>
+			<div id = "volume-container">
+				<div id = "volume-progress" class = "progress-container column">
+					<div class = "progress-incomplete">
+						
+					</div>
+					<div class = "progress-complete">
+						<div class = "progress-thumb">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id = "devices" class = "extra-control">
+				<div id = "devices-image" class = "extra-control-image" style = "--background-image: url({% static 'img/icons/device-white-96.png' %})">
+
+				</div>
+			</div>
+			<div id = "volume" class = "extra-control">
+				<div id = "volume-image" class = "extra-control-image" style = "--background-image: url({% static 'img/icons/speaker-white-96.png' %})">
+
+				</div>
+			</div>
 		</div>
 	</div>
 

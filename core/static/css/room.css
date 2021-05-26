@@ -360,37 +360,35 @@
 	
 	margin: 0 70px 0 20px;
 }
-#progress-complete, #progress-incomplete{
-	height: 3px;
-	
-	border-radius: 3px;
-}
-#song-progress{
-	height: 20px;
-	
+.progress-container{
 	display: flex;
 	align-items: center;
 	flex: 1;
 	
 	cursor: pointer;
 }
-#progress-complete{
-	width: 50%;
-	
+.progress-complete, .progress-incomplete{
+	border-radius: 3px;
+}
+.progress-container.row{ height: 20px; flex-direction: row; }
+.progress-container.column{ width: 20px; flex-direction: column; }
+.progress-complete{
 	position: relative;
 	
 	background-color: var(--dark-green);
 }
-#song-progress-container:hover #progress-thumb{
+.progress-container.row .progress-complete{ width: 50%; height: 3px; }
+.progress-container.column .progress-complete{ height: 50%; width: 3px; }
+.progress-container.row .progress-complete, .progress-container.row .progress-incomplete{ height: 3px; }
+.progress-container.column .progress-complete, .progress-container.column .progress-incomplete{ width: 3px; }
+.progress-container:hover .progress-thumb{
 	transform: scale(1);
 }
-#progress-thumb{
+.progress-thumb{
 	width: 10px;
 	height: 10px;
 	
 	position: absolute;
-	top: -4px;
-	right: -5px;
 	
 	background-color: var(--light-green);
 	
@@ -400,7 +398,15 @@
 	
 	transition: all .05s ease;
 }
-#progress-incomplete{
+.progress-container.row .progress-thumb{
+	top: -4px;
+	right: -5px;
+}
+.progress-container.column .progress-thumb{
+	top: -5px;
+	left: -3.5px;
+}
+.progress-incomplete{
 	flex: 1;
 	
 	background-color: #2b2b31;
@@ -423,16 +429,174 @@
 
 #extra-controls-container{
 	display: flex;
+	align-items: center;
 	justify-content: flex-end;
+
+	position: relative;
 }
 .extra-control{
+	height: 20px;
+
+	padding: 10px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	border-radius: 100%;
+
 	transition: all .1s ease;
 	
 	cursor: pointer;
 }
 .extra-control:hover{
-	transform: scale(1.1);
+	background-color: #333;
 }
+.extra-control:not(:first-child){
+	margin-left: 10px;
+}
+.extra-control img{
+	height: 100%;
+}
+.extra-control-image{
+	width: 20px;
+	height: 20px;
+
+	-webkit-mask-box-image: var(--background-image);
+
+	background-color: white;
+}
+#devices-image.active{ background-color: var(--dark-green); }
+#devices-image.inactive{ background-color: var(--red); }
+#volume-image.active{ background-color: white; }
+#volume-image.inactive{ background-color: #555; }
+#devices-container{
+	min-width: 300px;
+
+	display: none;
+	flex-direction: column;
+
+	position: absolute;
+	bottom: calc(100% + 10px);
+	right: 0;
+
+	background-color: var(--black);
+
+	box-shadow: 0 0 8px rgba(0, 0, 0, .5);
+
+	border-radius: var(--border-radius);
+
+	cursor: auto;
+
+	overflow: hidden;
+}
+#devices-container:hover #devices{
+	background-color: transparent !important;
+}
+#devices-header{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 10px calc(var(--panel-padding) / 2) 10px var(--panel-padding);
+
+	font-family: Roboto-Medium;
+	font-size: 18px;
+	color: white;
+
+	box-sizing: border-box;
+}
+#devices-options{
+	display: flex;
+	align-items: center;
+}
+.devices-option{
+	padding: 7px;
+
+	border-radius: 100%;
+
+	box-sizing: border-box;
+
+	cursor: pointer;
+}
+.devices-option img{
+	height: 20px;
+}
+.devices-option:hover{
+	background-color: var(--light-black);
+}
+.devices-option:not(:first-child){
+	margin-left: 5px;
+}
+#device-list{
+	display: flex;
+	flex-direction: column;
+}
+.device{
+	display: flex;
+	align-items: center;
+
+	padding: var(--panel-padding);
+
+	font-size: 14px;
+	color: white;
+
+	box-sizing: border-box;
+
+	cursor: pointer;
+}
+.device.active{
+	color: var(--dark-green);
+}
+.device:hover{
+	background-color: var(--light-black);
+}
+.device > img{
+	height: 20px;
+}
+.device-info{
+	display: flex;
+	flex-direction: column;
+
+	margin-left: var(--panel-padding);
+}
+.device-name{
+	font-family: Roboto-Medium;
+	font-size: 14px;
+}
+.device-type{
+	font-size: 12px;
+	color: #ccc;
+}
+.device.active .device-type{
+	color: #1a8752;
+}
+#volume-container{
+	height: 100px;
+
+	display: none;
+
+	position: absolute;
+	bottom: calc(100% + 10px);
+	right: 0;
+
+	margin-right: 5px;
+	padding: 15px 5px;
+
+	background-color: var(--black);
+
+	box-shadow: 0 0 8px rgba(0, 0, 0, .5);
+
+	border-radius: var(--border-radius);
+
+	cursor: auto;
+
+	overflow: hidden;
+
+	box-sizing: border-box;
+}
+#devices{ padding-right: 10.5px }
+#volume{ padding-left: 10.5px }
 
 /* #endregion */
 

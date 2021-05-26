@@ -1,0 +1,10 @@
+{% load static %}
+
+<div class = "device {% if device.is_active %}active{% endif %}">
+    <input class = "device-id" type = "hidden" value = "{{ device.id }}">
+    <img src = "{% static 'img/icons/device-white-96.png' %}">
+    <div class = "device-info">
+        <p class = "device-name">{{ device.name }}</p>
+        <p class = "device-type">{{ device.type }}</p>
+    </div>
+</div>
