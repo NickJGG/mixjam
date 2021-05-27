@@ -23,7 +23,7 @@ def authorize_url():
     netloc = os.environ.get("API_NETLOC", "accounts.spotify.com")
 
     redirect_uri = 'http://localhost:8000/callback/' if os.environ.get(
-        'DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
+        'DJANGO_DEVELOPMENT') else 'https://mixjam.io/callback/'
 
     path = f"/authorize"
 
