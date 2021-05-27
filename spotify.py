@@ -86,7 +86,7 @@ class SpotifyAPI(object):
         return True
 
     def perform_user_auth(self):
-        redirect_uri = 'http://localhost:8000/callback/' if os.environ.get('DJANGO_DEVELOPMENT') else 'http://syncified.herokuapp.com/callback/'
+        redirect_uri = 'http://localhost:8000/callback/' if os.environ.get('DJANGO_DEVELOPMENT') else 'https://mixjam.io/callback/'
 
         token_data = {
             'code': self.code,
