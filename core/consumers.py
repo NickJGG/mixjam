@@ -64,16 +64,19 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         response = await spotify.update_play(user, room)
 
-        devices, active, volume = await self.get_devices()
+        try:
+            devices, active, volume = await self.get_devices()
 
-        await self.send(text_data=json.dumps({
-            'type': 'devices',
-            'response_data': {
-                'devices': devices,
-                'active': active,
-                'volume': volume
-            }
-        }))
+            await self.send(text_data=json.dumps({
+                'type': 'devices',
+                'response_data': {
+                    'devices': devices,
+                    'active': active,
+                    'volume': volume
+                }
+            }))
+        except:
+            pass
 
         await self.request_playlist({
             'data': {
@@ -410,20 +413,23 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         raw_devices = await spotify.get_devices(user)
 
-        devices = []
+        if raw_devices.status_code == 200:
+            devices = []
 
-        for device in raw_devices.json()['devices']:
-            if device['is_active']:
-                devices = [(render_to_string('core/blocks/room/device.html', {
-                    'device': device
-                }))] + devices
-                
-                active = True
+            for device in raw_devices.json()['devices']:
+                if device['is_active']:
+                    devices = [(render_to_string('core/blocks/room/device.html', {
+                        'device': device
+                    }))] + devices
+                    
+                    active = True
 
-                volume = device['volume_percent']
-            else:
-                devices.append(render_to_string('core/blocks/room/device.html', {
-                    'device': device
-                }))
-        
-        return devices, active, volume
+                    volume = device['volume_percent']
+                else:
+                    devices.append(render_to_string('core/blocks/room/device.html', {
+                        'device': device
+                    }))
+            
+            return devices, active, volume
+        else:
+            return None
