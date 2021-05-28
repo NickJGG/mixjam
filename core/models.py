@@ -39,8 +39,8 @@ class RoomMode(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
     tag_line = models.CharField(max_length = 50, default = 'Syncer')
-    access_token = models.CharField(max_length = 200)
-    refresh_token = models.CharField(max_length = 200)
+    access_token = models.CharField(max_length = 200, blank = True, null = True)
+    refresh_token = models.CharField(max_length = 200, blank = True, null = True)
     authorized = models.BooleanField(default = False)
     most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.SET_NULL, related_name = 'most_recent_name')
 
