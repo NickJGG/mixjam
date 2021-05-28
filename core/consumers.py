@@ -416,6 +416,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         raw_devices = await spotify.get_devices(user)
 
+        print('\n\n\n\n\n')
         print(raw_devices)
         print(raw_devices.status_code)
         print(raw_devices.content)
