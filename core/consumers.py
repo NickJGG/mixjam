@@ -187,29 +187,35 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 except:
                     pass
 
-                devices, active, volume = await self.get_devices()
+                try:
+                    devices, active, volume = await self.get_devices()
 
-                await self.send(text_data=json.dumps({
-                    'type': 'devices',
-                    'response_data': {
-                        'devices': devices,
-                        'active': active,
-                        'volume': volume
-                    }
-                }))
+                    await self.send(text_data=json.dumps({
+                        'type': 'devices',
+                        'response_data': {
+                            'devices': devices,
+                            'active': active,
+                            'volume': volume
+                        }
+                    }))
+                except:
+                    pass
 
                 return
             elif request_action == 'get_devices':
-                devices, active, volume = await self.get_devices()
+                try:
+                    devices, active, volume = await self.get_devices()
 
-                await self.send(text_data=json.dumps({
-                    'type': 'devices',
-                    'response_data': {
-                        'devices': devices,
-                        'active': active,
-                        'volume': volume
-                    }
-                }))
+                    await self.send(text_data=json.dumps({
+                        'type': 'devices',
+                        'response_data': {
+                            'devices': devices,
+                            'active': active,
+                            'volume': volume
+                        }
+                    }))
+                except:
+                    pass
 
                 return
             elif request_action == 'set_volume':
