@@ -34,6 +34,6 @@ Here's why MixJam is better:
 
 ## Contact
 
-Nick Gilliam - nick.gilliam2@gmail.com
+Email: nick.gilliam2@gmail.com
 
 Project Link: [https://github.com/NickJGG/mixjam](https://github.com/NickJGG/mixjam)
