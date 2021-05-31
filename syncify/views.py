@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render
 from django.utils.crypto import get_random_string
 
@@ -5,8 +7,8 @@ import spotify
 
 from .models import *
 
-client_id = '8b817932e631474cb15f7e36edcfc53b'
-client_secret = '6ef495db91bd4268b520f861117d39f9'
+client_id = os.environ.get('CLIENT_ID')
+client_secret = os.environ.get('CLIENT_SECRET')
 
 def index(request):
     spot = spotify.SpotifyAPI(client_id, client_secret, request.user, '')
