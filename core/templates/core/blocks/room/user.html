@@ -1,34 +1,21 @@
 {% load static %}
 
-<div id = "user-{{ user.username }}" class = "user" style = "--background-color: #{{ user.userprofile.background_color }}">
-    <div class = "user-header">
-        {% include 'core/blocks/profile-picture.html' with width='var(--user-width)' height='var(--user-width)' %}
-
-        <div class = "user-blur"></div>
-        <div class = "user-options">
-            <div class = "user-option profile">
-                <div class = "option-blur"></div>
-                <p>View Profile</p>
-            </div>
-            
-            {% if show_admin and request_user != user %}
-
-                <div class = "user-option kick">
-                    <div class = "option-blur"></div>
-                    <p>Kick</p>
-                </div>
-
-            {% endif %}
-        </div>
+<div id = "{% if type_user %}user{% elif type_friend %}friend{% endif %}-{{ user.username }}" class = "popup-container row top left margin">
+    <div class = "side-panel-item room popup-toggle">
+        {% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
+        <p class = "item-label no-underline">{{ user.username }}</p>
     </div>
-    
-    <div class = "room-user-info">
-        {% if is_leader %}
-
-            <img src = "{% static 'img/icons/crown-96.png' %}">
-
-        {% endif %}
-
-        <p>{{ user.username }}</p>
+    <div class = "popup-element room-preview">
+        <a class = "no-underline" href>
+            <div class = "preview-header">
+                <p class = "preview-title">{{ user.username }}</p>
+                <div class = "preview-join">
+                    <img src = "{% static 'img/icons/right-white-96.png' %}">
+                </div>
+            </div>
+        </a>
+        <div class = "preview-users-container">
+            
+        </div>
     </div>
 </div>

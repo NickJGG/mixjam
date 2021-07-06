@@ -12,6 +12,11 @@ urlpatterns = [
     path('r/<str:room_code>/', views.room, name = 'room'),
     path('i/<str:invite_code>/', views.invite, name = 'invite'),
 
+    path('notification/', views.notification, name = 'notification'),
+    path('friend/request/', views.request_friend, name = 'request_friend'),
+    path('friend/remove/', views.remove_friend, name = 'remove_friend'),
+    path('room/invite/', views.room_invite, name = 'room_invite'),
+
     path('account/', views.account, name = 'account'),
     path('login/', views.login, name = 'login'),
     path('logout/', views.logout, name = 'logout'),

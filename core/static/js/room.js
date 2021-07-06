@@ -6,10 +6,10 @@ $(document).ready(function(){
 	//                                                                                 //
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	const ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-	const roomUrl = 'r/' + code + '/';
+	const ws_scheme = window.location.protocol == 'https:' ? 'wss' : 'ws';
+	const roomUrl = 'r/' + code + '/', userUrl = 'u/' + username + '/';
 	
-	var socket, timer, seek = false, movingProgress = false;
+	var socket, userSocket, timer, seek = false, movingProgress = false;
 	var notifications = [], notificationUpper = 4000, notificationLower = 2000, notificationTransition = 200, displayNotification = true;
 	var deviceActive;
 	
@@ -277,11 +277,11 @@ $(document).ready(function(){
 			case 'join':
 				$('#user-' + username).remove();
 
-				$('#user-list').append(data['response_data']['data']['connection_state']['user']['user_block']);
+				$('#group-users .side-panel-items-subgroup:nth-child(1)').append(data['response_data']['data']['connection_state']['user']['user_block']);
 
 				break;
 			case 'leave':
-				$('#user-' + username).appendTo('#offline-user-list');
+				$('#user-' + username).appendTo('#group-users .side-panel-items-subgroup:nth-child(2)');
 
 				break;
 			case 'kick':
@@ -669,23 +669,7 @@ $(document).ready(function(){
 			});
 		});
 
-		$(document).on('click', ':not(#devices-container)', function(e){
-			if ($(this).prop('id') == 'devices-container' || $(this).parents('#devices-container').length > 0){
-				e.stopPropagation();
-	
-				return;
-			}
-	
-			if ($(this).prop('id') == 'devices' || $(this).parents('#devices').length > 0){
-				if ($('#devices-container').css('display') == 'flex')
-					$('#devices-container').css('display', 'none');
-				else
-					$('#devices-container').css('display', 'flex');
-				
-				e.stopPropagation();
-			} else
-				$('#devices-container').css('display', 'none');
-		});
+		
 		$(document).on('click', ':not(#volume-container)', function(e){
 			if ($(this).prop('id') == 'volume-container' || $(this).parents('#volume-container').length > 0){
 				e.stopPropagation();

@@ -1,0 +1,10 @@
+<div id = "friend-{{ friend.username }}" class = "popup-container row top left margin">
+    <input type = "hidden" name = "username" value = "{{ friend.username }}">
+
+    <div class = "side-panel-item item-label-trigger left room popup-toggle">
+        {% include 'core/blocks/profile-picture.html' with user=friend width='100%' height='100%' %}
+        <p class = "item-label no-underline">{{ friend.username }}</p>
+    </div>
+
+    {% include 'core/blocks/previews/user-preview.html' with title=friend.username header_color=friend.userprofile.background_color %}
+</div>

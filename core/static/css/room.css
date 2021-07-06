@@ -22,10 +22,16 @@
 	width: 24px;
 	height: 24px;
 }
-#right-side-panel{
-	--side-panel-width: 350px;
 
-	display: initial;
+/* #right-side-panel{
+	display: flex;
+} */
+
+#panel-container{
+	padding: 0;
+}
+.panel{
+	padding: var(--panel-padding);
 }
 
 .panel-label.selected{
@@ -246,13 +252,10 @@
 	
 	display: flex;
 	align-items: center;
-	
-	margin-top: 20px;
+
 	padding: 15px;
 	
 	background-color: var(--medium-black);
-
-	border-radius: var(--border-radius);
 	
 	box-sizing: border-box;
 }
@@ -309,14 +312,14 @@
 	margin-left: 70px;
 }
 .control{
-	width: 35px;
-	height: 35px;
+	width: 30px;
+	height: 30px;
 	
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	
-	border: 2px solid #444;
+	background-color: var(--light-black);
 	
 	font-family: Roboto-Medium;
 	
@@ -324,31 +327,28 @@
 	
 	box-sizing: border-box;
 	
-	border-radius: 100%;
+	border-radius: var(--border-radius);
 	
 	cursor: pointer;
 }
 .control:not(:first-child){
 	margin-left: 8px;
 }
-.control:hover{
-	background-color: #444;
-}
-#previous img{
+#previous img, #next img{
 	position: relative;
-	left: -2px;
-	
-	transform: scale(.8);
+
+	transform: scale(.7);
 }
+#previous img{ left: -2px; }
+#next img{ left: 1px; }
 #play-pause{
-	width: 50px;
-	height: 50px;
+	width: 45px;
+	height: 45px;
+
+	background-color: #2b2b2b;
 }
-#next img{
-	position: relative;
-	left: 1px;
-	
-	transform: scale(.8);
+.control:hover{
+	background-color: #444 !important;
 }
 #song-progress-container{
 	display: flex;
@@ -473,22 +473,9 @@
 #devices-container{
 	min-width: 300px;
 
-	display: none;
 	flex-direction: column;
 
-	position: absolute;
-	bottom: calc(100% + 10px);
-	right: 0;
-
-	background-color: var(--black);
-
 	box-shadow: 0 0 8px rgba(0, 0, 0, .5);
-
-	border-radius: var(--border-radius);
-
-	cursor: auto;
-
-	overflow: hidden;
 }
 #devices-container:hover #devices{
 	background-color: transparent !important;
@@ -602,9 +589,9 @@
 
 /* #region Tab Container */
 
-#right-side-panel{
+/* #right-side-panel{
 	padding: 0;
-}
+} */
 
 .tab-container{
 	height: 100%;	
@@ -848,12 +835,6 @@
 	overflow: hidden;
 
 	transition: all .1s ease;
-}
-#offline-user-list .user{
-	filter: grayscale(100%) brightness(.5);
-}
-#offline-user-list .user:hover{
-	filter: none;
 }
 .user:after{
 	content: '';

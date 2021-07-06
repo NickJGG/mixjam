@@ -21,7 +21,7 @@
 	margin-top: calc(var(--panel-padding) * 2);
 }
 .settings-label{
-	margin-left: 10px;
+	margin-left: 1px;
 
 	font-family: Roboto-Medium;
 	font-size: 28px;
@@ -36,7 +36,7 @@
 
 	background-color: var(--medium-black);
 
-	border-radius: var(--panel-padding);
+	border-radius: var(--border-radius);
 
 	box-sizing: border-box;
 }
@@ -59,7 +59,7 @@
 	text-transform: uppercase;
 	color: white;
 
-	margin-left: 3px;
+	margin-left: 1px;
 }
 
 input, textarea{
@@ -74,7 +74,7 @@ input, textarea{
 	
 	background-color: #eee;
 	
-	border-radius: 12px;
+	border-radius: var(--border-radius);
 
 	resize: none;
 }
@@ -89,10 +89,11 @@ input:not(input[type="submit"]):not(input[type="radio"]), textarea, .radio-butto
 	margin-top: 5px;
 }
 input[type="submit"]{
+	min-width: 100px;
+
 	margin-top: 0;
 	margin-bottom: 0;
-	padding-left: 30px;
-	padding-right: 30px;
+	padding: initial 15px;
 
 	font-family: Roboto-Medium;
 	text-transform: capitalize;
@@ -143,7 +144,7 @@ input[type="radio"]{
 
 	background-color: var(--light-black);
 
-	border-radius: 10px;
+	border-radius: var(--border-radius);
 
 	box-sizing: border-box;
 

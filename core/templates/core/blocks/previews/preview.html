@@ -1,0 +1,21 @@
+<div class = "popup-element room-preview">
+    <a class = "no-underline" href>
+        <div class = "preview-header" style = "--header-color: #{{ header_color }}">
+            <div class = "preview-picture-wrapper">
+                <div class = "preview-picture">
+                    <img src = "{{ picture }}">
+                </div>
+            </div>
+        </div>
+    </a>
+    <div class = "preview-body">
+        <div class = "preview-details">
+            <div class = "preview-title">
+                <p>{{ title }}</p>
+            </div>
+        </div>
+
+        {% block preview_body %}
+        {% endblock %}
+    </div>
+</div>

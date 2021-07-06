@@ -43,6 +43,7 @@ class UserProfile(models.Model):
     refresh_token = models.CharField(max_length = 200, blank = True, null = True)
     authorized = models.BooleanField(default = False)
     most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.SET_NULL, related_name = 'most_recent_name')
+    friends = models.ManyToManyField(User, blank = True, related_name = 'friends')
 
     icon_image = models.CharField(max_length = 100, choices = ProfilePicture.IMAGE_CHOICES, default = ProfilePicture.BABY_YODA)
     icon_color = models.CharField(max_length = 6, default = 'ffffff')
@@ -50,8 +51,22 @@ class UserProfile(models.Model):
 
     new_user = models.BooleanField(default = True)
 
+    online_count = models.IntegerField(default = 0, blank = True)
+
     def __str__(self):
         return self.user.username
+
+    def go_online(self):
+        self.online_count += 1
+        self.save()
+
+        return self.online_count
+    
+    def go_offline(self):
+        self.online_count = self.online_count - 1 if self.online_count > 0 else 0
+        self.save()
+
+        return self.online_count
 
 class Room(models.Model):
     code = models.CharField(max_length = 30)
@@ -153,3 +168,15 @@ class Playlist(models.Model):
         self.song_index = 0
         self.progress_ms = 0
         self.save()
+    
+class Notification(models.Model):
+    sender = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'notification_sender')
+    receiver = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'notification_receiver')
+    time_created = models.DateTimeField(auto_now_add=True)
+
+class FriendRequest(models.Model):
+    notification = models.ForeignKey(Notification, on_delete = models.CASCADE, related_name = 'friend_notification')
+
+class RoomInvite(models.Model):
+    notification = models.ForeignKey(Notification, on_delete = models.CASCADE, related_name = 'room_notification')
+    room = models.ForeignKey(Room, on_delete = models.CASCADE, related_name = 'invite_room')

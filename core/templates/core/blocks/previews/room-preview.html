@@ -1,0 +1,22 @@
+{% extends 'core/blocks/previews/preview.html' %}
+{% load static %}
+
+{% block preview_body %}
+
+    <div class = "preview-users-container">
+        <p class = "section-label">Listening • {{ room.active_users.all|length }}</p>
+        <div class = "preview-users-wrapper">
+            <div class = "preview-users">
+                {% for user in room.active_users.all %}
+                    
+                    <div class = "popup-toggle item-label-trigger right">
+                        {% include 'core/blocks/profile-picture.html' with user=user width='40px' height='40px' %}
+                        <p class = "item-label no-underline">{{ user.username }}</p>
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

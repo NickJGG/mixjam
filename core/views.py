@@ -1,10 +1,10 @@
 import os
-import random
 
 from django.core.mail import send_mail, BadHeaderError
 from django.core.exceptions import ValidationError
 from django.db.models.query_utils import Q
 from django.http import HttpResponse
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
 from django.utils.http import urlsafe_base64_encode
@@ -17,14 +17,17 @@ from django.contrib import messages
 from django.templatetags.static import static
 from django.template.loader import render_to_string
 
-from channels.db import database_sync_to_async
+from channels.layers import get_channel_layer
+
+from asgiref.sync import async_to_sync
 
 import spotify as spotify_auth
 from syncify import settings
 
 from .models import *
 
-from . import util, spotify
+from . import spotify
+from .templatetags import util
 
 client_id = os.environ.get('CLIENT_ID')
 client_secret = os.environ.get('CLIENT_SECRET')
@@ -147,7 +150,9 @@ def callback(request):
     return redirect('index')
 
 def room(request, room_code):
-    data = {}
+    data = {
+        'in_room': True
+    }
 
     rooms = Room.objects.filter(code = room_code)
 
@@ -404,16 +409,349 @@ def account(request):
         'authorized': authorized
     })
 
+def notification(request):
+    data = {
+        'success': True
+    }
+
+    if request.POST:
+        notification_id = request.POST.get('notification_id')
+        accept = request.POST.get('accept') == 'true'
+
+        notification = Notification.objects.filter(id = notification_id)
+
+        if notification.exists():
+            notification = notification[0]
+
+            noti_type, noti = util.get_type_notification(notification)
+
+            channel_layer = get_channel_layer()
+
+            if noti_type == 'room_invite':
+                if accept:
+                    noti.room.users.add(request.user)
+                    noti.room.inactive_users.add(request.user)
+                    noti.room.save()
+
+                    async_to_sync(channel_layer.group_send)('user_' + notification.sender.username, {
+                        'type': 'request_notification',
+                        'data': {
+                            'type': 'room_invite',
+                            'notification_id': notification.id,
+                            'notification_block': render_to_string('core/blocks/notification.html', {
+                                'user': notification.receiver,
+                                'message': 'accepted your room invite',
+                                'type': 'user_action'
+                            }),
+                            'permanent': False
+                        }
+                    })
+                    async_to_sync(channel_layer.group_send)('user_' + notification.receiver.username, {
+                        'type': 'request_notification',
+                        'data': {
+                            'type': 'room_invite',
+                            'notification_id': notification.id,
+                            'notification_block': render_to_string('core/blocks/notification.html', {
+                                'message': 'Joined room',
+                                'type': 'text'
+                            }),
+                            'permanent': False,
+                            'room_url': reverse('room', kwargs = { 'room_code': noti.room.code})
+                        }
+                    })
+                else:
+                    async_to_sync(channel_layer.group_send)('user_' + notification.sender.username, {
+                        'type': 'request_notification',
+                        'data': {
+                            'type': 'room_invite',
+                            'notification_id': notification.id,
+                            'notification_block': render_to_string('core/blocks/notification.html', {
+                                'user': notification.receiver,
+                                'message': 'denied your room invite',
+                                'type': 'user_action'
+                            }),
+                            'permanent': False
+                        }
+                    })
+                    async_to_sync(channel_layer.group_send)('user_' + notification.receiver.username, {
+                        'type': 'request_notification',
+                        'data': {
+                            'type': 'room_invite',
+                            'notification_id': notification.id,
+                            'notification_block': render_to_string('core/blocks/notification.html', {
+                                'message': 'Room invite denied',
+                                'type': 'text'
+                            }),
+                            'permanent': False
+                        }
+                    })
+
+                notification.delete()
+            elif noti_type == 'friend_request':
+                if accept:
+                    notification.sender.userprofile.friends.add(notification.receiver)
+                    notification.receiver.userprofile.friends.add(notification.sender)
+
+                    async_to_sync(channel_layer.group_send)('user_' + notification.sender.username, {
+                        'type': 'request_notification',
+                        'data': {
+                            'type': 'friend_add',
+                            'notification_id': notification.id,
+                            'notification_block': render_to_string('core/blocks/notification.html', {
+                                'user': notification.receiver,
+                                'message': 'accepted your friend request',
+                                'type': 'user_action'
+                            }),
+                            'friend_block': render_to_string('core/blocks/side-panel-items/friend.html', {
+                                'friend': notification.receiver
+                            }),
+                            'friend_online': notification.receiver.userprofile.online_count > 0,
+                            'permanent': False
+                        }
+                    })
+                    async_to_sync(channel_layer.group_send)('user_' + notification.receiver.username, {
+                        'type': 'request_notification',
+                        'data': {
+                            'type': 'friend_add',
+                            'notification_id': notification.id,
+                            'notification_block': render_to_string('core/blocks/notification.html', {
+                                'user': notification.sender,
+                                'message': 'is now your friend',
+                                'type': 'user_action'
+                            }),
+                            'friend_block': render_to_string('core/blocks/side-panel-items/friend.html', {
+                                'friend': notification.sender
+                            }),
+                            'friend_online': notification.sender.userprofile.online_count > 0,
+                            'permanent': False
+                        }
+                    })
+                else:
+                    async_to_sync(channel_layer.group_send)('user_' + notification.sender.username, {
+                        'type': 'request_notification',
+                        'data': {
+                            'type': 'friend_request',
+                            'notification_id': notification.id,
+                            'notification_block': render_to_string('core/blocks/notification.html', {
+                                'user': notification.receiver,
+                                'message': 'denied your friend request',
+                                'type': 'user_action'
+                            }),
+                            'permanent': False
+                        }
+                    })
+                    async_to_sync(channel_layer.group_send)('user_' + notification.receiver.username, {
+                        'type': 'request_notification',
+                        'data': {
+                            'type': 'friend_request',
+                            'notification_id': notification.id,
+                            'notification_block': render_to_string('core/blocks/notification.html', {
+                                'message': 'Friend request denied',
+                                'type': 'text'
+                            }),
+                            'permanent': False
+                        }
+                    })
+
+                notification.delete()
+        else:
+            data['success'] = False
+
+    return JsonResponse(data)
+
+def request_friend(request):
+    data = {
+        'success': True
+    }
+
+    if request.GET:
+        query = request.GET.get('query')
+
+        target_user = User.objects.filter(username = query)
+
+        if target_user.exists():
+            target_user = target_user[0]
+
+            channel_layer = get_channel_layer()
+
+            if request.user.userprofile.friends.filter(id = target_user.id).exists():
+                async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
+                    'type': 'request_notification',
+                    'data': {
+                        'type': 'friend_request',
+                        'notification_block': render_to_string('core/blocks/notification.html', {
+                            'message': 'User is already your friend',
+                            'type': 'text'
+                        }),
+                        'permanent': False
+                    }
+                })
+            elif FriendRequest.objects.filter(notification__sender = request.user, notification__receiver = target_user).exists():
+                async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
+                    'type': 'request_notification',
+                    'data': {
+                        'type': 'friend_request',
+                        'notification_block': render_to_string('core/blocks/notification.html', {
+                            'message': 'Friend request already pending',
+                            'type': 'text'
+                        }),
+                        'permanent': False
+                    }
+                })
+            else:
+                notification = Notification(sender = request.user, receiver = target_user)
+                notification.save()
+
+                friend_request = FriendRequest(notification = notification)
+                friend_request.save()
+
+                async_to_sync(channel_layer.group_send)('user_' + target_user.username, {
+                    'type': 'request_notification',
+                    'data': {
+                        'type': 'friend_request',
+                        'notification_block': render_to_string('core/blocks/notification.html', {
+                            'noti': friend_request,
+                            'message': 'wants to be friends',
+                            'type': 'full'
+                        }),
+                        'permanent': True
+                    }
+                })
+
+                async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
+                    'type': 'request_notification',
+                    'data': {
+                        'type': 'friend_request',
+                        'notification_block': render_to_string('core/blocks/notification.html', {
+                            'message': 'Friend request sent',
+                            'type': 'text'
+                        }),
+                        'permanent': False
+                    }
+                })
+    else:
+        data['success'] = False
+
+    return JsonResponse(data)
+
+def remove_friend(request):
+    data = {
+        'success': True,
+        'is_friend': True,
+        'removed': True
+    }
+
+    if request.POST:
+        username = request.POST.get('username')
+
+        friend = request.user.userprofile.friends.filter(username = username)
+
+        if friend.exists():
+            friend = friend[0]
+
+            request.user.userprofile.friends.remove(friend)
+            friend.userprofile.friends.remove(request.user)
+
+            channel_layer = get_channel_layer()
+
+            async_to_sync(channel_layer.group_send)('user_' + friend.username, {
+                'type': 'request_notification',
+                'data': {
+                    'type': 'friend_remove',
+                    'notification_block': render_to_string('core/blocks/notification.html', {
+                        'user': request.user,
+                        'message': 'removed you as a friend',
+                        'type': 'user_action',
+                        'permanent': False
+                    }),
+                    'friend_username': request.user.username
+                }
+            })
+
+            async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
+                'type': 'request_notification',
+                'data': {
+                    'type': 'friend_remove',
+                    'notification_block': render_to_string('core/blocks/notification.html', {
+                        'user': friend,
+                        'message': 'removed as a friend',
+                        'type': 'user_action',
+                        'permanent': False
+                    }),
+                    'friend_username': friend.username
+                }
+            })
+        else:
+            data['is_friend'] = False
+            data['removed'] = False
+    else:
+        data['success'] = False
+    
+    return JsonResponse(data)
+
+def room_invite(request):
+    if request.POST:
+        username = request.POST.get('username')
+        room_code = request.POST.get('room_code')
+
+        friend = request.user.userprofile.friends.filter(username = username)
+        room = Room.objects.get(code = room_code)
+
+        if friend.exists():
+            friend = friend[0]
+
+            channel_layer = get_channel_layer()
+
+            if room.active_users.filter(username = friend.username).exists():
+                async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
+                    'type': 'request_notification',
+                    'data': {
+                        'type': 'friend_remove',
+                        'notification_block': render_to_string('core/blocks/notification.html', {
+                            'message': 'User already in room',
+                            'type': 'text',
+                            'permanent': False
+                        })
+                    }
+                })
+            elif room.leader == request.user or room.mode != RoomMode.CLOSED:
+                notification = Notification(sender = request.user, receiver = friend)
+                notification.save()
+
+                invite = RoomInvite(notification = notification, room = room)
+                invite.save()
+
+                async_to_sync(channel_layer.group_send)('user_' + friend.username, {
+                    'type': 'request_notification',
+                    'data': {
+                        'type': 'room_invite',
+                        'notification_block': render_to_string('core/blocks/notification.html', {
+                            'noti': invite,
+                            'message': 'wants you to join',
+                            'type': 'room_invite'
+                        }),
+                        'permanent': True
+                    }
+                })
+
+                async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
+                    'type': 'request_notification',
+                    'data': {
+                        'type': 'room_invite',
+                        'notification_block': render_to_string('core/blocks/notification.html', {
+                            'message': 'Room invite sent',
+                            'type': 'text'
+                        }),
+                        'permanent': False
+                    }
+                })
+
 def login(request):
     if request.POST:
-        print(request.POST)
-
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         user = authenticate(username = username, password = password)
-
-        print(user)
 
         if user is not None:
             auth_login(request, user)

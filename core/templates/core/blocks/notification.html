@@ -1,0 +1,77 @@
+{% load static %}
+
+{% if type == 'text' %}
+
+    <div class = "notification">
+        <div class = "notification-icon">
+            <img src = "/static/img/icons/bell-white-96.png">
+        </div>
+        <div class = "notification-details">
+            <p>
+                <span class = "notification-message">{{ message }}</span>
+            </p>
+        </div>
+    </div>
+
+{% elif type == 'user_action' %}
+
+    <div class = "notification">
+        {% include 'core/blocks/profile-picture.html' with user=user width='36px' height='36px' %}
+
+        <div class = "notification-details">
+            <p>
+                <span class = "notification-sender">{{ user.username }}</span>
+                <span class = "notification-message">{{ message }}</span>
+            </p>
+        </div>
+    </div>
+
+{% elif type == 'room_invite' %}
+
+    <div class = "notification">
+        <input class = "notification-id" type = "hidden" name = "notification-id" value = "{{ noti.notification.id }}">
+
+        {% include 'core/blocks/profile-picture.html' with user=noti.notification.sender width='36px' height='36px' %}
+
+        <div class = "notification-details">
+            <p>
+                <span class = "notification-sender">{{ noti.notification.sender.username }}</span>
+                <span class = "notification-message">{% if message %} {{ message }} {% else %} {{ noti.message }} {% endif %}</span>
+                <span class = "notification-object">{{ noti.room.title }}</span>
+            </p>
+        </div>
+        <div class = "notification-actions">
+            <div class = "notification-action deny">
+                <img src = "{% static 'img/icons/deny-white-96.png' %}">
+            </div>
+            <div class = "notification-action accept">
+                <img src = "{% static 'img/icons/check-white-96.png' %}">
+            </div>
+        </div>
+    </div>
+
+{% else %}
+
+    <div class = "notification">
+        <input class = "notification-id" type = "hidden" name = "notification-id" value = "{{ noti.notification.id }}">
+        <input class = "type-id" type = "hidden" name = "type-id" value = "{{ noti.id }}">
+
+        {% include 'core/blocks/profile-picture.html' with user=noti.notification.sender width='36px' height='36px' %}
+
+        <div class = "notification-details">
+            <p>
+                <span class = "notification-sender">{{ noti.notification.sender.username }}</span>
+                <span class = "notification-message">{% if message %} {{ message }} {% else %} {{ noti.message }} {% endif %}</span>
+            </p>
+        </div>
+        <div class = "notification-actions">
+            <div class = "notification-action deny">
+                <img src = "{% static 'img/icons/deny-white-96.png' %}">
+            </div>
+            <div class = "notification-action accept">
+                <img src = "{% static 'img/icons/check-white-96.png' %}">
+            </div>
+        </div>
+    </div>
+
+{% endif %}

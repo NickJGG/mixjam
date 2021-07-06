@@ -7,23 +7,27 @@
         <p id = "user-identity-username">{{ user.username }}</p>
         <p id = "user-identity-tagline">{{ user.userprofile.tag_line }}</p>
     </div>
-    <div id = "user-card-showcase" style = "--background-color: #{{ user.userprofile.background_color }}">
-        <div class = "user-showcase-group">
-            {% get_rooms user as rooms %}
-            {% get_room_count user as room_count %}
+    {% if not hide_showcase %}
+        
+        <div id = "user-card-showcase" style = "--background-color: #{{ user.userprofile.background_color }}">
+            <div class = "user-showcase-group">
+                {% get_rooms user as rooms %}
+                {% get_room_count user as room_count %}
 
-            <p class = "showcase-group-label">Rooms • {{ room_count }}</p>
-            <div id = "user-showcase-rooms" class = "showcase-group-content">
-                {% for room in rooms %}
+                <p class = "showcase-group-label">Rooms • {{ room_count }}</p>
+                <div id = "user-showcase-rooms" class = "showcase-group-content">
+                    {% for room in rooms %}
 
-                    <a href = "{% url 'room' room_code=room.code %}">
-                        <div class = "showcase-room" style = "--background-image: url({{ room.playlist_image_url }})">
+                        <a href = "{% url 'room' room_code=room.code %}">
+                            <div class = "showcase-room" style = "--background-image: url({{ room.playlist_image_url }})">
 
-                        </div>
-                    </a>
+                            </div>
+                        </a>
 
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
+
+    {% endif %}
 </div>

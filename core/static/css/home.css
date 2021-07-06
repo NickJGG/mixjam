@@ -45,18 +45,11 @@
 .widget-container{
     display: flex;
     flex-direction: column;
+    flex: 1;
 
     box-sizing: border-box;
 }
-.widget-list{
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-.widget-list-header{
+.widget-container-header{
     width: fit-content;
 
     display: flex;
@@ -64,27 +57,19 @@
     
     margin-bottom: 10px;
 }
-.widget-list-label{
-    margin-left: 10px;
+.widget-container-label{
+    margin-left: 1px;
 
     font-family: Roboto-Medium;
 	font-size: 28px;
 	color: white;
 }
-.widget-list.main{
-    margin-bottom: var(--panel-padding);
-}
-.widget-list:not(:first-child){
-    margin-top: var(--panel-padding);
-}
-.widgets{
+.widget-list{
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     grid-gap: var(--panel-padding);
 }
 .widget{
-    --background-color: var(--medium-black);
-
     width: 100%;
     height: 100%;
 
@@ -94,18 +79,18 @@
 
     position: relative;
 
-    background-color: var(--background-color);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
     color: white;
 
-    border-radius: 20px;
+    border-radius: var(--border-radius);
 
     box-sizing: border-box;
 
     cursor: pointer;
+
+    transition: all .1s ease;
+}
+.widget:hover{
+    transform: scale(1.02);
 }
 .widget.link{
     background-color: var(--background-color);
@@ -126,7 +111,7 @@
 
     border-color: #2f7d56;
 }
-.widget:hover{
+.widget:hover .widget-info{
     background-color: #2b2b2b;
 }
 .widget-image{
@@ -142,7 +127,7 @@
     background-position: center;
     background-repeat: no-repeat;
 
-    border-radius: calc(var(--border-radius) - 5px) calc(var(--border-radius) - 5px) 0 0;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
 
     box-sizing: border-box;
 }
@@ -150,7 +135,7 @@
     width: 100%;
     height: 100%;
 
-    border-radius: 15px;
+    border-radius: var(--border-radius);
 }
 .room-playing{
     width: 55px;
@@ -167,7 +152,7 @@
 
     background-color: var(--medium-black);
     
-    border-radius: 15px 0 15px 0;
+    border-radius: var(--border-radius) 0;
 
     box-sizing: border-box;
 
@@ -184,31 +169,6 @@
     width: 25px;
     height: 25px;
 }
-.room-users-container{
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-
-    margin-top: var(--panel-padding);
-
-    overflow-y: hidden;
-}
-.room-users-wrapper{
-    width: 100%;
-    
-    flex: 1;
-
-    margin-top: 8px;
-
-    overflow-y: scroll;
-}
-.room-users{
-    --container-width: calc(100% / 3);
-
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-gap: 10px;
-}
 
 .widget-info{
     width: 100%;
@@ -217,6 +177,10 @@
     flex-direction: column;
 
     padding: 15px var(--panel-padding);
+
+    background-color: var(--medium-black);
+
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
 
     box-sizing: border-box;
 

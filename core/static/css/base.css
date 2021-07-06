@@ -1,13 +1,17 @@
 :root{
 	--light-green: #73d073;
 	--dark-green: #00b95e;
-	--black: #0b0b0b;
-	--medium-black: #141414;
-	--light-black: #1f1f1f;
-	--red: #ff6468;
+	--dark-green-hover: #1dce77;
+	--black: #0F0F11;
+	--medium-black: #151517;
+	--light-black: #1E1E20;
+	--red: #ec4a4e;
+	--red-hover: #f76266;
+	--blue: #1d6cab;
+	--blue-hover: #2b84cc;
 
-	--panel-padding: 20px;
-	--border-radius: 20px;
+	--panel-padding: 15px;
+	--border-radius: 5px;
 }
 *{
 	margin: 0;

@@ -15,6 +15,91 @@ from .models import *
 from . import util
 from . import spotify
 
+class UserConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user = self.scope['user']
+
+        self.room_name = user.username
+        self.group_name = 'user_%s' % self.room_name
+
+        await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+
+        online_count = user.userprofile.go_online()
+
+        if online_count == 1:
+            for friend in user.userprofile.friends.all():
+                await self.channel_layer.group_send(
+                    'user_%s' % friend.username,
+                    {
+                        'type': 'request_connection',
+                        'data': {
+                            'connection_state': {
+                                'connection_type': 'online',
+                                'user': {
+                                    'username': user.username
+                                }
+                            }
+                        }
+                    }
+                )
+
+    # DISCONNECT FUNCTION
+    async def disconnect(self, close_code):
+        user = self.scope['user']
+
+        online_count = user.userprofile.go_offline()
+
+        if online_count == 0:
+            for friend in user.userprofile.friends.all():
+                await self.channel_layer.group_send(
+                    'user_%s' % friend.username,
+                    {
+                        'type': 'request_connection',
+                        'data': {
+                            'connection_state': {
+                                'connection_type': 'offline',
+                                'user': {
+                                    'username': user.username
+                                }
+                            }
+                        }
+                    }
+                )
+
+        await self.channel_layer.group_discard(
+            self.group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        request_data = json.loads(text_data)
+
+        #request_type = request_data['type']
+        #request_action = request_data['data']['action']
+
+        user = self.scope['user']
+
+        await self.channel_layer.group_send(
+            self.group_name, request_data
+        )
+
+    async def response_send(self, type, response_data):
+        await self.send(text_data=json.dumps({
+            'type': type,
+            'response_data': response_data
+        }))
+
+    async def request_connection(self, request_data):
+        await self.response_send('connection', request_data)
+
+    async def request_notification(self, request_data):
+        await self.response_send('notification', request_data)
+
 class RoomConsumer(AsyncWebsocketConsumer):
     put_methods = ['play', 'pause', 'seek']
     post_methods = ['previous', 'next']
@@ -331,7 +416,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 'user': connection_user,
                 'request_user': user,
                 'is_leader': connection_user == room.leader,
-                'show_admin': user == room.leader
+                'show_admin': user == room.leader,
+                'type_user': True
             })
 
         await self.response_send('connection', request_data)
@@ -416,26 +502,29 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         raw_devices = await spotify.get_devices(user)
 
-        print('\n\n\n\n\n')
-        print(raw_devices)
-        print(raw_devices.status_code)
-        print(raw_devices.content)
-        print(raw_devices.json())
+        # print('\n\n\n\n\n')
+        # print(raw_devices)
+        # print(raw_devices.status_code)
+        # print(raw_devices.content)
+        # print(raw_devices.json())
 
         devices = []
 
-        for device in raw_devices.json()['devices']:
-            if device['is_active']:
-                devices = [(render_to_string('core/blocks/room/device.html', {
-                    'device': device
-                }))] + devices
-                
-                active = True
+        try:
+            for device in raw_devices.json()['devices']:
+                if device['is_active']:
+                    devices = [(render_to_string('core/blocks/room/device.html', {
+                        'device': device
+                    }))] + devices
+                    
+                    active = True
 
-                volume = device['volume_percent']
-            else:
-                devices.append(render_to_string('core/blocks/room/device.html', {
-                    'device': device
-                }))
-        
-        return devices, active, volume
+                    volume = device['volume_percent']
+                else:
+                    devices.append(render_to_string('core/blocks/room/device.html', {
+                        'device': device
+                    }))
+            
+            return devices, active, volume
+        except:
+            return None, None, None

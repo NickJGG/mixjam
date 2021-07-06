@@ -3,94 +3,92 @@
 
 <div id = "panel-home" class = "panel {% if selected == True %}selected{% endif %}">
 	<div class = "widget-container" style = "--rows: 2; --columns: 4">
+        <div class = "widget-container-header">
+            <p class = "widget-container-label">Rooms</p>
+        </div>
         <div class = "widget-list">
-            <div class = "widget-list-header">
-                <p class = "widget-list-label">Rooms</p>
-            </div>
-            <div class = "widgets">
-                {% if user.userprofile.most_recent_room %}
+            {% if user.userprofile.most_recent_room %}
 
-                    <a class = "no-underline" href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}">
-                        <div class = "widget link" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }})">
-                            {% if user.userprofile.most_recent_room.playlist.playing %}
+                <a class = "no-underline" href = "{% url 'room' room_code=user.userprofile.most_recent_room.code %}">
+                    <div class = "widget link" style = "--background-image: url({{ user.userprofile.most_recent_room.playlist_image_url }})">
+                        {% if user.userprofile.most_recent_room.playlist.playing %}
 
-                                <div class = "room-playing">
-                                    <div class = "room-preview-wrapper">
-                                        <img class = "playing-image" src = "{% static 'img/icons/logo.gif' %}">
-                                        <div class = "room-users-container">
-                                            <p class = "section-label">Listening • {{ user.userprofile.most_recent_room.active_users.all|length }}</p>
-                                            <div class = "room-users-wrapper">
-                                                <div class = "room-users">
-                                                    {% for user in user.userprofile.most_recent_room.active_users.all %}
-                                                        {% include 'core/blocks/user-lite.html' with user=user %}
-                                                    {% endfor %}
-                                                </div>
+                            <div class = "room-playing">
+                                <div class = "room-preview-wrapper">
+                                    <img class = "playing-image" src = "{% static 'img/icons/logo.gif' %}">
+                                    <div class = "preview-users-container">
+                                        <p class = "section-label">Listening • {{ user.userprofile.most_recent_room.active_users.all|length }}</p>
+                                        <div class = "preview-users-wrapper">
+                                            <div class = "preview-users">
+                                                {% for user in user.userprofile.most_recent_room.active_users.all %}
+                                                    {% include 'core/blocks/user-lite.html' with user=user %}
+                                                {% endfor %}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                            {% endif %}
-
-                            <div class = "widget-image">
-                                
                             </div>
-                            <div class = "widget-info">
-                                <div class = "widget-label"> 
-                                    <p class = "widget-name" title = "{{ user.userprofile.most_recent_room.title }}">{{ user.userprofile.most_recent_room.title }}</p>
-                                </div>
-                                <div class = "room-creator">
-                                    <img src = "{% static 'img/icons/crown-96.png' %}">
-					
-					                <p>{{ user.userprofile.most_recent_room.leader.username }}</p>
-                                </div>
+
+                        {% endif %}
+
+                        <div class = "widget-image">
+                            
+                        </div>
+                        <div class = "widget-info">
+                            <div class = "widget-label"> 
+                                <p class = "widget-name" title = "{{ user.userprofile.most_recent_room.title }}">{{ user.userprofile.most_recent_room.title }}</p>
+                            </div>
+                            <div class = "room-creator">
+                                <img src = "{% static 'img/icons/crown-96.png' %}">
+                
+                                <p>{{ user.userprofile.most_recent_room.leader.username }}</p>
                             </div>
                         </div>
-                    </a>
+                    </div>
+                </a>
 
-                {% endif %}
+            {% endif %}
 
-                {% for room in other_rooms %}
+            {% for room in other_rooms %}
 
-                    <a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
-                        <div class = "widget link" style = "--background-image: url({{ room.playlist_image_url }})">
-                            {% if room.playlist.playing %}
+                <a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
+                    <div class = "widget link" style = "--background-image: url({{ room.playlist_image_url }})">
+                        {% if room.playlist.playing %}
 
-                                <div class = "room-playing">
-                                    <div class = "room-preview-wrapper">
-                                        <img class = "playing-image" src = "{% static 'img/icons/logo.gif' %}">
-                                        <div class = "room-users-container">
-                                            <p class = "section-label">Listening • {{ room.active_users.all|length }}</p>
-                                            <div class = "room-users-wrapper">
-                                                <div class = "room-users">
-                                                    {% for user in room.active_users.all %}
-                                                        {% include 'core/blocks/user-lite.html' with user=user %}
-                                                    {% endfor %}
-                                                </div>
+                            <div class = "room-playing">
+                                <div class = "room-preview-wrapper">
+                                    <img class = "playing-image" src = "{% static 'img/icons/logo.gif' %}">
+                                    <div class = "preview-users-container">
+                                        <p class = "section-label">Listening • {{ room.active_users.all|length }}</p>
+                                        <div class = "preview-users-wrapper">
+                                            <div class = "preview-users">
+                                                {% for user in room.active_users.all %}
+                                                    {% include 'core/blocks/user-lite.html' with user=user %}
+                                                {% endfor %}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                            {% endif %}
-                            <div class = "widget-image">
-                                
                             </div>
-                            <div class = "widget-info">
-                                <div class = "widget-label">
-                                    <p class = "widget-name">{{ room.title }}</p>
-                                </div>
-                                <div class = "room-creator">
-                                    <img src = "{% static 'img/icons/crown-96.png' %}">
-					
-					                <p>{{ room.leader.username }}</p>
-                                </div>
+
+                        {% endif %}
+                        <div class = "widget-image">
+                            
+                        </div>
+                        <div class = "widget-info">
+                            <div class = "widget-label">
+                                <p class = "widget-name">{{ room.title }}</p>
+                            </div>
+                            <div class = "room-creator">
+                                <img src = "{% static 'img/icons/crown-96.png' %}">
+                
+                                <p>{{ room.leader.username }}</p>
                             </div>
                         </div>
-                    </a>
+                    </div>
+                </a>
 
-                {% endfor %}
-            </div>
+            {% endfor %}
         </div>
     </div>
 

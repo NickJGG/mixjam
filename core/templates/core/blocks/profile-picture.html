@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class = "profile-picture-container notification-image" style = "--width: {{ width }}; --height: {{ height }}; --background-color: #{{ user.userprofile.background_color }}; --icon-color: #{{ user.userprofile.icon_color }}">
+<div class = "profile-picture-container notification-image item-picture" style = "--width: {{ width }}; --height: {{ height }}; --background-color: #{{ user.userprofile.background_color }}; --icon-color: #{{ user.userprofile.icon_color }}">
     <div class = "profile-picture">
         {% with 'img/profile//'|add:user.userprofile.icon_image|add:'-white-100.png' as path %}
             <div class = "profile-picture-icon" style = "--background-image: url({% static path %})"></div>

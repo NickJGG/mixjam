@@ -10,9 +10,12 @@
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/messages.css' %}">
 
 {% endblock %}
-	
 
 {% block content %}
+
+	<div id = "temp-notifications">
+		
+	</div>
 	
 	<div id = "nav">
 		<div class = "nav-section">
@@ -35,52 +38,81 @@
 		<div id = "user-section" class = "nav-section">
 			{% block user_container_before %}
 			{% endblock %}
-			
-			<div id = "user-container">
-				{% include 'core/blocks/profile-picture.html' with width='40px' height='40px' %}
 
-				<p id = "user-container-username">{{ user.username }}</p>
+			<div id = "user-utilities">
+				<div id = "notification-container" class = "user-utility popup-container column bottom right">
+					<div class = "popup-toggle">
+						<img src = "{% static 'img/icons/bell-white-96.png' %}">
+					</div>
+					<div class = "popup-element">
+						<div class = "header">
+							<p>Notifications</p>
+						</div>
+						<div id = "notification-list">
+							{% get_notifications user as notifications %}
+
+							{% for noti in notifications %}
+								{% include 'core/blocks/notification.html' with noti=noti type=noti.type %}
+							{% endfor %}
+						</div>
+					</div>
+				</div>
 			</div>
+			<div class = "popup-container column bottom right">
+				<div id = "user-container" class = "popup-toggle">
+					{% include 'core/blocks/profile-picture.html' with width='40px' height='40px' %}
 
-			<div id = "user-dropdown">
-				{% include 'core/blocks/user-card.html' %}
+					<p id = "user-container-username">{{ user.username }}</p>
+				</div>
+				<div id = "user-dropdown" class = "popup-element">
+					{% include 'core/blocks/user-card.html' with hide_showcase=True %}
 
-				<div id = "user-dropdown-options">
-					<a class = "no-underline" href = "{% url 'account' %}">
-						<div class = "dropdown-option">Account</div>
-					</a>
-					<a class = "no-underline" href = "{% url 'logout' %}">
-						<div class = "dropdown-option logout">Logout</div>
-					</a>
+					<div id = "user-dropdown-options">
+						<a class = "no-underline" href = "{% url 'account' %}">
+							<div class = "dropdown-option">Account</div>
+						</a>
+						<a class = "no-underline" href = "{% url 'logout' %}">
+							<div class = "dropdown-option logout">Logout</div>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div id = "container">
 		<div id = "left-side-panel" class = "side-panel-container">
-			<div class = "list-section">
+			<div class = "side-panel-items">
 				{% get_rooms user as rooms %}
 				{% get_room_count user as room_count %}
 
-				<p class = "section-label">Your Rooms • {{ room_count }}</p>
-				<div class = "section-items">
-					{% for room in rooms %}
-						
-						<a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
-							<div class = "section-item room">
-								<div class = "item-picture" style = "--background-image: url({{ room.playlist_image_url }})">
-									{% if room.playlist.playing %}
-										<div class = "playing-overlay" style = "--background-image: url({% static 'img/icons/logo.gif' %})"></div>
-									{% endif %}
-								</div>
-
-								<p class = "item-label no-underline">{{ room.title }}</p>
-							</div>
-						</a>
-						
-					{% endfor %}
+				<div class = "popup-container side-panel-items-controller right barebones">
+					<div class = "side-panel-item item-label-trigger selector room popup-toggle right">
+						<img id = "expand" class = "side-panel-items-icon" src = "{% static 'img/icons/music-record-white-96.png' %}">
+						<p class = "item-label no-underline">Rooms</p>
+					</div>
 				</div>
+
+				<div class = "side-panel-items-divider"></div>
+
+				{% for room in rooms %}
+
+					<div class = "popup-container row top right margin">
+						<div class = "side-panel-item item-label-trigger room popup-toggle right">
+							<div class = "item-picture" style = "--background-image: url({{ room.playlist_image_url }})">
+								{% if room.playlist.playing %}
+									<div class = "playing-overlay" style = "--background-image: url({% static 'img/icons/logo.gif' %})"></div>
+								{% endif %}
+							</div>
+
+							<p class = "item-label no-underline">{{ room.title }}</p>
+						</div>
+						
+						{% include 'core/blocks/previews/room-preview.html' with title=room.title picture=room.playlist_image_url header_color=room.banner_color room=room %}
+					</div>
+						
+				{% endfor %}
 			</div>
+
 			<div id = "mini-footer">
 				<div id = "footer-links">
 					<a href = "https://github.com/NickJGG">
@@ -121,6 +153,69 @@
 		</div>
 		<div id = "right-side-panel" class = "side-panel-container">
 			{% block right_side_panel %}
+
+				<div class = "side-panel-items">
+					<div class = "side-panel-items-controller popup-container barebones row">
+						<div class = "side-panel-item selector room popup-toggle">
+							<img class = "side-panel-items-icon" src = "{% block hide_friends_icon %}{% static 'img/icons/people-white-96.png' %}{% endblock %}">
+						</div>
+						<div class = "popup-element">
+							<div class = "selector-options">
+								<div id = "selector-friends" class = "selector-option">
+									<img class = "side-panel-items-icon" src = "{% static 'img/icons/people-white-96.png' %}">
+								</div>
+								
+								{% block selector_options %}
+								{% endblock %}
+							</div>
+
+							<p class = "item-label no-underline">Preview</p>
+						</div>
+					</div>
+
+					<div class = "side-panel-items-divider"></div>
+
+					{% get_friends_statuses user as friends %}
+
+					<div id = "group-friends" class = "side-panel-items-group {% block hide_friends %}selected{% endblock %}">
+						<div class = "side-panel-items-subgroup">
+
+							{% for friend in friends.online %}
+								{% include 'core/blocks/side-panel-items/friend.html' with friend=friend %}
+							{% endfor %}
+
+						</div>
+						<div class = "side-panel-items-subgroup grayscale">
+
+							{% for friend in friends.offline %}
+								{% include 'core/blocks/side-panel-items/friend.html' with friend=friend %}
+							{% endfor %}
+							
+						</div>
+						<div class = "side-panel-items-subgroup actions">
+							<div id = "add-friend" class = "popup-container row top left margin">
+								<div class = "side-panel-item item-label-trigger popup-toggle left">
+									<img class = "side-panel-items-icon" src = "{% static 'img/icons/plus-white-96-2.png' %}">
+									<p class = "item-label no-underline">Add Friend</p>
+								</div>
+								<div class = "popup-element room-preview">
+									<div class = "preview-body">
+										<input type = "text" placeholder = "Username">
+										<div class = "preview-options">
+											<div class = "preview-option accept left">
+												<img src = "{% static 'img/icons/add-user-white-96.png' %}">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{% block selector_groups %}
+					{% endblock %}
+				</div>
+
 			{% endblock %}
 		</div>
 	</div>
@@ -130,5 +225,9 @@
 {% block js %}
 	{{ block.super }}
 
+	<script src = "{% static 'js/ajax.js' %}"></script>
 	<script src = "{% static 'js/base_auth.js' %}"></script>
+	<script type = "text/javascript">
+		var username = '{{ user.username }}';
+	</script>
 {% endblock %}

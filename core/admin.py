@@ -6,3 +6,6 @@ from .models import *
 admin.site.register(Room)
 admin.site.register(Playlist)
 admin.site.register(UserProfile)
+admin.site.register(Notification)
+admin.site.register(RoomInvite)
+admin.site.register(FriendRequest)

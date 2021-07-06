@@ -8,6 +8,7 @@ $(document).ready(function(){
 		'overview': 'overview',
 		'activities': 'activities',
 		'create room': 'create',
+		'room': 'room',
 	};
 	
 	$(document).on('click', '.subpanel-label', function(){

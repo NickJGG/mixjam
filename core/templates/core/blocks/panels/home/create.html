@@ -25,21 +25,19 @@
                 <div class = "settings-list no-background no-padding">
                     <div class = "setting">
                         <div class = "widget-list">
-                            <div class = "widgets">
-                                {% for playlist in playlists %}
-                                    
-                                    <div class = "widget selector" style = "--background-image: url({{ playlist.images.0.url }})">
-                                        <input class = "room-id" type = "hidden" value = "{{ playlist.id }}">
-                                        <div class = "widget-image"></div>
-                                        <div class = "widget-info">
-                                            <div class = "widget-label"> 
-                                                <p class = "widget-name">{{ playlist.name }}</p>
-                                            </div>
+                            {% for playlist in playlists %}
+                                
+                                <div class = "widget selector" style = "--background-image: url({{ playlist.images.0.url }})">
+                                    <input class = "room-id" type = "hidden" value = "{{ playlist.id }}">
+                                    <div class = "widget-image"></div>
+                                    <div class = "widget-info">
+                                        <div class = "widget-label"> 
+                                            <p class = "widget-name">{{ playlist.name }}</p>
                                         </div>
                                     </div>
+                                </div>
 
-                                {% endfor %}
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

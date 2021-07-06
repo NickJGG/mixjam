@@ -1,0 +1,27 @@
+{% extends 'core/blocks/previews/preview.html' %}
+{% load static %}
+{% load util %}
+
+{% block preview_body %}
+
+    <div class = "preview-options">
+        {% if room %}
+            {% if room.leader == user or room.mode != 'closed' %}
+
+                <input type = "hidden" name = "room-code" value = "{{ room.code }}">
+
+                <div class = "preview-option room-invite item-label-trigger top blue">
+                    <img src = "{% static 'img/icons/invite-room-white-96.png' %}">
+                    <p class = "item-label no-underline">Invite to Room</p>
+                </div>
+
+            {% endif %}
+        {% endif %}
+
+        <div class = "preview-option remove-friend item-label-trigger top red">
+            <img src = "{% static 'img/icons/remove-user-white-96.png' %}">
+            <p class = "item-label no-underline">Remove Friend</p>
+        </div>
+    </div>
+
+{% endblock %}

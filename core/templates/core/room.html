@@ -44,7 +44,8 @@
 
 {% block panel_labels %}
 
-	<p class = "panel-label selected">Home</p>
+	<div class = "panel-label">Home</div>
+	<p class = "panel-label selected">Room</p>
 	<!-- <p class = "panel-label">Activities</p> -->
 
 	{% if room.leader == user %}
@@ -106,7 +107,8 @@
 
 	{% endif %}
 
-	{% include 'core/blocks/panels/room/home.html' with selected=True %}
+	{% include 'core/blocks/panels/room/home.html' %}
+	{% include 'core/blocks/panels/room/room.html' with selected=True %}
 	{% include 'core/blocks/panels/room/activities.html' %}
 
 	{% if room.leader == user %}
@@ -149,17 +151,24 @@
 			<p id = "song-total-time">- : - -</p>
 		</div>
 		<div id = "extra-controls-container">
-			<div id = "devices-container">
-				<div id = "devices-header">
-					<p>Devices</p>
-					<div id = "devices-options">
-						<div id = "devices-refresh" class = "devices-option">
-							<img src = "{% static 'img/icons/refresh-white-96.png' %}">
-						</div>
+			<div class = "popup-container column top right">
+				<div id = "devices" class = "extra-control popup-toggle">
+					<div id = "devices-image" class = "extra-control-image" style = "--background-image: url({% static 'img/icons/device-white-96.png' %})">
+
 					</div>
 				</div>
-				<div id = "device-list">
-					
+				<div id = "devices-container" class = "popup-element">
+					<div id = "devices-header">
+						<p>Devices</p>
+						<div id = "devices-options">
+							<div id = "devices-refresh" class = "devices-option">
+								<img src = "{% static 'img/icons/refresh-white-96.png' %}">
+							</div>
+						</div>
+					</div>
+					<div id = "device-list">
+						
+					</div>
 				</div>
 			</div>
 			<div id = "volume-container">
@@ -174,11 +183,6 @@
 					</div>
 				</div>
 			</div>
-			<div id = "devices" class = "extra-control">
-				<div id = "devices-image" class = "extra-control-image" style = "--background-image: url({% static 'img/icons/device-white-96.png' %})">
-
-				</div>
-			</div>
 			<div id = "volume" class = "extra-control">
 				<div id = "volume-image" class = "extra-control-image" style = "--background-image: url({% static 'img/icons/speaker-white-96.png' %})">
 
@@ -189,7 +193,7 @@
 
 {% endblock %}
 
-{% block right_side_panel %}
+{% comment %} {% block right_side_panel %}
 
 	<div class = "tab-container">
 		<div class = "tab-selectors">
@@ -206,6 +210,78 @@
 		{% include 'core/blocks/tabs/room/users.html' with selected=True room=room offline_users=offline_users active_users=room.active_users.all %}
 	</div>
 
+{% endblock %} {% endcomment %}
+
+{% block selector_options %}
+
+	<div id = "selector-users" class = "selector-option">
+		<img class = "side-panel-items-icon" src = "{% static 'img/icons/room-users-white-96.png' %}">
+	</div>
+
+{% endblock %}
+
+{% block hide_friends %}{% endblock %}
+{% block hide_friends_icon %}{% static 'img/icons/room-users-white-96.png' %}{% endblock %}
+
+{% block selector_groups %}
+
+	<div id = "group-users" class = "side-panel-items-group selected">
+		<div class = "side-panel-items-subgroup">
+
+			{% for user in room.active_users.all %}
+
+				<div id = "user-{{ user.username }}" class = "popup-container row top left margin">
+					<div class = "side-panel-item room popup-toggle">
+						{% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
+						<p class = "item-label no-underline">{{ user.username }}</p>
+					</div>
+					<div class = "popup-element room-preview">
+						<a class = "no-underline" href>
+							<div class = "preview-header">
+								<p class = "preview-title">{{ user.username }}</p>
+								<div class = "preview-join">
+									<img src = "{% static 'img/icons/right-white-96.png' %}">
+								</div>
+							</div>
+						</a>
+						<div class = "preview-users-container">
+							
+						</div>
+					</div>
+				</div>
+					
+			{% endfor %}
+
+		</div>
+		<div class = "side-panel-items-subgroup grayscale">
+
+			{% for user in offline_users %}
+
+				<div id = "user-{{ user.username }}" class = "popup-container row top left margin">
+					<div class = "side-panel-item room popup-toggle grayscale">
+						{% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
+						<p class = "item-label no-underline">{{ user.username }}</p>
+					</div>
+					<div class = "popup-element room-preview">
+						<a class = "no-underline" href>
+							<div class = "preview-header">
+								<p class = "preview-title">{{ user.username }}</p>
+								<div class = "preview-join">
+									<img src = "{% static 'img/icons/right-white-96.png' %}">
+								</div>
+							</div>
+						</a>
+						<div class = "preview-users-container">
+							
+						</div>
+					</div>
+				</div>
+					
+			{% endfor %}
+			
+		</div>
+	</div>
+
 {% endblock %}
 
 {% block js %}
@@ -216,6 +292,7 @@
 	{% static '' as static_url %}
 	{{ room_state|json_script:"roomState" }}
 	{{ room.code|json_script:"code" }}
+	{{ user.username|json_script:"username" }}
 	{{ room_state.song_state.is_playing|json_script:"is_playing" }}
 	
 	<script src = "{% static 'js/room.js' %}"></script>
