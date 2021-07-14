@@ -1,7 +1,5 @@
 import json
 from django.shortcuts import render
-import requests
-import time
 
 from datetime import datetime
 
@@ -29,15 +27,9 @@ class UserConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        print(dir(self.channel_layer))
-        print(self.channel_layer)
+        user.userprofile.go_online()
 
-        if settings.DEBUG:
-            channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
-        else:
-            channel_count = len(self.channel_layer.group_channels(self.group_name))
-
-        if channel_count == 1:
+        if user.userprofile.online_count == 1:
             for friend in user.userprofile.friends.all():
                 active_room = Room.objects.filter(users = friend, active_users = friend)
 
@@ -70,12 +62,9 @@ class UserConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         user = self.scope['user']
 
-        if settings.DEBUG:
-            channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
-        else:
-            channel_count = len(self.channel_layer.group_channels(self.group_name))
+        user.userprofile.go_offline()
 
-        if channel_count == 1:
+        if user.userprofile.online_count == 0:
             for friend in user.userprofile.friends.all():
                 active_room = Room.objects.filter(users = friend, active_users = friend)
 

@@ -50,6 +50,9 @@ def get_friends_statuses(user):
 
     channel_layer = get_channel_layer()
 
+    print(dir(channel_layer))
+    print('\n\n', channel_layer.channels, '\n\n')
+
     for friend in user.userprofile.friends.all():
         if len(channel_layer.groups.get('user_' + friend.username, {}).items()) > 0:
             online.append(friend)
