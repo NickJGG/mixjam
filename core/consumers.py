@@ -8,7 +8,6 @@ from datetime import datetime
 from django.utils import timezone
 from django.template.loader import render_to_string
 
-from channels import Group
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
