@@ -8,12 +8,12 @@ from datetime import datetime
 from django.utils import timezone
 from django.template.loader import render_to_string
 
+from channels import Group
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .models import *
-from . import util
-from . import spotify
+from . import util, spotify, settings
 
 class UserConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -29,7 +29,10 @@ class UserConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
+        if settings.DEBUG:
+            channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
+        else:
+            channel_count = len(self.channel_layer.group_channels(self.group_name))
 
         if channel_count == 1:
             for friend in user.userprofile.friends.all():
@@ -64,7 +67,10 @@ class UserConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         user = self.scope['user']
 
-        channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
+        if settings.DEBUG:
+            channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
+        else:
+            channel_count = len(self.channel_layer.group_channels(self.group_name))
 
         if channel_count == 1:
             for friend in user.userprofile.friends.all():
