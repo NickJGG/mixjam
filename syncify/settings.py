@@ -24,7 +24,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'ydh#&zkf&ru@j*5_nxitp1w=uj2m$h9_y!#(@#t_j+(m=j9$y#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', 'syncified.herokuapp.com', 'www.mixjam.io', 'mixjam.io']
 
@@ -140,6 +139,8 @@ DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
 DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
 
 if os.environ.get('DJANGO_DEVELOPMENT'):
+    DEBUG = True
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -155,6 +156,8 @@ if os.environ.get('DJANGO_DEVELOPMENT'):
 
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
+    DEBUG = False
+
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
