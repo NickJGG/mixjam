@@ -5,34 +5,27 @@
 	{% include 'core/blocks/user-card.html' %}
 
 	<div id = "settings-sections">
-		<form id = "form-personalization" method = "POST">
+		<form id = "form-personalization" enctype = "multipart/form-data" method = "POST">
 			{% csrf_token %}
 
 			<input type = "hidden" name = "panel-label" value = "personalization">
 			<input id = "icon-image-path" type = "hidden" name = "icon-image" value = "{{ user.userprofile.icon_image }}">
 			<div class = "settings-sections">
 				<div class = "settings-section">
-					<p class = "settings-label">Profile Picture</p>
+					<p class = "settings-label">Profile</p>
 					<div class = "settings-list">
 						<div id = "setting-icon" class = "setting">
-							<p class = "setting-label">Icon</p>
-							<div id = "picture-choices-container">
-								{% for image in images %}
-						
-									{% with 'img/profile//'|add:image as path %}
-										<div class = "picture-choice {% if user.userprofile.icon_image in path %}selected{% endif %}" style = "--highlight-color: #{{ user.userprofile.background_color }}; --icon: url({% static path %})"></div>
-									{% endwith %}
-						
-								{% endfor %}
+							<p class = "setting-label">Picture</p>
+							<div class = "file-upload">
+								<div class = "upload-button">Upload Image</div>
+								<div class = "upload-preview"></div>
+
+								<input type = "file" name = "picture" accept = "image/*">
 							</div>
 						</div>
 						<div class = "setting">
-							<p class = "setting-label">Icon Color (Hex)</p>
-							<input type = "text" name = "icon-color" value = "{{ user.userprofile.icon_color }}">
-						</div>
-						<div class = "setting">
-							<p class = "setting-label">Background Color (Hex)</p>
-							<input type = "text" name = "background-color" value = "{{ user.userprofile.background_color }}">
+							<p class = "setting-label">Color (Hex)</p>
+							<input type = "text" name = "color" value = "{{ user.userprofile.color }}">
 						</div>
 						<div class = "settings-actions">
 							<input type = "submit" value = "Save">

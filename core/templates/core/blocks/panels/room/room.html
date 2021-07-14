@@ -1,5 +1,49 @@
 {% load static %}
 
 <div id = "panel-room" class = "panel no-scrolling {% if selected == True %}selected{% endif %}">
-	
+    <div id = "room-info">
+        <div id = "room-banner">
+            <div id = "room-picture">
+                <img src = "{{ room.playlist_image_url }}">
+            </div>
+        </div>
+        <div id = "room-details">
+            <p id = "room-title">{{ room.title }}</p>
+            <div id = "room-options">
+                <div class = "room-option item-label-trigger left">
+                    <img src = "{% static 'img/icons/leave-white-96.png' %}">
+                    <p class = "item-label">Leave Room</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id = "room-body">
+        <div id = "element-users" class = "room-element">
+            <p class = "element-title">Users</p>
+            <div class = "element-body">
+                <div id = "user-list">
+                    {% for user in room.users.all %}
+
+                        <div class = "home-user popup-toggle item-label-trigger right" style = "--background-color: #{{ user.userprofile.color }}">
+                            {% include 'core/blocks/profile-picture.html' with user=user width="100%" height="100%" %}
+                            
+                            <p class = "item-label">{{ user.username }}</p>
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div id = "element-chat" class = "room-element">
+            <p class = "element-title">Chat</p>
+            <div id = "chat-container">
+                <div id = "chat-messages-wrapper">
+                    <div id = "chat-messages">
+                       
+                    </div>
+                </div>
+                <input id = "chat-box" type = "text" placeholder = "Write a message">
+            </div>
+        </div>
+    </div>
 </div>

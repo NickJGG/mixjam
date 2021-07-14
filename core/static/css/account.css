@@ -9,6 +9,8 @@
 
 #panel-container #user-card{
 	margin-bottom: var(--panel-padding);
+
+	background-color: var(--medium-black);
 }
 
 #picture-choices-container{

@@ -8,6 +8,8 @@ from django.utils.crypto import get_random_string
 
 from channels.db import database_sync_to_async
 
+from django_resized import ResizedImageField
+
 from . import util
 
 class ProfilePicture(models.Model):
@@ -45,9 +47,10 @@ class UserProfile(models.Model):
     most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.SET_NULL, related_name = 'most_recent_name')
     friends = models.ManyToManyField(User, blank = True, related_name = 'friends')
 
-    icon_image = models.CharField(max_length = 100, choices = ProfilePicture.IMAGE_CHOICES, default = ProfilePicture.BABY_YODA)
-    icon_color = models.CharField(max_length = 6, default = 'ffffff')
-    background_color = models.CharField(max_length = 6, default = '07ace5')
+    color = models.CharField(max_length = 6, default = '07ace5')
+    image_small = ResizedImageField(size = [200, 200], crop = ['middle', 'center'], upload_to = 'small/', null = True, blank = True)
+    image_medium = ResizedImageField(size = [500, 500], crop = ['middle', 'center'], upload_to = 'medium/', null = True, blank = True)
+    image_large = ResizedImageField(size = [800, 800], crop = ['middle', 'center'], upload_to = 'large/', null = True, blank = True)
 
     new_user = models.BooleanField(default = True)
 

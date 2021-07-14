@@ -9,8 +9,8 @@ $(document).ready(function(){
 	const ws_scheme = window.location.protocol == 'https:' ? 'wss' : 'ws';
 	const roomUrl = 'r/' + code + '/', userUrl = 'u/' + username + '/';
 	
-	var socket, userSocket, timer, seek = false, movingProgress = false;
-	var notifications = [], notificationUpper = 4000, notificationLower = 2000, notificationTransition = 200, displayNotification = true;
+	var socket, timer, seek = false, movingProgress = false;
+	var historyEntries = [], historyUpper = 4000, historyLower = 2000, historyTransition = 200, displayHistoryEntry = true;
 	var deviceActive;
 	
 	init();
@@ -25,9 +25,11 @@ $(document).ready(function(){
 
 		$('#device-list').empty();
 
-		devices.forEach(function(device){
-			$('#device-list').append(device);
-		});
+		if (devices != null){
+			devices.forEach(function(device){
+				$('#device-list').append(device);
+			});
+		}
 
 		if (deviceActive){
 			$('#devices-image').addClass('active').removeClass('inactive');
@@ -81,16 +83,16 @@ $(document).ready(function(){
 		}
 	}
 
-	function updateNotification(data){
+	function updateHistory(data){
 		var block = data['response_data']['data']['block'],
 			action = data['response_data']['data']['request_action'];
 
+		block = $(block);
+
 		switch(action){
 			case 'seek':
-				block = $(block);
-
 				block.append(`
-					<div class = "notification-object lone">
+					<div class = "entry-object lone">
 						` + secondsToClock(roomState.song_state.progress_ms / 1000).split('.')[0] + `
 					</div>
 				`);
@@ -99,13 +101,13 @@ $(document).ready(function(){
 			case 'next':
 			case 'previous':
 			case 'play_direct':
-				block = $(block);
-
 				block.append(`
-					<div class = "notification-song-image notification-image" style = "--background-image: url(` + roomState.song_state.track.album.images[2].url + `)"></div>
-					<div class = "notification-object">
-						` + roomState.song_state.track.name + `
+					<div class = "entry-image">
+						<img src = "` + roomState.song_state.track.album.images[2].url + `">
 					</div>
+					<p class = "entry-object">
+						` + roomState.song_state.track.name + `
+					</p>
 				`);
 
 				break;
@@ -113,41 +115,45 @@ $(document).ready(function(){
 				break;
 		}
 
-		var length = notifications.push(block);
+		var length = historyEntries.push(block);
 
-		if (displayNotification){
-			startNotification();
+		$('#history-entry-list').prepend(block.clone());
+
+		if (displayHistoryEntry){
+			startHistoryEntry();
 		}
 	}
-	function startNotification(){
-		displayNotification = false;
+	function startHistoryEntry(){
+		displayHistoryEntry = false;
 
-		var block = notifications.shift();
+		var block = historyEntries.shift();
 
-		$('#notification-container').empty();
-		$('#notification-container').append(block);
-		$('.notification').animate({
+		$('#history-entries').empty();
+		$('#history-entries').append(block);
+		$('.history-entry').animate({
 			'opacity': '1'
-		}, notificationTransition);
+		}, historyTransition);
 
-		var length = notifications.length > 0 ? notificationLower : notificationUpper;
+		var length = historyEntries.length > 0 ? historyLower : historyUpper;
 
-		setTimeout(hideNotification, length);
+		setTimeout(hideHistoryEntry, length);
 	}
-	function hideNotification(){
-		$('.notification').animate({
-			'opacity': '0'
-		}, notificationTransition);
+	function hideHistoryEntry(){
+		$('#hdistory-entries .history-entry').each(function(){
+			$(this).animate({
+				'opacity': '0'
+			}, historyTransition);
+		});
 
-		setTimeout(showNextNotification, notificationTransition);
+		setTimeout(showNextHistoryEntry, historyTransition);
 	}
-	function showNextNotification(){
-		if (notifications.length > 0)
-			startNotification();
+	function showNextHistoryEntry(){
+		if (historyEntries.length > 0)
+			startHistoryEntry();
 		else {
-			displayNotification = true;
+			displayHistoryEntry = true;
 
-			$('#notification-container').empty();
+			$('#history-entries').empty();
 		}
 	}
 
@@ -189,7 +195,7 @@ $(document).ready(function(){
 			$('#chat-messages').append(`
 				<div class = "chat-message ` + (self ? 'self' : '') + `">
 					<div class = "chat-message-info">
-						<div class = "message-color" style = "--message-color: ` + messageColor + `"></div>
+						<div class = "message-color" style = "--message-color: #` + messageColor + `"></div>
 						<p class = "message-username">` + username + `</p>
 					</div>
 					<div class = "chat-message-string">
@@ -237,9 +243,9 @@ $(document).ready(function(){
 			$('#playlist-title').text(playlistState.name);
 			$('#playlist-song-count').text(playlistState.tracks.total);
 			
-			$('#playlist-songs').empty();
+			$('#song-list-wrapper').empty();
 			
-			$('.playlist-song.playing').removeClass('playing');
+			$('.song.playing').removeClass('playing');
 			
 			var i, length = 0;
 			
@@ -249,7 +255,7 @@ $(document).ready(function(){
 				
 				length += song.track.duration_ms;
 				
-				$('#playlist-songs').append(`<div class = "playlist-song ` + (songPlaying ? 'playing' : '') + `">
+				/*$('#playlist-songs').append(`<div class = "playlist-song ` + (songPlaying ? 'playing' : '') + `">
 												<div style = "display: flex; align-items: center;">
 													<img class = "song-cover" src = "` + song.track.album.images[2].url + `">
 													<p class = "song-title">` + song.track.name + `</p>
@@ -258,30 +264,42 @@ $(document).ready(function(){
 												<p class = "song-album">` + song.track.album.name + `</p>
 												<p class = "song-user">` + song.added_by.id + `</p>
 												<p class = "song-length">` + secondsToClock(Math.round(song.track.duration_ms / 1000.0)) + `</p>
-											</div>`);	
+											</div>`);*/
+
+				var songElement = $(roomState.song_block);
+				songElement.find('.song-cover > img').attr('src', song.track.album.images[2].url);
+				songElement.find('.song-title').text(song.track.name);
+				songElement.find('.song-artist').text(song.track.artists[0].name);
+				songElement.find('.song-album p').text(song.track.album.name);
+				songElement.find('.song-link').attr('href', song.track.external_urls.spotify);
+
+				if (songPlaying)
+					songElement.addClass('playing');
+				
+				$('#song-list-wrapper').append(songElement);
 			}
 			
 			$('#playlist-length').text(secondsToLength(length / 1000));
-
-			if (playlistState.collaborative)
-				$('#playlist-collab').css('display', 'block');
-			else
-				$('#playlist-collab').css('display', 'none');
 		}
 	}
 	function updateConnections(data){
-		var type = data['response_data']['data']['connection_state']['connection_type'],
-			username = data['response_data']['data']['connection_state']['user']['username'];
+		var type = data.response_data.data.connection_state.connection_type,
+			username = data.response_data.data.connection_state.user.username,
+			self_kicked = data.response_data.data.connection_state.self_kicked;
+
+		console.log(self_kicked);
 
 		switch(type){
 			case 'join':
 				$('#user-' + username).remove();
 
-				$('#group-users .side-panel-items-subgroup:nth-child(1)').append(data['response_data']['data']['connection_state']['user']['user_block']);
+				$('#group-users .side-panel-items-subgroup:nth-child(1)').append(data.response_data.data.connection_state.user.user_block);
 
 				break;
 			case 'leave':
-				$('#user-' + username).appendTo('#group-users .side-panel-items-subgroup:nth-child(2)');
+				$('#user-' + username).remove();
+
+				$('#group-users .side-panel-items-subgroup:nth-child(2)').append(data.response_data.data.connection_state.user.user_block);
 
 				break;
 			case 'kick':
@@ -291,9 +309,6 @@ $(document).ready(function(){
 			default:
 				break;
 		}
-
-		$('#user-online-count').text($('#user-list').children().length);
-		$('#user-offline-count').text($('#offline-user-list').children().length);
 	}
 	
 // 	#endregion
@@ -309,19 +324,9 @@ $(document).ready(function(){
 	function setupSocket(){
 		socket = new WebSocket(ws_scheme + '://' + window.location.host + '/ws/' + roomUrl);
 
-		socket.onopen = function(e){
-			$('#connection-status').css('--background-color', 'var(--dark-green)');
-			$('#connection-status-label p').text('Connected');
-		};
-
-		socket.onclose = function(e){
-			$('#connection-status').css('--background-color', 'var(--red)');
-			$('#connection-status-label p').text('Disconnected');
-
-			reconnectTimer = setTimeout(function(){
-				setupSocket();
-			}, 5000);
-		};
+		registerConnection(socket, 'room', 'Room Services', ws_scheme + '://' + window.location.host + '/ws/' + roomUrl, function(newSocket){
+			socket = newSocket;
+		});
 
 		socket.onmessage = function(e){
 			const data = JSON.parse(e.data);
@@ -347,9 +352,9 @@ $(document).ready(function(){
 					updateAdmin(data);
 
 					break;
-				case 'request_notification':
-				case 'notification':
-					updateNotification(data);
+				case 'request_history':
+				case 'history_entry':
+					updateHistory(data);
 
 					break;
 				case 'user_action':
@@ -370,7 +375,7 @@ $(document).ready(function(){
 		}
 	}
 	function setupControls(){
-		$('.control').on('click', function(){
+		$('.song-control').on('click', function(){
 			var id = $(this).attr('id'),
 				playPause = id == 'play-pause',
 				action = playPause ? (playing ? "pause" : "play") : id;
@@ -384,16 +389,21 @@ $(document).ready(function(){
 			}
 		});
 		
-		$(document).on('click', '.playlist-song', function(){
-			var index = $(this).index();
+		$(document).on('click', '.song, .song *', function(){
+			if ($(this).parents('.song-actions').length > 0)
+				return;
+
+			var song = $(this).parents('.song'), index = song.index();
+
+			console.log(index);
 
 			socketPlaylist('play_direct', action_data = {
 				'offset': index
 			});
 			
-			$('.playlist-song.playing').removeClass('playing');
+			$('.song.playing').removeClass('playing');
 			
-			$(this).addClass('playing');
+			song.addClass('playing');
 		});
 		
 		$('#song-cover').on('click', function(){
@@ -539,7 +549,7 @@ $(document).ready(function(){
 		});
 
 		$('#chat-box').on('keyup', function(e){
-			if (e.key == 'Enter'){
+			if (e.key == 'Enter' && $(this).val().length > 0){
 				socketChat('send', {
 					'text': $(this).val()
 				});
@@ -553,24 +563,15 @@ $(document).ready(function(){
 			$('#unread-count').css('display', 'none');
 		});
 
-		$(document).on('click', '.user-option', function(){
-			var username = $(this).parents('.user').find('.room-user-info p').text();
+		$(document).on('click', '.preview-option.kick-user, .preview-option.kick-user *', function(){
+			var username = $(this).parents('.popup-container').find('input[name="username"]').val();
 
-			if ($(this).hasClass('kick')){
-				socketSend('admin', {
-					'action': 'kick',
-					'action_data': {
-						'user': username
-					}
-				});
-			} else if ($(this).hasClass('profile')){
-				socketSend('user_action', {
-					'action': 'profile',
-					'action_data': {
-						'user': username
-					}
-				});
-			}
+			socketSend('admin', {
+				'action': 'kick',
+				'action_data': {
+					'user': username
+				}
+			});
 		});
 
 		$('.overlay-option').on('click', function(){
@@ -669,24 +670,18 @@ $(document).ready(function(){
 			});
 		});
 
-		
-		$(document).on('click', ':not(#volume-container)', function(e){
-			if ($(this).prop('id') == 'volume-container' || $(this).parents('#volume-container').length > 0){
-				e.stopPropagation();
-	
-				return;
+		$(document).on({
+			mouseenter: function () {
+				console.log('mouse enter');
+
+				$(this).parents('.song').find('.song-play').css('opacity', '0');
+			},
+			mouseleave: function () {
+				console.log('mouse leave');
+
+				$(this).parents('.song').find('.song-play').css('opacity', '');
 			}
-	
-			if ($(this).prop('id') == 'volume' || $(this).parents('#volume').length > 0){
-				if ($('#volume-container').css('display') == 'flex')
-					$('#volume-container').css('display', 'none');
-				else if (deviceActive)
-					$('#volume-container').css('display', 'flex');
-				
-				e.stopPropagation();
-			} else
-				$('#volume-container').css('display', 'none');
-		});
+		}, '.song-action, .song-action *');
 	}
 
 // 	#endregion

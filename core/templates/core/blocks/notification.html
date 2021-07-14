@@ -1,8 +1,9 @@
 {% load static %}
 
-{% if type == 'text' %}
+<div class = "notification">
 
-    <div class = "notification">
+    {% if type == 'text' %}
+
         <div class = "notification-icon">
             <img src = "/static/img/icons/bell-white-96.png">
         </div>
@@ -11,11 +12,9 @@
                 <span class = "notification-message">{{ message }}</span>
             </p>
         </div>
-    </div>
 
-{% elif type == 'user_action' %}
+    {% elif type == 'user_action' %}
 
-    <div class = "notification">
         {% include 'core/blocks/profile-picture.html' with user=user width='36px' height='36px' %}
 
         <div class = "notification-details">
@@ -24,11 +23,9 @@
                 <span class = "notification-message">{{ message }}</span>
             </p>
         </div>
-    </div>
 
-{% elif type == 'room_invite' %}
+    {% elif type == 'room_invite' %}
 
-    <div class = "notification">
         <input class = "notification-id" type = "hidden" name = "notification-id" value = "{{ noti.notification.id }}">
 
         {% include 'core/blocks/profile-picture.html' with user=noti.notification.sender width='36px' height='36px' %}
@@ -48,11 +45,9 @@
                 <img src = "{% static 'img/icons/check-white-96.png' %}">
             </div>
         </div>
-    </div>
 
-{% else %}
+    {% else %}
 
-    <div class = "notification">
         <input class = "notification-id" type = "hidden" name = "notification-id" value = "{{ noti.notification.id }}">
         <input class = "type-id" type = "hidden" name = "type-id" value = "{{ noti.id }}">
 
@@ -72,6 +67,10 @@
                 <img src = "{% static 'img/icons/check-white-96.png' %}">
             </div>
         </div>
+
+    {% endif %}
+    <div class = "notification-action close">
+        <img src = "{% static 'img/icons/close-white-96.png' %}">
     </div>
 
-{% endif %}
+</div>

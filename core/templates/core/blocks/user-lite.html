@@ -1,4 +1,4 @@
-<div class = "room-user {% if no_name %}no-name{% endif %}" style = "--user-color: #{{ user.userprofile.background_color }}">
+<div class = "room-user {% if no_name %}no-name{% endif %}" style = "--user-color: #{{ user.userprofile.color }}">
     <div class = "room-user-background"></div>
     <div class = "pfp-wrapper">
         {% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}

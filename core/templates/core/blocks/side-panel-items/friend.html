@@ -6,5 +6,5 @@
         <p class = "item-label no-underline">{{ friend.username }}</p>
     </div>
 
-    {% include 'core/blocks/previews/user-preview.html' with title=friend.username header_color=friend.userprofile.background_color %}
+    {% include 'core/blocks/previews/user-preview.html' with room=room profile=friend title=friend.username header_color=friend.userprofile.color %}
 </div>

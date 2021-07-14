@@ -2,26 +2,41 @@
 {% load static %}
 {% load util %}
 
+{% block picture %}
+    {% include 'core/blocks/profile-picture.html' with user=profile width='100%' height='100%' %}
+{% endblock %}
+
 {% block preview_body %}
 
     <div class = "preview-options">
-        {% if room %}
-            {% if room.leader == user or room.mode != 'closed' %}
+        {% if profile != user %}
+            {% if room and profile %}
+                {% get_action_info user profile room as action_info %}
 
+                <input type = "hidden" name = "username" value = "{{ profile.username }}">
                 <input type = "hidden" name = "room-code" value = "{{ room.code }}">
 
-                <div class = "preview-option room-invite item-label-trigger top blue">
-                    <img src = "{% static 'img/icons/invite-room-white-96.png' %}">
-                    <p class = "item-label no-underline">Invite to Room</p>
-                </div>
+                {% if action_info.in_room and action_info.is_leader %}
+                    <div class = "preview-option kick-user item-label-trigger top red">
+                        <img src = "{% static 'img/icons/kick-room-white-96.png' %}">
+                        <p class = "item-label no-underline">Kick</p>
+                    </div>
 
+                {% endif %}
+                {% if action_info.can_invite %}
+                    <div class = "preview-option room-invite item-label-trigger top blue">
+                        <img src = "{% static 'img/icons/invite-room-white-96.png' %}">
+                        <p class = "item-label no-underline">Invite to Room</p>
+                    </div>
+
+                {% endif %}
             {% endif %}
-        {% endif %}
 
-        <div class = "preview-option remove-friend item-label-trigger top red">
-            <img src = "{% static 'img/icons/remove-user-white-96.png' %}">
-            <p class = "item-label no-underline">Remove Friend</p>
-        </div>
+            <div class = "preview-option remove-friend item-label-trigger top red">
+                <img src = "{% static 'img/icons/remove-user-white-96.png' %}">
+                <p class = "item-label no-underline">Remove Friend</p>
+            </div>
+        {% endif %}
     </div>
 
 {% endblock %}

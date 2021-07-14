@@ -2,14 +2,14 @@
 
 <div id = "user-card">
     <div id = "user-card-identity">
-        {% include 'core/blocks/profile-picture.html' with width='200px' height='200px' %}
+        {% include 'core/blocks/profile-picture.html' with size=2 width='200px' height='200px' %}
 
         <p id = "user-identity-username">{{ user.username }}</p>
         <p id = "user-identity-tagline">{{ user.userprofile.tag_line }}</p>
     </div>
     {% if not hide_showcase %}
         
-        <div id = "user-card-showcase" style = "--background-color: #{{ user.userprofile.background_color }}">
+        <div id = "user-card-showcase" style = "--background-color: #{{ user.userprofile.color }}">
             <div class = "user-showcase-group">
                 {% get_rooms user as rooms %}
                 {% get_room_count user as room_count %}

@@ -16,6 +16,7 @@ urlpatterns = [
     path('friend/request/', views.request_friend, name = 'request_friend'),
     path('friend/remove/', views.remove_friend, name = 'remove_friend'),
     path('room/invite/', views.room_invite, name = 'room_invite'),
+    path('room/kick/', views.room_kick, name = 'room_kick'),
 
     path('account/', views.account, name = 'account'),
     path('login/', views.login, name = 'login'),

@@ -1,6 +1,8 @@
 <div class = "history-entry">
     {% if before_subject %}
-        {{ before_subject }}
+        <div class = "entry-image">
+            {{ before_subject }}
+        </div>
     {% endif %}
     
     {% if subject %}
@@ -12,7 +14,9 @@
     {% endif %}
 
     {% if before_object %}
-        {{ before_object }}
+        <div class = "entry-image">
+            {{ before_object }}
+        </div>
     {% endif %}
 
     {% if object %}

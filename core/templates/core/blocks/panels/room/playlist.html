@@ -1,0 +1,45 @@
+{% load static %}
+{% load util %}
+
+<div id = "panel-playlist" class = "panel no-scrolling {% if selected == True %}selected{% endif %}">
+    <div id = "playlist-wrapper">
+        <div id = "playlist-info-container">
+            <div id = "playlist-cover">
+                <img src = "{{ room.playlist_image_url }}">
+            </div>
+            <div id = "playlist-info">
+                <div id = "playlist-details">
+                    <p id = "playlist-title">{{ room.title }}</p>
+                    <div id = "playlist-stats">
+                        <div class = "playlist-stat item-label-trigger top">
+                            <img src = "{% static 'img/icons/music-record-white-96.png' %}">
+                            <p id = "playlist-song-count">121</p>
+                            <p class = "item-label">Songs</p>
+                        </div>
+                        <div class = "playlist-stat item-label-trigger top">
+                            <img src = "{% static 'img/icons/audio-wave-white-96.png' %}">
+                            <p id = "playlist-length">121</p>
+                            <p class = "item-label">Length</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id = "playlist-actions">
+                <a class = "no-underline" href = "{% get_playlist_url room.playlist_id %}"  target = "_blank" rel = "noopener noreferrer">
+                    <div class = "playlist-action item-label-trigger top">
+                        <img src = "{% static 'img/icons/spotify-96.png' %}">
+    
+                        <p class = "item-label">Open in Spotify</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div id = "playlist-container">
+            <div id = "song-list">
+                <div id = "song-list-wrapper">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -4,6 +4,8 @@ from urllib.parse import urlunsplit, urlencode
 
 from django import template
 
+from channels.layers import get_channel_layer
+
 from core.models import *
 
 register = template.Library()
@@ -46,8 +48,10 @@ def get_friends_statuses(user):
     online = []
     offline = []
 
+    channel_layer = get_channel_layer()
+
     for friend in user.userprofile.friends.all():
-        if friend.userprofile.online_count > 0:
+        if len(channel_layer.groups.get('user_' + friend.username, {}).items()) > 0:
             online.append(friend)
         else:
             offline.append(friend)
@@ -107,3 +111,25 @@ def get_room_info(user):
         return active_room[0]
     
     return None
+
+@register.simple_tag
+def get_action_info(inviter, invitee, room):
+    active = room.active_users.filter(username = invitee.username).exists()
+    in_room = room.users.filter(username = invitee.username).exists()
+    is_leader = inviter == room.leader
+
+    can_invite = not active and (room.leader == inviter or room.mode != RoomMode.CLOSED or in_room)
+
+    print('\nINVITER: ', inviter, '\nINVITEE: ', invitee, '\nACTIVE: ', active, '\nIN ROOM: ', in_room, '\nCAN INVITE: ', can_invite, '\nIS LEADER: ', is_leader, '\n')
+    print(inviter, room.leader)
+
+    return {
+        'active': active,
+        'in_room': in_room,
+        'can_invite': can_invite,
+        'is_leader': is_leader
+    }
+
+@register.simple_tag
+def get_playlist_url(id):
+    return 'https://open.spotify.com/playlist/' + id

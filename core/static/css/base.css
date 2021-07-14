@@ -9,6 +9,8 @@
 	--red-hover: #f76266;
 	--blue: #1d6cab;
 	--blue-hover: #2b84cc;
+	--gold: #cf9a05;
+	--gold-hover: #f4b912;
 
 	--panel-padding: 15px;
 	--border-radius: 5px;
@@ -17,8 +19,11 @@
 	margin: 0;
 	padding: 0;
 }
+html{
+	height: 100%;
+}
 body{
-	min-height: 100vh;
+	min-height: 100%;
 }
 img{
 	display: block;

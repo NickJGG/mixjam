@@ -40,20 +40,44 @@
 			{% endblock %}
 
 			<div id = "user-utilities">
+				<div id = "connection-container" class = "disconnected user-utility popup-container column bottom right">
+					<div class = "popup-toggle">
+						<img src = "{% static 'img/icons/disconnected-white-96.png' %}">
+					</div>
+					<div class = "popup-element hover">
+						<div class = "header">
+							<p>Connections</p>
+						</div>
+						<div id = "connection-list">
+							<div class = "connection disconnected template">
+								<div class = "connection-icon">
+									<img src = "{% static 'img/icons/disconnected-white-96.png' %}">
+								</div>
+								<p class = "connection-name"></p>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div id = "notification-container" class = "user-utility popup-container column bottom right">
+					{% get_notifications user as notifications %}
+
 					<div class = "popup-toggle">
 						<img src = "{% static 'img/icons/bell-white-96.png' %}">
+
+						<div id = "notification-badge" {% if notifications|length > 0 %}class = "show"{% endif %}>
+							<p>{{ notifications|length }}</p>
+						</div>
 					</div>
 					<div class = "popup-element">
 						<div class = "header">
 							<p>Notifications</p>
 						</div>
-						<div id = "notification-list">
-							{% get_notifications user as notifications %}
-
-							{% for noti in notifications %}
-								{% include 'core/blocks/notification.html' with noti=noti type=noti.type %}
-							{% endfor %}
+						<div id = "notifications-wrapper">
+							<div id = "notification-list">
+								{% for noti in notifications %}
+									{% include 'core/blocks/notification.html' with noti=noti type=noti.type %}
+								{% endfor %}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -181,16 +205,15 @@
 						<div class = "side-panel-items-subgroup">
 
 							{% for friend in friends.online %}
-								{% include 'core/blocks/side-panel-items/friend.html' with friend=friend %}
+								{% include 'core/blocks/side-panel-items/friend.html' with room=room friend=friend %}
 							{% endfor %}
 
 						</div>
 						<div class = "side-panel-items-subgroup grayscale">
 
 							{% for friend in friends.offline %}
-								{% include 'core/blocks/side-panel-items/friend.html' with friend=friend %}
+								{% include 'core/blocks/side-panel-items/friend.html' with room=room friend=friend %}
 							{% endfor %}
-							
 						</div>
 						<div class = "side-panel-items-subgroup actions">
 							<div id = "add-friend" class = "popup-container row top left margin">

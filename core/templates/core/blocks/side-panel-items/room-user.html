@@ -1,0 +1,10 @@
+<div id = "user-{{ room_user.username }}" class = "popup-container row top left margin">
+    <input type = "hidden" name = "username" value = "{{ room_user.username }}">
+
+    <div class = "side-panel-item item-label-trigger left room popup-toggle">
+        {% include 'core/blocks/profile-picture.html' with user=room_user width='100%' height='100%' %}
+        <p class = "item-label no-underline">{{ room_user.username }}</p>
+    </div>
+
+    {% include 'core/blocks/previews/user-preview.html' with room=room profile=room_user user=user title=room_user.username header_color=room_user.userprofile.color %}
+</div>

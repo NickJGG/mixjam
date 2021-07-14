@@ -1,56 +1,43 @@
 {% load static %}
 
 <div id = "panel-home" class = "panel no-scrolling {% if selected == True %}selected{% endif %}">
-	<div id = "playlist-info" {% if room.banner_color != None %} style = "--banner-color: #{{ room.banner_color }}" {% endif %}>
-		<div id = "playlist-cover">
-			<img src = "{{ room.playlist_image_url }}">
-		</div>
-		<div id = "playlist-details">
-			<p id = "playlist-collab"><span id = "collab-bullet">○</span>Collaborative</p>
-			<p id = "playlist-title"></p>
-			<div id = "playlist-stats">
-				<div class = "playlist-stat subtitle-container">
-					<div class = "playlist-stat-image subtitle-image" style = "--background-image: url({% static 'img/icons/music-record-white-96.png' %})"></div>
-					<p id = "playlist-song-count"></p>
-					<div class = "subtitle-label">
-						<p>Songs</p>
-					</div>
-				</div>
-				<div class = "playlist-stat subtitle-container">
-					<div class = "playlist-stat-image subtitle-image" style = "--background-image: url({% static 'img/icons/audio-wave-white-96.png' %})"></div>
-					<p id = "playlist-length"></p>
-					<div class = "subtitle-label">
-						<p>Length</p>
-					</div>
-				</div>
-			</div>
-			<p id = "playlist-description">{{ room.description }}</p>
-			<div id = "playlist-info-end">
-				<div id = "playlist-author">
-					{% include 'core/blocks/profile-picture.html' with user=room.leader width='24px' height='24px' %}
-					
-					<p id = "playlist-creator">{{ room.leader.username }}</p>
-				</div>
+    <div id = "room-info">
+        <div id = "room-banner">
+            <div id = "room-picture">
+                <img src = "{{ room.playlist_image_url }}">
+            </div>
+        </div>
+        <div id = "room-details">
+            <p id = "room-title">{{ room.title }}</p>
+            <div id = "room-options">
+                {% if user != room.leader %}
+                    
+                    <div class = "room-option item-label-trigger left">
+                        <img src = "{% static 'img/icons/leave-white-96.png' %}">
+                        <p class = "item-label">Leave Room</p>
+                    </div>
 
-				{% if user != room.leader %}
-
-					<div id = "leave-room-container">
-						<form method = "POST">
-							{% csrf_token %}
-			
-							<input type = "hidden" name = "section" value = "leave">
-							
-							<p class = "sure-label" style = "margin-right: 12px">Are you sure?</p>
-							<input id = "leave-room" class = "gray" type = "submit" value = "Leave Room">
-							<input id = "dont-leave" class = "gray" type = "submit" value = "No">
-						</form>
-					</div>
-				
-				{% endif %}
-			</div>
-		</div>
-	</div>
-	<div class = "subpanel-container no-labels">
-		{% include 'core/blocks/panels/room/subpanels/playlist.html' with subpanel_selected=True %}
-	</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div id = "room-body">
+        <div id = "element-description" class = "room-element">
+            <p class = "element-title">Description</p>
+            <div class = "element-body">
+                <p>{{ room.description }}</p>
+            </div>
+        </div>
+        <div id = "element-chat" class = "room-element">
+            <p class = "element-title">Chat</p>
+            <div id = "chat-container">
+                <div id = "chat-messages-wrapper">
+                    <div id = "chat-messages">
+                       
+                    </div>
+                </div>
+                <input id = "chat-box" type = "text" placeholder = "Write a message">
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,22 +1,36 @@
 {% extends 'core/blocks/previews/preview.html' %}
 {% load static %}
 
+{% block header_href %}href = "{% url 'room' room_code=room.code %}"{% endblock %}
+
+{% block picture %}
+    <img src = "{{ room.playlist_image_url }}">
+{% endblock %}
+
 {% block preview_body %}
 
     <div class = "preview-users-container">
         <p class = "section-label">Listening • {{ room.active_users.all|length }}</p>
-        <div class = "preview-users-wrapper">
-            <div class = "preview-users">
-                {% for user in room.active_users.all %}
-                    
-                    <div class = "popup-toggle item-label-trigger right">
-                        {% include 'core/blocks/profile-picture.html' with user=user width='40px' height='40px' %}
-                        <p class = "item-label no-underline">{{ user.username }}</p>
-                    </div>
+        
+        {% if room.active_users.all|length > 0 %}
 
-                {% endfor %}
+            <div class = "preview-users-wrapper">
+                <div class = "preview-users">
+                    {% for user in room.active_users.all %}
+                        
+                        <div class = "popup-toggle item-label-trigger right">
+                            {% include 'core/blocks/profile-picture.html' with user=user width='40px' height='40px' %}
+                            <p class = "item-label no-underline">{{ user.username }}</p>
+                        </div>
+
+                    {% endfor %}
+                </div>
             </div>
-        </div>
+
+        {% endif %}
     </div>
+    <a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
+        <input class = "join-room" style = "background-color: #{{ room.banner_color }}" type = "submit" value = "Join">
+    </a>
 
 {% endblock %}

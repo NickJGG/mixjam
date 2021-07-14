@@ -44,27 +44,12 @@
 
 {% block panel_labels %}
 
-	<div class = "panel-label">Home</div>
-	<p class = "panel-label selected">Room</p>
-	<!-- <p class = "panel-label">Activities</p> -->
+	<div class = "panel-label selected">Home</div>
+	<p class = "panel-label">Playlist</p>
 
 	{% if room.leader == user %}
 		<p class = "panel-label">Settings</p>
 	{% endif %}
-
-{% endblock %}
-
-{% block user_container_before %}
-
-	<div id = "notification-container">
-		
-	</div>
-	<div id = "connection-container" class = "subtitle-container" style = "--background-image: url({% static 'img/icons/connection-white-96.png' %})">
-		<div id = "connection-status" class = "subtitle-image colored"></div>
-		<div id = "connection-status-label" class = "subtitle-label">
-			<p>Disconnected</p>
-		</div>
-	</div>
 
 {% endblock %}
 
@@ -107,9 +92,8 @@
 
 	{% endif %}
 
-	{% include 'core/blocks/panels/room/home.html' %}
-	{% include 'core/blocks/panels/room/room.html' with selected=True %}
-	{% include 'core/blocks/panels/room/activities.html' %}
+	{% include 'core/blocks/panels/room/home.html' with selected=True %}
+	{% include 'core/blocks/panels/room/playlist.html' %}
 
 	{% if room.leader == user %}
 		{% include 'core/blocks/panels/room/settings.html' with room=room %}
@@ -126,13 +110,13 @@
 			</div>
 		</div>
 		<div id = "song-controls">
-			<div id = "previous" class = "control">
+			<div id = "previous" class = "song-control control">
 				<img src = "{% static 'img/icons/rewind-white-24.png' %}">
 			</div>
-			<div id = "play-pause" class = "control">
+			<div id = "play-pause" class = "song-control control">
 				<img src = "{% if room_state.song_state.is_playing %}{% static 'img/icons/pause-white-24.png' %}{% else %}{% static 'img/icons/play-white-24.png' %}{% endif %}">
 			</div>
-			<div id = "next" class = "control">
+			<div id = "next" class = "song-control control">
 				<img src = "{% static 'img/icons/fastforward-white-24.png' %}">
 			</div>
 		</div>
@@ -152,13 +136,29 @@
 		</div>
 		<div id = "extra-controls-container">
 			<div class = "popup-container column top right">
-				<div id = "devices" class = "extra-control popup-toggle">
-					<div id = "devices-image" class = "extra-control-image" style = "--background-image: url({% static 'img/icons/device-white-96.png' %})">
+				<div id = "history" class = "control popup-toggle">
+					<img src = "{% static 'img/icons/history-white-96.png' %}">
+				</div>
+				<div id = "history-container" class = "popup-element">
+					<div class = "header">
+						<p>History</p>
+					</div>
+					<div id = "history-wrapper">
+						<div id = "history-entry-list">
 
+						</div>
 					</div>
 				</div>
+				<div id = "history-entries">
+					
+				</div>
+			</div>
+			<div class = "popup-container column top right">
+				<div id = "devices" class = "control popup-toggle">
+					<img id = "devices-image" src = "{% static 'img/icons/device-white-96.png' %}">
+				</div>
 				<div id = "devices-container" class = "popup-element">
-					<div id = "devices-header">
+					<div class = "header">
 						<p>Devices</p>
 						<div id = "devices-options">
 							<div id = "devices-refresh" class = "devices-option">
@@ -171,46 +171,27 @@
 					</div>
 				</div>
 			</div>
-			<div id = "volume-container">
-				<div id = "volume-progress" class = "progress-container column">
-					<div class = "progress-incomplete">
-						
-					</div>
-					<div class = "progress-complete">
-						<div class = "progress-thumb">
+			<div class = "popup-container column top right">
+				<div id = "volume" class = "control popup-toggle">
+					<img id = "volume-image" src = "{% static 'img/icons/speaker-white-96.png' %}">
+				</div>
+				<div id = "volume-container" class = "popup-element">
+					<div id = "volume-progress" class = "progress-container column">
+						<div class = "progress-incomplete">
 							
 						</div>
+						<div class = "progress-complete">
+							<div class = "progress-thumb">
+								
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-			<div id = "volume" class = "extra-control">
-				<div id = "volume-image" class = "extra-control-image" style = "--background-image: url({% static 'img/icons/speaker-white-96.png' %})">
-
 				</div>
 			</div>
 		</div>
 	</div>
 
 {% endblock %}
-
-{% comment %} {% block right_side_panel %}
-
-	<div class = "tab-container">
-		<div class = "tab-selectors">
-			<div id = "tab-label-chat" class = "tab-selector">
-				<p>Chat</p>
-				<span id = "unread-count">0</span>
-			</div>
-			<div class = "tab-selector selected">
-				<p>Users</p>
-			</div>
-		</div>
-
-		{% include 'core/blocks/tabs/room/chat.html' %}
-		{% include 'core/blocks/tabs/room/users.html' with selected=True room=room offline_users=offline_users active_users=room.active_users.all %}
-	</div>
-
-{% endblock %} {% endcomment %}
 
 {% block selector_options %}
 
@@ -228,55 +209,15 @@
 	<div id = "group-users" class = "side-panel-items-group selected">
 		<div class = "side-panel-items-subgroup">
 
-			{% for user in room.active_users.all %}
-
-				<div id = "user-{{ user.username }}" class = "popup-container row top left margin">
-					<div class = "side-panel-item room popup-toggle">
-						{% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
-						<p class = "item-label no-underline">{{ user.username }}</p>
-					</div>
-					<div class = "popup-element room-preview">
-						<a class = "no-underline" href>
-							<div class = "preview-header">
-								<p class = "preview-title">{{ user.username }}</p>
-								<div class = "preview-join">
-									<img src = "{% static 'img/icons/right-white-96.png' %}">
-								</div>
-							</div>
-						</a>
-						<div class = "preview-users-container">
-							
-						</div>
-					</div>
-				</div>
-					
+			{% for room_user in room.active_users.all %}
+				{% include 'core/blocks/side-panel-items/room-user.html' with room_user=room_user %}
 			{% endfor %}
 
 		</div>
 		<div class = "side-panel-items-subgroup grayscale">
 
-			{% for user in offline_users %}
-
-				<div id = "user-{{ user.username }}" class = "popup-container row top left margin">
-					<div class = "side-panel-item room popup-toggle grayscale">
-						{% include 'core/blocks/profile-picture.html' with user=user width='100%' height='100%' %}
-						<p class = "item-label no-underline">{{ user.username }}</p>
-					</div>
-					<div class = "popup-element room-preview">
-						<a class = "no-underline" href>
-							<div class = "preview-header">
-								<p class = "preview-title">{{ user.username }}</p>
-								<div class = "preview-join">
-									<img src = "{% static 'img/icons/right-white-96.png' %}">
-								</div>
-							</div>
-						</a>
-						<div class = "preview-users-container">
-							
-						</div>
-					</div>
-				</div>
-					
+			{% for room_user in offline_users %}
+				{% include 'core/blocks/side-panel-items/room-user.html' with room_user=room_user %}
 			{% endfor %}
 			
 		</div>

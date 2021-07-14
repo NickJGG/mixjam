@@ -9,6 +9,7 @@ $(document).ready(function(){
 		'activities': 'activities',
 		'create room': 'create',
 		'room': 'room',
+		'playlist': 'playlist',
 	};
 	
 	$(document).on('click', '.subpanel-label', function(){

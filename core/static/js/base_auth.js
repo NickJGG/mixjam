@@ -8,15 +8,18 @@ $(document).ready(function(){
 
     function updateConnections(data){
         var type = data.connection_state.connection_type,
-			username = data.connection_state.user.username;
+			username = data.connection_state.user.username,
+            block = data.connection_state.friend_block;
+
+        $('#friend-' + username).remove();
 
 		switch(type){
 			case 'online':
-				$('#friend-' + username).appendTo('#group-friends .side-panel-items-subgroup:nth-child(1)');
+				$(block).appendTo('#group-friends .side-panel-items-subgroup:nth-child(1)');
 
 				break;
 			case 'offline':
-				$('#friend-' + username).appendTo('#group-friends .side-panel-items-subgroup:nth-child(2)');
+				$(block).appendTo('#group-friends .side-panel-items-subgroup:nth-child(2)');
 
 				break;
 			default:
@@ -49,8 +52,15 @@ $(document).ready(function(){
 
         $('#temp-notifications').append(notification);
 
-        if (data.permanent)
+        if (data.permanent){
             $('#notification-list').append(data.notification_block);
+
+            var notificationCount = parseInt($('#notification-badge p').text());
+
+            $('#notification-badge p').text(notificationCount + 1)
+
+            $('#notification-badge').addClass('show');
+        }
 
         setTimeout(function(){
             notification.remove();
@@ -76,15 +86,17 @@ $(document).ready(function(){
     }
 
     function init(){
+        Array.prototype.remove = function(from, to) {
+            var rest = this.slice((to || from) + 1 || this.length);
+            this.length = from < 0 ? this.length + from : from;
+            return this.push.apply(this, rest);
+          };
+
         userSocket = new WebSocket(ws_scheme + '://' + window.location.host + '/ws/' + userUrl);
         
-		userSocket.onopen = function(e){
-			console.log('USER CONNECTED');
-		};
-        
-		userSocket.onclose = function(e){
-			console.log('USER DISCONNECTED');
-		};
+        registerConnection(userSocket, 'online', 'Online Services', ws_scheme + '://' + window.location.host + '/ws/' + userUrl, function(newSocket){
+            userSocket = newSocket;
+        });
 
         userSocket.onmessage = function(e){
 			const data = JSON.parse(e.data);
@@ -182,7 +194,6 @@ $(document).ready(function(){
     });
     $('.selector-option').on('click', function(){
         var id = $(this).prop('id'),
-            text = '',
             name = id.split('selector-')[1];
 
         if (id == 'selector-friends'){
@@ -204,9 +215,19 @@ $(document).ready(function(){
             notificationDiv = $(this).parents('.notification'),
             notificationId = notificationDiv.find('.notification-id').val();
 
-        if ($(this).hasClass('notification-action'))
+        if ($(this).hasClass('notification-action')){
+            if ($(this).hasClass('close')){
+                notificationDiv.remove();
+
+                return;
+            }
+
             accept = $(this).hasClass('accept');
-        else 
+        } else if ($(this).parents('.notification-action').hasClass('close')){
+            notificationDiv.remove();
+
+            return;
+        } else
             accept = $(this).parents('.notification-action').hasClass('accept');
 
         $.ajax({
@@ -219,12 +240,14 @@ $(document).ready(function(){
             success: function(data){
                 console.log(data);
 
-                if (data.success){
-                    if (accept){
-                        //var status = data.online ? 1 : 2;
+                var notificationCount = parseInt($('#notification-badge p').text());
 
-                        //$('#group-friends .side-panel-items-subgroup:nth-child(' + status + ')').append(data.block);
-                    }
+                if (notificationCount > 1)
+                    $('#notification-badge p').text(notificationCount - 1);
+                else{
+                    $('#notification-badge p').text('0');
+                    
+                    $('#notification-badge').removeClass('show');
                 }
 
                 notificationDiv.remove();
@@ -279,3 +302,102 @@ $(document).ready(function(){
         });
     });
 });
+
+var connections = [], connectionCount = 0;
+
+function registerConnection(socket, code, name, url, callback){
+    connections.push({
+        'socket': socket,
+        'code': code,
+        'name': name,
+        'url': url,
+        'callback': callback
+    });
+
+    $('.connection.' + code).remove();
+
+    var template = $('.connection.template').clone();
+    template.find('.connection-name').text(name);
+    template.removeClass('template');
+    template.addClass(code);
+
+    template.insertBefore('.connection.template');
+
+    socket.onopen = function(e){
+        var i;
+
+        for (i = 0; i < connections.length; i++){
+            var connection = connections[i];
+
+            if (connection.socket == socket){
+                $('.connection.' + connection.code).removeClass('disconnected');
+                $('.connection.' + connection.code).addClass('connected');
+
+                var src = $('.connection.' + connection.code + ' .connection-icon img').attr('src');
+
+                $('.connection.' + connection.code + ' .connection-icon img').attr('src', src.replace('disconnected', 'connected'));
+
+                break;
+            }
+        }
+
+        connectionCount++;
+
+        updateConnectionStatus();
+    };
+    socket.onclose = function(e){
+        var i, connection;
+
+        for (i = 0; i < connections.length; i++){
+            connection = connections[i];
+
+            if (connection.socket == socket){
+                $('.connection.' + connection.code).removeClass('connected');
+                $('.connection.' + connection.code).addClass('disconnected');
+
+                var src = $('.connection.' + connection.code + ' .connection-icon img').attr('src');
+
+                $('.connection.' + connection.code + ' .connection-icon img').attr('src', src.replace('connected', 'disconnected'));
+
+                connections.remove(i);
+
+                break;
+            }
+        }
+
+        reconnectTimer = setTimeout(function(){
+            socket = new WebSocket(connection.url);
+
+            registerConnection(socket, connection.code, connection.name, connection.url, connection.callback);
+
+            connection.callback(socket);
+        }, 5000);
+
+        connectionCount--;
+
+        updateConnectionStatus();
+    };
+}
+function updateConnectionStatus(){
+    var image = $('#connection-container .popup-toggle img'), src = image.attr('src');
+
+    if (connectionCount == 0){
+        $('#connection-container').removeClass('connected');
+        $('#connection-container').removeClass('mixed');
+        $('#connection-container').addClass('disconnected');
+
+        image.attr('src', src.replace('connected', 'disconnected'));
+    } else if (connectionCount == connections.length){
+        $('#connection-container').removeClass('disconnected');
+        $('#connection-container').removeClass('mixed');
+        $('#connection-container').addClass('connected');
+
+        image.attr('src', src.replace('disconnected', 'connected'));
+    } else {
+        $('#connection-container').removeClass('disconnected');
+        $('#connection-container').removeClass('connected');
+        $('#connection-container').addClass('mixed');
+
+        image.attr('src', src.replace('disconnected', 'connected'));
+    }
+}

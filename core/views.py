@@ -300,46 +300,36 @@ def account(request):
             changed = False
 
             if panel == 'personalization':
-                icon_image = request.POST.get('icon-image')
-                icon_color = request.POST.get('icon-color')
-                background_color = request.POST.get('background-color')
+                picture = request.FILES['picture'] if 'picture' in request.FILES else None
 
-                if icon_image:
-                    if not changed and icon_image != request.user.userprofile.icon_image:
+                color = request.POST.get('color')
+
+                if picture:
+                    try:
+                        request.user.userprofile.image_small = picture
+                        request.user.userprofile.image_medium = picture
+                        request.user.userprofile.image_large = picture
+
                         changed = True
+                    except:
+                        messages.error(request, 'Something went wrong with your image upload')
 
-                        request.user.userprofile.icon_image = icon_image
-
-                if icon_color:
+                if color:
                     try:
-                        int(icon_color, 16)
-                        
-                        if len(icon_color) > 6:
+                        int(color, 16)
+
+                        if len(color) > 6:
                             raise ValueError
 
-                        if not changed and icon_color != request.user.userprofile.icon_color:
+                        if not changed and color != request.user.userprofile.color:
                             changed = True
 
-                        request.user.userprofile.icon_color = icon_color
+                        request.user.userprofile.color = color
                     except:
-                        messages.error(request, 'Icon color is in the wrong format (Hex)')
+                        messages.error(request, 'Color is in the wrong format (Hex)')
                 
-                if background_color:
-                    try:
-                        int(background_color, 16)
-
-                        if len(background_color) > 6:
-                            raise ValueError
-
-                        if not changed and background_color != request.user.userprofile.background_color:
-                            changed = True
-
-                        request.user.userprofile.background_color = background_color
-                    except:
-                        messages.error(request, 'Background color is in the wrong format (Hex)')
-
                 if changed:
-                    messages.success(request, 'Details updated')
+                    messages.success(request, 'Profile updated')
 
                 request.user.userprofile.save()
             elif panel == 'overview':
@@ -429,8 +419,10 @@ def notification(request):
 
             if noti_type == 'room_invite':
                 if accept:
+                    if not noti.room.users.filter(username = request.user.username).exists():
+                        noti.room.inactive_users.add(request.user)
+                    
                     noti.room.users.add(request.user)
-                    noti.room.inactive_users.add(request.user)
                     noti.room.save()
 
                     async_to_sync(channel_layer.group_send)('user_' + notification.sender.username, {
@@ -564,6 +556,8 @@ def request_friend(request):
         'success': True
     }
 
+    channel_layer = get_channel_layer()
+
     if request.GET:
         query = request.GET.get('query')
 
@@ -571,8 +565,6 @@ def request_friend(request):
 
         if target_user.exists():
             target_user = target_user[0]
-
-            channel_layer = get_channel_layer()
 
             if request.user.userprofile.friends.filter(id = target_user.id).exists():
                 async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
@@ -629,8 +621,18 @@ def request_friend(request):
                         'permanent': False
                     }
                 })
-    else:
-        data['success'] = False
+        else:
+            async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
+                'type': 'request_notification',
+                'data': {
+                    'type': 'friend_request',
+                    'notification_block': render_to_string('core/blocks/notification.html', {
+                        'message': 'User does not exist',
+                        'type': 'text'
+                    }),
+                    'permanent': False
+                }
+            })
 
     return JsonResponse(data)
 
@@ -706,7 +708,7 @@ def room_invite(request):
                 async_to_sync(channel_layer.group_send)('user_' + request.user.username, {
                     'type': 'request_notification',
                     'data': {
-                        'type': 'friend_remove',
+                        'type': 'room_invite',
                         'notification_block': render_to_string('core/blocks/notification.html', {
                             'message': 'User already in room',
                             'type': 'text',
@@ -745,6 +747,35 @@ def room_invite(request):
                         'permanent': False
                     }
                 })
+    
+    return JsonResponse({})
+
+def room_kick(request):
+    if request.POST:
+        username = request.POST.get('username')
+        room_code = request.POST.get('room_code')
+
+        room = Room.objects.filter(code = room_code)
+
+        if room.exists():
+            room = room[0]
+
+            user = User.objects.filter(username = username)
+
+            if user.exists() and request.user == room.leader:
+                channel_layer = get_channel_layer()
+
+                async_to_sync(channel_layer.group_send)('room_' + room.code, {
+                    'type': 'request_admin',
+                    'data': {
+                        'action': 'kick',
+                        'action_data': {
+                            'user': username
+                        }
+                    }
+                })
+    
+    return JsonResponse({})
 
 def login(request):
     if request.POST:

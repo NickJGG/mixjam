@@ -1,9 +1,10 @@
 <div class = "popup-element room-preview">
-    <a class = "no-underline" href>
+    <a class = "no-underline" {% block header_href %}{% endblock %}>
         <div class = "preview-header" style = "--header-color: #{{ header_color }}">
             <div class = "preview-picture-wrapper">
                 <div class = "preview-picture">
-                    <img src = "{{ picture }}">
+                    {% block picture %}
+                    {% endblock %}
                 </div>
             </div>
         </div>

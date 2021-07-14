@@ -112,7 +112,7 @@
     border-color: #2f7d56;
 }
 .widget:hover .widget-info{
-    background-color: #2b2b2b;
+    background-color: rgb(45, 45, 47);
 }
 .widget-image{
     width: 100%;

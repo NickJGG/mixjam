@@ -29,10 +29,17 @@ class UserConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        online_count = user.userprofile.go_online()
+        channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
 
-        if online_count == 1:
+        if channel_count == 1:
             for friend in user.userprofile.friends.all():
+                active_room = Room.objects.filter(users = friend, active_users = friend)
+
+                if active_room.exists():
+                    active_room = active_room[0]
+                else:
+                    active_room = None
+
                 await self.channel_layer.group_send(
                     'user_%s' % friend.username,
                     {
@@ -42,7 +49,12 @@ class UserConsumer(AsyncWebsocketConsumer):
                                 'connection_type': 'online',
                                 'user': {
                                     'username': user.username
-                                }
+                                },
+                                'friend_block': render_to_string('core/blocks/side-panel-items/friend.html', {
+                                    'friend': user,
+                                    'user': friend,
+                                    'room': active_room
+                                })
                             }
                         }
                     }
@@ -52,10 +64,17 @@ class UserConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         user = self.scope['user']
 
-        online_count = user.userprofile.go_offline()
+        channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
 
-        if online_count == 0:
+        if channel_count == 1:
             for friend in user.userprofile.friends.all():
+                active_room = Room.objects.filter(users = friend, active_users = friend)
+
+                if active_room.exists():
+                    active_room = active_room[0]
+                else:
+                    active_room = None
+
                 await self.channel_layer.group_send(
                     'user_%s' % friend.username,
                     {
@@ -65,7 +84,12 @@ class UserConsumer(AsyncWebsocketConsumer):
                                 'connection_type': 'offline',
                                 'user': {
                                     'username': user.username
-                                }
+                                },
+                                'friend_block': render_to_string('core/blocks/side-panel-items/friend.html', {
+                                    'friend': user,
+                                    'user': friend,
+                                    'room': active_room
+                                })
                             }
                         }
                     }
@@ -103,9 +127,8 @@ class UserConsumer(AsyncWebsocketConsumer):
 class RoomConsumer(AsyncWebsocketConsumer):
     put_methods = ['play', 'pause', 'seek']
     post_methods = ['previous', 'next']
-    playlist_notifications = []
 
-    playlist_to_notif = {
+    playlist_to_history = {
         'play': 'resumed',
         'play_direct': 'played',
         'pause': 'paused',
@@ -166,9 +189,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
             }
         })
 
-        await self.send_notification('join', user, 'joined', before_subject = render_to_string('core/blocks/profile-picture.html', {
-            'width': '20px',
-            'height': '20px',
+        await self.send_history_entry('join', user, 'joined', before_subject = render_to_string('core/blocks/profile-picture.html', {
+            'width': '100%',
+            'height': '100%',
             'user': user
         }))
 
@@ -179,7 +202,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
         room = self.get_room()
 
-        await self.send_notification('leave', user, 'left', before_subject = render_to_string('core/blocks/profile-picture.html', {
+        await self.send_history_entry('leave', user, 'left', before_subject = render_to_string('core/blocks/profile-picture.html', {
             'width': '20px',
             'height': '20px',
             'user': user
@@ -218,7 +241,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         self.print_request(request_data)
 
-        if request_type == 'playlist' and request_action not in self.playlist_notifications:
+        if request_type == 'playlist':
             return_data = spotify.update_playlist(user, room, request_data['data'])
 
             if request_action == 'song_end' and not return_data:
@@ -228,7 +251,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         elif request_data['type'] == 'chat':
             request_data['data']['action_data']['user'] = {
                 'username': user.username,
-                'color': user.userprofile.background_color
+                'color': user.userprofile.color
             }
         elif request_type == 'admin':
             if request_action == 'kick':
@@ -328,28 +351,25 @@ class RoomConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
         room = self.get_room()
 
-        method_data = {}
-        method_params = {}
-
         before_subject = None
         before_object = None
 
-        if request_action not in self.playlist_notifications:
-            await spotify.action(user, room, request_action, request_action_data)
+        await spotify.action(user, room, request_action, request_action_data)
 
-            if request_action in self.playlist_to_notif.keys():
-                before_subject = render_to_string('core/blocks/profile-picture.html', {
-                    'width': '20px',
-                    'height': '20px',
-                    'user': User.objects.get(username = request_action_data['user'])
-                })
+        if request_action in self.playlist_to_history.keys():
+            before_subject = render_to_string('core/blocks/profile-picture.html', {
+                'width': '20px',
+                'height': '20px',
+                'user': User.objects.get(username = request_action_data['user'])
+            })
     
         room_state = await spotify.get_room_state(user, room.code)
+        room_state['song_block'] = render_to_string('core/blocks/room/playlist-song.html')
 
         await self.response_send('playlist', room_state)
 
         if before_subject is not None:
-            await self.send_notification_self(request_action, request_action_data['user'], self.playlist_to_notif[request_action], before_subject = before_subject, before_object = before_object)
+            await self.send_self_history_entry(request_action, request_action_data['user'], self.playlist_to_history[request_action], before_subject = before_subject, before_object = before_object)
 
     async def request_chat(self, request_data):
         request_data['data']['action_data']['user']['self'] = request_data['data']['action_data']['user']['username'] == self.scope['user'].username
@@ -385,7 +405,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
-                    await self.send_notification(request_action, room.leader, 'kicked', request_action_data['user'], before_subject = render_to_string('core/blocks/profile-picture.html', {
+                    await self.send_history_entry(request_action, room.leader, 'kicked', request_action_data['user'], before_subject = render_to_string('core/blocks/profile-picture.html', {
                         'width': '20px',
                         'height': '20px',
                         'user': room.leader
@@ -397,8 +417,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         elif request_action == 'delete':
             await self.response_send('admin', request_data)
 
-    async def request_notification(self, request_data):
-        await self.response_send('notification', request_data)
+    async def request_history(self, request_data):
+        await self.response_send('history_entry', request_data)
 
     async def request_user_action(self, request_data):
         request_data = request_data['data']
@@ -406,23 +426,28 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.response_send('user_action', request_data)
 
     async def request_connection(self, request_data):
+        user = self.scope['user']
+
         if request_data['data']['connection_state']['connection_type'] != 'kick':
-            user = self.scope['user']
             room = self.get_room()
 
             connection_user = User.objects.get(username = request_data['data']['connection_state']['user']['username'])
 
-            request_data['data']['connection_state']['user']['user_block'] = render_to_string('core/blocks/room/user.html', {
-                'user': connection_user,
-                'request_user': user,
-                'is_leader': connection_user == room.leader,
-                'show_admin': user == room.leader,
-                'type_user': True
+            request_data['data']['connection_state']['user']['user_block'] = render_to_string('core/blocks/side-panel-items/room-user.html', {
+                'room_user': connection_user,
+                'room': room,
+                'user': user
             })
+        else:
+            self_kicked = request_data['data']['connection_state']['user']['username'] == user.username
+
+            print(user, 'KICKED:', request_data['data']['connection_state']['user']['username'], self_kicked)
+
+            request_data['data']['connection_state']['self_kicked'] = self_kicked
 
         await self.response_send('connection', request_data)
 
-    async def send_notification(self, request_action, subject, action, object = None, before_subject = None, before_object = None):
+    async def send_history_entry(self, request_action, subject, action, object = None, before_subject = None, before_object = None):
         block_data = {
             'subject': subject,
             'action': action,
@@ -434,15 +459,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.group_name,
             {
-                'type': 'request_notification',
+                'type': 'request_history',
                 'data': {
                     'request_action': request_action,
-                    'block': render_to_string('core/blocks/room/notification.html', block_data)
+                    'block': render_to_string('core/blocks/room/history-entry.html', block_data)
                 }
             }
         )
 
-    async def send_notification_self(self, request_action, subject, action, object = None, before_subject = None, before_object = None):
+    async def send_self_history_entry(self, request_action, subject, action, object = None, before_subject = None, before_object = None):
         block_data = {
             'subject': subject,
             'action': action,
@@ -451,10 +476,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
             'before_object': before_object
         }
 
-        await self.response_send('request_notification', {
+        await self.response_send('request_history', {
             'data': {
                 'request_action': request_action,
-                'block': render_to_string('core/blocks/room/notification.html', block_data)
+                'block': render_to_string('core/blocks/room/history-entry.html', block_data)
             }
         })
 
