@@ -43,6 +43,7 @@ $(document).ready(function(){
                 break;
             case 'friend_remove':
                 $('#friend-' + data.friend_username).remove();
+                $('#friend-' + data.friend_username).remove();
             default:
                 break;
         }
@@ -67,8 +68,8 @@ $(document).ready(function(){
         }, 5000);
     }
 
-    function sendFriendRequest(){
-        var query = $('#add-friend input').val();
+    function sendFriendRequest(customQuery){
+        var query = (customQuery == null || customQuery.length == 0) ? $('#add-friend input').val() : customQuery;
 
         $.ajax({
             url: '/friend/request',
@@ -281,6 +282,11 @@ $(document).ready(function(){
                 console.log('failure');
             }
         });
+    });
+    $(document).on('click', '.preview-option.add-friend, .preview-option.add-friend *', function(){
+        var username = $(this).parents('.popup-container').find('input[name="username"]').val();
+
+        sendFriendRequest(username);
     });
     $(document).on('click', '.preview-option.room-invite, .preview-option.room-invite *', function(){
         var username = $(this).parents('.popup-container').find('input[name="username"]').val(),

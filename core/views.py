@@ -495,7 +495,8 @@ def notification(request):
                                 'type': 'user_action'
                             }),
                             'friend_block': render_to_string('core/blocks/side-panel-items/friend.html', {
-                                'friend': notification.receiver
+                                'friend': notification.receiver,
+                                'user': notification.sender
                             }),
                             'friend_online': notification.receiver.userprofile.online_count > 0,
                             'permanent': False
@@ -512,7 +513,8 @@ def notification(request):
                                 'type': 'user_action'
                             }),
                             'friend_block': render_to_string('core/blocks/side-panel-items/friend.html', {
-                                'friend': notification.sender
+                                'friend': notification.sender,
+                                'user': notification.receiver
                             }),
                             'friend_online': notification.sender.userprofile.online_count > 0,
                             'permanent': False

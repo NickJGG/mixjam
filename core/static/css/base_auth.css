@@ -256,7 +256,7 @@ body{
 	display: flex;
 	flex: 1;
 
-	margin-top: 11px;
+	margin-top: 10px;
 }
 .notification-details p{
 	line-height: 16px;
@@ -781,10 +781,9 @@ body{
 	cursor: pointer;
 }
 .preview-option:hover{ background-color: #333; }
-/* .preview-option.blue{ background-color: var(--blue); } */
 .preview-option.blue:hover{ background-color: var(--blue-hover); }
-/* .preview-option.red{ background-color: var(--red); } */
 .preview-option.red:hover{ background-color: var(--red-hover); }
+.preview-option.green:hover{ background-color: var(--dark-green); }
 .preview-option:not(:first-child){
 	margin-left: calc(var(--panel-padding) / 2);
 }

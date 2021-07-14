@@ -131,3 +131,7 @@ def get_action_info(inviter, invitee, room):
 @register.simple_tag
 def get_playlist_url(id):
     return 'https://open.spotify.com/playlist/' + id
+    
+@register.simple_tag
+def is_friend(user, other_user):
+    return user.userprofile.friends.filter(username = other_user.username).exists()

@@ -32,10 +32,23 @@
                 {% endif %}
             {% endif %}
 
-            <div class = "preview-option remove-friend item-label-trigger top red">
-                <img src = "{% static 'img/icons/remove-user-white-96.png' %}">
-                <p class = "item-label no-underline">Remove Friend</p>
-            </div>
+            {% is_friend user profile as is_friend %}
+                
+            {% if is_friend %}
+
+                <div class = "preview-option remove-friend item-label-trigger top red">
+                    <img src = "{% static 'img/icons/remove-user-white-96.png' %}">
+                    <p class = "item-label no-underline">Remove Friend</p>
+                </div>
+
+            {% else %}
+
+                <div class = "preview-option add-friend item-label-trigger top green">
+                    <img src = "{% static 'img/icons/add-user-white-96.png' %}">
+                    <p class = "item-label no-underline">Add Friend</p>
+                </div> 
+
+            {% endif %}
         {% endif %}
     </div>
 
