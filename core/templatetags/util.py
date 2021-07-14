@@ -49,7 +49,7 @@ def get_friends_statuses(user):
     offline = []
 
     for friend in user.userprofile.friends.all():
-        if user.userprofile.online_count > 0:
+        if friend.userprofile.online_count > 0:
             online.append(friend)
         else:
             offline.append(friend)
