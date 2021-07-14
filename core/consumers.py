@@ -7,12 +7,13 @@ from datetime import datetime
 
 from django.utils import timezone
 from django.template.loader import render_to_string
+from django.conf import settings
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .models import *
-from . import util, spotify, settings
+from . import util, spotify
 
 class UserConsumer(AsyncWebsocketConsumer):
     async def connect(self):
