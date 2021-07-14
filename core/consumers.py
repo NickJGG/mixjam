@@ -29,6 +29,9 @@ class UserConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        print(dir(self.channel_layer))
+        print(self.channel_layer)
+
         if settings.DEBUG:
             channel_count = len(self.channel_layer.groups.get(self.group_name, {}).items())
         else:
