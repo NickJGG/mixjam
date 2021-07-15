@@ -1,8 +1,6 @@
 {% load static %}
 
 <div class = "profile-picture entry-image item-picture" style = "--width: {{ width }}; --height: {{ height }}; --background-color: #{{ user.userprofile.color }}">
-    <p>{{ user.userprofile.image_small }}</p>
-    <p>{{ user.userprofile.image_small.url }}</p>
     {% if size == 2 and user.userprofile.image_medium %}
         <img src = "{{ user.userprofile.image_medium.url }}">
     {% elif size == 3 and user.userprofile.image_large %}
