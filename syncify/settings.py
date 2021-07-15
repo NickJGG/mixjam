@@ -165,6 +165,7 @@ else:
     AWS_DEFAULT_ACL = None
     AWS_S3_REGION_NAME = 'us-east-2'
     AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_QUERYSTRING_AUTH = False
 
     STATIC_URL = AWS_URL + 'static/'
     MEDIA_URL = AWS_URL + 'media/'
