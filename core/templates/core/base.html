@@ -27,24 +27,9 @@
 	
 	{% block css %}
 	{% endblock %}
-
-	{% static 'font/roboto/Roboto-Regular.ttf' as roboto_reg %}
-	{% static 'font/roboto/Roboto-Medium.ttf' as roboto_med %}
-	{% static 'font/roboto/Roboto-Bold.ttf' as roboto_bold %}
 	
 	<style>
-		@font-face {
-			font-family: Roboto-Regular;
-			src: url("{{ roboto_reg }}");
-		}
-		@font-face {
-			font-family: Roboto-Medium;
-			src: url("{{ roboto_med }}");
-		}
-		@font-face {
-			font-family: Roboto-Bold;
-			src: url("{{ roboto_bold }}");
-		}
+		{% include 'core/fonts.css' %}
 	</style>
 </head>
 <body>

@@ -1,0 +1,14 @@
+{% load static %}
+
+@font-face {
+    font-family: Roboto-Regular;
+    src: url("{% static 'font/roboto/Roboto-Regular.ttf' %}");
+}
+@font-face {
+    font-family: Roboto-Medium;
+    src: url("{% static 'font/roboto/Roboto-Medium.ttf' %}");
+}
+@font-face {
+    font-family: Roboto-Bold;
+    src: url("{% static 'font/roboto/Roboto-Bold.ttf' %}");
+}
