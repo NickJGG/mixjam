@@ -305,13 +305,12 @@ def account(request):
                 color = request.POST.get('color')
 
                 if picture is not None:
+                    print('\n\n\nYOYOYO\n\n\n')
+
                     try:
                         request.user.userprofile.image_small = picture
                         request.user.userprofile.image_medium = picture
                         request.user.userprofile.image_large = picture
-
-                        print(request.user.userprofile.image_small)
-                        print(request.user.userprofile.image_small.url)
 
                         changed = True
                     except:
@@ -335,9 +334,6 @@ def account(request):
                     messages.success(request, 'Profile updated')
 
                 request.user.userprofile.save()
-
-                print(request.user.userprofile.image_small)
-                print(request.user.userprofile.image_small.url)
             elif panel == 'overview':
                 first_name = request.POST.get('first-name')
                 last_name = request.POST.get('last-name')
