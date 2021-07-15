@@ -293,6 +293,9 @@ def account(request):
     path = os.path.join(settings.BASE_DIR, 'core', 'static', 'img', 'profile')
     file_list = os.listdir(path)
 
+    print(request.user.userprofile.image_small)
+    print(request.user.userprofile.image_small.url)
+
     if request.POST:
         if 'panel-label' in request.POST:
             panel = request.POST.get('panel-label')
@@ -309,6 +312,9 @@ def account(request):
                         request.user.userprofile.image_small = picture
                         request.user.userprofile.image_medium = picture
                         request.user.userprofile.image_large = picture
+
+                        print(request.user.userprofile.image_small)
+                        print(request.user.userprofile.image_small.url)
 
                         changed = True
                     except:
@@ -332,6 +338,9 @@ def account(request):
                     messages.success(request, 'Profile updated')
 
                 request.user.userprofile.save()
+
+                print(request.user.userprofile.image_small)
+                print(request.user.userprofile.image_small.url)
             elif panel == 'overview':
                 first_name = request.POST.get('first-name')
                 last_name = request.POST.get('last-name')
