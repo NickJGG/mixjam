@@ -119,7 +119,7 @@ input{
 	
 	background-color: #eee;
 	
-	border-radius: 12px;
+    border-radius: var(--border-radius);
 
 	box-sizing: border-box;
 }
