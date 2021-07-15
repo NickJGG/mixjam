@@ -161,16 +161,16 @@ else:
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET')
-    AWS_URL = 'http://' + AWS_STORAGE_BUCKET_NAME + '.s3.amazonaws.com/'
+    AWS_URL = 'https://' + AWS_STORAGE_BUCKET_NAME + '.s3.amazonaws.com/'
     AWS_DEFAULT_ACL = None
     AWS_S3_REGION_NAME = 'us-east-2'
     AWS_S3_SIGNATURE_VERSION = 's3v4'
 
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATIC_URL = AWS_URL + 'static/'
+    MEDIA_URL = AWS_URL + 'media/'
 
-    STATIC_ROOT = AWS_URL + 'staticfiles'
-    MEDIA_ROOT = AWS_URL + 'media'
+    STATICFILES_STORAGE = 'core.storage_backends.StaticStorage'
+    DEFAULT_FILE_STORAGE = 'core.storage_backends.MediaStorage'
 
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
