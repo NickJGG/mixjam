@@ -1,14 +1,18 @@
 {% load static %}
 
+{% static 'font/roboto/Roboto-Regular.ttf' as roboto_reg %}
+{% static 'font/roboto/Roboto-Medium.ttf' as roboto_med %}
+{% static 'font/roboto/Roboto-Bold.ttf' as roboto_bold %}
+
 @font-face {
     font-family: Roboto-Regular;
-    src: url("{% static 'font/roboto/Roboto-Regular.ttf' %}");
+    src: url("{{ roboto_reg|safe }}");
 }
 @font-face {
     font-family: Roboto-Medium;
-    src: url("{% static 'font/roboto/Roboto-Medium.ttf' %}");
+    src: url("{{ roboto_med|safe }}");
 }
 @font-face {
     font-family: Roboto-Bold;
-    src: url("{% static 'font/roboto/Roboto-Bold.ttf' %}");
+    src: url("{{ roboto_bold|safe }}");
 }
