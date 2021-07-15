@@ -293,9 +293,6 @@ def account(request):
     path = os.path.join(settings.BASE_DIR, 'core', 'static', 'img', 'profile')
     file_list = os.listdir(path)
 
-    print(request.user.userprofile.image_small)
-    print(request.user.userprofile.image_small.url)
-
     if request.POST:
         if 'panel-label' in request.POST:
             panel = request.POST.get('panel-label')
