@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +130,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
 ASGI_APPLICATION = 'syncify.routing.application'
 
 DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
@@ -158,10 +163,22 @@ if os.environ.get('DJANGO_DEVELOPMENT'):
 else:
     DEBUG = False
 
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET')
+    AWS_URL = 'http://' + AWS_STORAGE_BUCKET_NAME + '.s3.amazonaws.com/'
+    AWS_DEFAULT_ACL = None
+    AWS_S3_REGION_NAME = 'us-east-2'
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+
+    STATIC_URL = AWS_URL + '/static/'
+    MEDIA_URL = AWS_URL + '/media/'
+
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
