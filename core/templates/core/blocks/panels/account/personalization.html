@@ -2,7 +2,7 @@
 {% load util %}
 
 <div id = "panel-personalization" class = "panel {% if selected == True %}selected{% endif %}">
-	
+	{% include 'core/blocks/user-card.html' %}
 
 	<div id = "settings-sections">
 		<form id = "form-personalization" enctype = "multipart/form-data" method = "POST">
