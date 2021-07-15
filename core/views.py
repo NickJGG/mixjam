@@ -304,7 +304,7 @@ def account(request):
 
                 color = request.POST.get('color')
 
-                if picture:
+                if picture is not None:
                     try:
                         request.user.userprofile.image_small = picture
                         request.user.userprofile.image_medium = picture
