@@ -1,4 +1,5 @@
 import os
+import html
 
 from urllib.parse import urlunsplit, urlencode
 
@@ -135,3 +136,7 @@ def get_playlist_url(id):
 @register.simple_tag
 def is_friend(user, other_user):
     return user.userprofile.friends.filter(username = other_user.username).exists()
+
+@register.simple_tag
+def remove_encoding(font):
+    return html.unescape(font)
