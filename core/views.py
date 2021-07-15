@@ -16,6 +16,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
 from django.templatetags.static import static
 from django.template.loader import render_to_string
+from django.forms import ModelForm
 
 from channels.layers import get_channel_layer
 
@@ -289,6 +290,8 @@ def invite(request, invite_code):
     else:
         return render(request, 'core/error.html', errors['invalid_invite'])
 
+from django.utils.datastructures import MultiValueDict
+
 def account(request):
     path = os.path.join(settings.BASE_DIR, 'core', 'static', 'img', 'profile')
     file_list = os.listdir(path)
@@ -302,15 +305,20 @@ def account(request):
             if panel == 'personalization':
                 picture = request.FILES['picture'] if 'picture' in request.FILES else None
 
+                files = {
+                    'image_small': [picture],
+                    'image_medium': [picture],
+                    'image_large': [picture],
+                }
+
+                files = MultiValueDict(files)
+
                 color = request.POST.get('color')
 
                 if picture is not None:
-                    print('\n\n\nYOYOYO\n\n\n')
-
                     try:
-                        request.user.userprofile.image_small = picture
-                        request.user.userprofile.image_medium = picture
-                        request.user.userprofile.image_large = picture
+                        form = ImageForm(request.POST, files, instance = request.user.userprofile)
+                        form.save()
 
                         changed = True
                     except:
@@ -400,6 +408,15 @@ def account(request):
         'images': file_list,
         'authorized': authorized
     })
+
+class ImageForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = (
+            'image_small',
+            'image_medium',
+            'image_large',
+        )
 
 def notification(request):
     data = {
