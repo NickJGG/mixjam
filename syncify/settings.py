@@ -169,8 +169,8 @@ else:
     STATIC_URL = AWS_URL + 'static/'
     MEDIA_URL = AWS_URL + 'media/'
 
-    STATICFILES_STORAGE = 'core.storage_backends.StaticStorage'
-    DEFAULT_FILE_STORAGE = 'core.storage_backends.MediaStorage'
+    STATICFILES_STORAGE = 'syncify.storage_backends.StaticStorage'
+    DEFAULT_FILE_STORAGE = 'syncify.storage_backends.MediaStorage'
 
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
