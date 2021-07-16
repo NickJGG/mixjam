@@ -762,7 +762,13 @@ $(document).ready(function(){
 		});
 	}
 	function updatePlayButton(){
-		$('#play-pause').find('img').prop('src', playing ? pausePath : playPath);
+		if (playing){
+			$('#play-pause img.play').hide();
+			$('#play-pause img.pause').show();
+		} else {
+			$('#play-pause img.pause').hide();
+			$('#play-pause img.play').show();
+		}
 	}
 	function updateProgress(milli=roomState.song_state.track.duration_ms - roomState.song_state.progress_ms){
 		var clock = secondsToClock((roomState.song_state.track.duration_ms / 1000) - (milli / 1000)),

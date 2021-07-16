@@ -114,7 +114,8 @@
 				<img src = "{% static 'img/icons/rewind-white-24.png' %}">
 			</div>
 			<div id = "play-pause" class = "song-control control">
-				<img src = "{% if room_state.song_state.is_playing %}{% static 'img/icons/pause-white-24.png' %}{% else %}{% static 'img/icons/play-white-24.png' %}{% endif %}">
+				<img class = "play" src = "{% if room_state.song_state.is_playing %}{% static 'img/icons/pause-white-24.png' %}{% else %}{% static 'img/icons/play-white-24.png' %}{% endif %}">
+				<img class = "pause" src = "{% if room_state.song_state.is_playing %}{% static 'img/icons/play-white-24.png' %}{% else %}{% static 'img/icons/pause-white-24.png' %}{% endif %}">
 			</div>
 			<div id = "next" class = "song-control control">
 				<img src = "{% static 'img/icons/fastforward-white-24.png' %}">

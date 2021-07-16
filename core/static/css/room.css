@@ -347,6 +347,9 @@
 #play-pause:hover{
 	background-color: rgb(35, 35, 37) !important;
 }
+#play-pause img.pause{
+	display: none;
+}
 #song-progress-container{
 	display: flex;
 	align-items: center;
