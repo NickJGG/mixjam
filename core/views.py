@@ -315,10 +315,10 @@ def account(request):
                 form = ImageForm(request.POST, request.FILES, instance = profile.picture)
 
                 if form.is_valid():
-                    form.save()
-
-                    request.user.userprofile.picture = form.instance
-                    request.user.userprofile.save()
+                    profile.picture.small = request.FILES.get('small')
+                    profile.picture.medium = request.FILES.get('small')
+                    profile.picture.large = request.FILES.get('small')
+                    profile.picture.save()
 
                 changed = True
 
