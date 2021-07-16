@@ -290,12 +290,7 @@ def invite(request, invite_code):
     else:
         return render(request, 'core/error.html', errors['invalid_invite'])
 
-from django.utils.datastructures import MultiValueDict
-
 def account(request):
-    path = os.path.join(settings.BASE_DIR, 'core', 'static', 'img', 'profile')
-    file_list = os.listdir(path)
-
     if request.POST:
         if 'panel-label' in request.POST:
             panel = request.POST.get('panel-label')
@@ -303,28 +298,30 @@ def account(request):
             changed = False
 
             if panel == 'personalization':
-                picture = request.FILES['picture'] if 'picture' in request.FILES else None
-
-                files = {
-                    'image_small': [picture],
-                    'image_medium': [picture],
-                    'image_large': [picture],
-                }
-
-                files = MultiValueDict(files)
-
                 color = request.POST.get('color')
 
-                if picture is not None:
-                    try:
-                        form = ImageForm(request.POST, files, instance = request.user.userprofile)
-                        form.save()
+                profile = UserProfile.objects.get(user__username = request.user.username)
 
-                        changed = True
-                    except:
-                        messages.error(request, 'Something went wrong with your image upload')
+                if not profile.picture:
+                    picture = UserProfilePicture()
+                    picture.save()
 
-                if color:
+                    profile.picture = picture
+                    profile.save()
+
+                request.FILES['medium'] = request.FILES['small']
+                request.FILES['large'] = request.FILES['small']
+
+                form = ImageForm(request.POST, request.FILES, instance = profile.picture)
+
+                if form.is_valid():
+                    form.save()
+                    print(form.instance)
+                    print(profile.picture)
+
+                changed = True
+
+                '''if color:
                     try:
                         int(color, 16)
 
@@ -336,12 +333,10 @@ def account(request):
 
                         request.user.userprofile.color = color
                     except:
-                        messages.error(request, 'Color is in the wrong format (Hex)')
+                        messages.error(request, 'Color is in the wrong format (Hex)')'''
                 
                 if changed:
                     messages.success(request, 'Profile updated')
-
-                request.user.userprofile.save()
             elif panel == 'overview':
                 first_name = request.POST.get('first-name')
                 last_name = request.POST.get('last-name')
@@ -402,21 +397,16 @@ def account(request):
                 else:
                     messages.error(request, 'Please enter a new password')
 
-    authorized = spotify.refresh_token(request.user)
+    #authorized = spotify.refresh_token(request.user)
 
     return render(request, 'core/account.html', {
-        'images': file_list,
-        'authorized': authorized
+        'authorized': True
     })
 
 class ImageForm(ModelForm):
     class Meta:
-        model = UserProfile
-        fields = (
-            'image_small',
-            'image_medium',
-            'image_large',
-        )
+        model = UserProfilePicture
+        fields = ('small', 'medium', 'large')
 
 def notification(request):
     data = {

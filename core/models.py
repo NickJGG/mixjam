@@ -48,9 +48,8 @@ class UserProfile(models.Model):
     friends = models.ManyToManyField(User, blank = True, related_name = 'friends')
 
     color = models.CharField(max_length = 6, default = '07ace5')
-    image_small = ResizedImageField(size = [200, 200], crop = ['middle', 'center'], upload_to = 'small/', null = True, blank = True)
-    image_medium = ResizedImageField(size = [500, 500], crop = ['middle', 'center'], upload_to = 'medium/', null = True, blank = True)
-    image_large = ResizedImageField(size = [800, 800], crop = ['middle', 'center'], upload_to = 'large/', null = True, blank = True)
+
+    picture = models.ForeignKey('UserProfilePicture', on_delete = models.CASCADE, null = True, blank = True, related_name = 'profile_picture')
 
     new_user = models.BooleanField(default = True)
 
@@ -70,6 +69,11 @@ class UserProfile(models.Model):
         self.save()
 
         return self.online_count
+
+class UserProfilePicture(models.Model):
+    small = ResizedImageField(size = [200, 200], crop = ['middle', 'center'], upload_to = 'small', null = True, blank = True)
+    medium = ResizedImageField(size = [500, 500], crop = ['middle', 'center'], upload_to = 'medium', null = True, blank = True)
+    large = ResizedImageField(size = [800, 800], crop = ['middle', 'center'], upload_to = 'large', null = True, blank = True)
 
 class Room(models.Model):
     code = models.CharField(max_length = 30)

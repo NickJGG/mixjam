@@ -123,8 +123,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
 
 ASGI_APPLICATION = 'syncify.routing.application'
 
@@ -137,6 +135,9 @@ DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
 
 if os.environ.get('DJANGO_DEVELOPMENT'):
     DEBUG = True
+
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
 
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
