@@ -1,5 +1,5 @@
 :root{
-	--banner-color: #2e2e2e;
+	--banner-color: var(--red);
 }
 
 #invite-link{

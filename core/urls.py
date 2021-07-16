@@ -21,6 +21,7 @@ urlpatterns = [
     path('room/kick/', views.room_kick, name = 'room_kick'),
 
     path('account/', views.account, name = 'account'),
+    path('account/edit/', views.account_edit, name = 'account_edit'),
     path('login/', views.login, name = 'login'),
     path('logout/', views.logout, name = 'logout'),
     path('register/', views.register, name = 'register'),

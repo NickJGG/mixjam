@@ -291,6 +291,13 @@ def invite(request, invite_code):
         return render(request, 'core/error.html', errors['invalid_invite'])
 
 def account(request):
+    authorized = spotify.refresh_token(request.user)
+
+    return render(request, 'core/account.html', {
+        'authorized': authorized
+    })
+
+def account_edit(request):
     if request.POST:
         if 'panel-label' in request.POST:
             panel = request.POST.get('panel-label')
@@ -300,87 +307,66 @@ def account(request):
             if panel == 'personalization':
                 color = request.POST.get('color')
 
-                profile = UserProfile.objects.get(user__username = request.user.username)
+                if 'small' in request.FILES:
+                    if request.user.userprofile.picture is None:
+                        new_picture = UserProfilePicture()
+                        new_picture.save()
+                        
+                        request.user.userprofile.picture = new_picture
 
-                if not profile.picture:
-                    picture = UserProfilePicture()
-                    picture.save()
+                    request.user.userprofile.picture.small = request.FILES.get('small')
+                    request.user.userprofile.picture.medium = request.FILES.get('small')
+                    request.user.userprofile.picture.large = request.FILES.get('small')
+                    request.user.userprofile.picture.save()
 
-                    profile.picture = picture
-                    profile.save()
+                    changed = True
 
-                request.FILES['medium'] = request.FILES['small']
-                request.FILES['large'] = request.FILES['small']
-
-                form = ImageForm(request.POST, request.FILES, instance = profile.picture)
-
-                if form.is_valid():
-                    profile.picture.small = request.FILES.get('small')
-                    profile.picture.medium = request.FILES.get('small')
-                    profile.picture.large = request.FILES.get('small')
-                    profile.picture.save()
-
-                    request.user.userprofile.picture = profile.picture
-                    request.user.userprofile.save()
-
-                changed = True
-
-                '''if color:
+                if color:
                     try:
                         int(color, 16)
 
                         if len(color) > 6:
                             raise ValueError
 
-                        if not changed and color != request.user.userprofile.color:
-                            changed = True
-
                         request.user.userprofile.color = color
+
+                        changed = True
                     except:
-                        messages.error(request, 'Color is in the wrong format (Hex)')'''
+                        messages.error(request, 'Color is in the wrong format (Hex)')
                 
                 if changed:
                     messages.success(request, 'Profile updated')
+                
+                request.user.userprofile.save()
             elif panel == 'overview':
-                first_name = request.POST.get('first-name')
-                last_name = request.POST.get('last-name')
-                email = request.POST.get('email')
-                tag_line = request.POST.get('tag-line')
+                form = UserForm(request.POST, instance = request.user)
+
+                first_name = request.POST.get('first_name')
+                last_name = request.POST.get('last_name')
 
                 if first_name and len(first_name) > 0:
-                    if not changed and first_name != request.user.first_name:
-                        changed = True
+                    if last_name and len(last_name) > 0:
+                        if form.is_valid():
+                            form.save()
 
-                    request.user.first_name = first_name
+                            changed = True
+                        else:
+                            print(form.errors)
+                    else:
+                        messages.error(request, 'Last name is too short')
                 else:
                     messages.error(request, 'First name is too short')
-                
-                if last_name and len(last_name) > 0:
-                    if not changed and last_name != request.user.last_name:
-                        changed = True
 
-                    request.user.last_name = last_name
+                form = ProfileForm(request.POST, instance = request.user.userprofile)
+
+                if form.is_valid():
+                    print('\n\n\nVALID\n\n\n')
+
+                    form.save()
+
+                    changed = True
                 else:
-                    messages.error(request, 'Last name is too short')
-
-                if email and len(email) > 0:
-                    if not changed and email != request.user.email:
-                        changed = True
-
-                    request.user.email = email
-                else:
-                    messages.error(request, 'Email is too short')
-                
-                if tag_line and len(tag_line) > 0:
-                    if not changed and tag_line != request.user.userprofile.tag_line:
-                        changed = True
-
-                    request.user.userprofile.tag_line = tag_line
-                else:
-                    messages.error(request, 'Tag line is too short')
-
-                request.user.userprofile.save()
-                request.user.save()
+                    print(form.errors)
 
                 if changed:
                     messages.success(request, 'Details updated')
@@ -400,12 +386,18 @@ def account(request):
                         messages.error(request, 'Passwords do not match')
                 else:
                     messages.error(request, 'Please enter a new password')
+    
+    return redirect('account')
 
-    #authorized = spotify.refresh_token(request.user)
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
 
-    return render(request, 'core/account.html', {
-        'authorized': True
-    })
+class ProfileForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ('tag_line',)
 
 class ImageForm(ModelForm):
     class Meta:

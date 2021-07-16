@@ -5,7 +5,7 @@
 	{% include 'core/blocks/user-card.html' %}
 
 	<div id = "settings-sections">
-		<form id = "form-personalization" enctype = "multipart/form-data" method = "POST">
+		<form id = "form-personalization" enctype = "multipart/form-data" action = "{% url 'account_edit' %}" method = "POST">
 			{% csrf_token %}
 
 			<input type = "hidden" name = "panel-label" value = "personalization">

@@ -15,7 +15,7 @@ from . import util, spotify
 
 class UserConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        user = self.scope['user']
+        user = User.objects.get(username = self.scope['user'].username)
 
         self.room_name = user.username
         self.group_name = 'user_%s' % self.room_name
@@ -60,7 +60,7 @@ class UserConsumer(AsyncWebsocketConsumer):
 
     # DISCONNECT FUNCTION
     async def disconnect(self, close_code):
-        user = self.scope['user']
+        user = User.objects.get(username = self.scope['user'].username)
 
         user.userprofile.go_offline()
 

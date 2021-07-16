@@ -40,14 +40,14 @@ class RoomMode(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
-    tag_line = models.CharField(max_length = 50, default = 'Syncer')
+    tag_line = models.CharField(max_length = 50, default = 'Jammer')
     access_token = models.CharField(max_length = 200, blank = True, null = True)
     refresh_token = models.CharField(max_length = 200, blank = True, null = True)
     authorized = models.BooleanField(default = False)
     most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.SET_NULL, related_name = 'most_recent_name')
     friends = models.ManyToManyField(User, blank = True, related_name = 'friends')
 
-    color = models.CharField(max_length = 6, default = '07ace5')
+    color = models.CharField(max_length = 6, default = '1c71ca')
 
     picture = models.ForeignKey('UserProfilePicture', on_delete = models.CASCADE, null = True, blank = True, related_name = 'profile_picture')
 
@@ -79,7 +79,7 @@ class Room(models.Model):
     code = models.CharField(max_length = 30)
     title = models.CharField(max_length=150, default="New Room")
     description = models.CharField(max_length = 1000, default = "")
-    banner_color = models.CharField(max_length = 6, null = True, blank = True, default = '141414')
+    banner_color = models.CharField(max_length = 6, null = True, blank = True, default = 'ec4a4e')
     mode = models.CharField(max_length = 50, choices = RoomMode.MODE_CHOICES, default = RoomMode.PRIVATE)
 
     invite_code = models.CharField(max_length = 6, null = True, blank = True)
