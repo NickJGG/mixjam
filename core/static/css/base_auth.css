@@ -194,11 +194,12 @@ body{
 	align-items: center;
 	justify-content: center;
 
-	margin-right: 10px;
-
 	background-color: var(--medium-black);
 
 	border-radius: var(--border-radius);
+}
+#connection-list .connection-icon{
+	margin-right: 10px;
 }
 .connection-icon img.connected{
 	display: none;
