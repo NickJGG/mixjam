@@ -41,8 +41,9 @@
 
 			<div id = "user-utilities">
 				<div id = "connection-container" class = "disconnected user-utility popup-container column bottom right">
-					<div class = "popup-toggle">
-						<img src = "{% static 'img/icons/disconnected-white-96.png' %}">
+					<div class = "popup-toggle connection-icon">
+						<img class = "disconnected" src = "{% static 'img/icons/disconnected-white-96.png' %}">
+						<img class = "connected" src = "{% static 'img/icons/connected-white-96.png' %}">
 					</div>
 					<div class = "popup-element hover">
 						<div class = "header">
@@ -51,7 +52,8 @@
 						<div id = "connection-list">
 							<div class = "connection disconnected template">
 								<div class = "connection-icon">
-									<img src = "{% static 'img/icons/disconnected-white-96.png' %}">
+									<img class = "disconnected" src = "{% static 'img/icons/disconnected-white-96.png' %}">
+									<img class = "connected" src = "{% static 'img/icons/connected-white-96.png' %}">
 								</div>
 								<p class = "connection-name"></p>
 							</div>

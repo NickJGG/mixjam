@@ -339,9 +339,8 @@ function registerConnection(socket, code, name, url, callback){
                 $('.connection.' + connection.code).removeClass('disconnected');
                 $('.connection.' + connection.code).addClass('connected');
 
-                var src = $('.connection.' + connection.code + ' .connection-icon img').attr('src');
-
-                $('.connection.' + connection.code + ' .connection-icon img').attr('src', src.replace('disconnected', 'connected'));
+                $('.connection.' + connection.code + ' .connection-icon img.disconnected').hide();
+                $('.connection.' + connection.code + ' .connection-icon img.connected').show();
 
                 break;
             }
@@ -361,9 +360,8 @@ function registerConnection(socket, code, name, url, callback){
                 $('.connection.' + connection.code).removeClass('connected');
                 $('.connection.' + connection.code).addClass('disconnected');
 
-                var src = $('.connection.' + connection.code + ' .connection-icon img').attr('src');
-
-                $('.connection.' + connection.code + ' .connection-icon img').attr('src', src.replace('connected', 'disconnected'));
+                $('.connection.' + connection.code + ' .connection-icon img.connected').hide();
+                $('.connection.' + connection.code + ' .connection-icon img.disconnected').show();
 
                 connections.remove(i);
 
@@ -392,18 +390,22 @@ function updateConnectionStatus(){
         $('#connection-container').removeClass('mixed');
         $('#connection-container').addClass('disconnected');
 
-        image.attr('src', src.replace('connected', 'disconnected'));
+        $('#connection-container .popup-toggle img.connected').hide();
+        $('#connection-container .popup-toggle img.disconnected').show();
+        $('.connection.' + connection.code + ' .connection-icon img.disconnected').show();
     } else if (connectionCount == connections.length){
         $('#connection-container').removeClass('disconnected');
         $('#connection-container').removeClass('mixed');
         $('#connection-container').addClass('connected');
 
-        image.attr('src', src.replace('disconnected', 'connected'));
+        $('#connection-container .popup-toggle img.disconnected').hide();
+        $('#connection-container .popup-toggle img.connected').show();
     } else {
         $('#connection-container').removeClass('disconnected');
         $('#connection-container').removeClass('connected');
         $('#connection-container').addClass('mixed');
 
-        image.attr('src', src.replace('disconnected', 'connected'));
+        $('#connection-container .popup-toggle img.disconnected').hide();
+        $('#connection-container .popup-toggle img.connected').show();
     }
 }

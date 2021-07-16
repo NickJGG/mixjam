@@ -200,6 +200,9 @@ body{
 
 	border-radius: var(--border-radius);
 }
+.connection-icon img.connected{
+	display: none;
+}
 .connection-icon img{
 	height: 50%;
 }

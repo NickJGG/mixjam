@@ -119,8 +119,8 @@ def get_action_info(inviter, invitee, room):
 
     can_invite = not active and (room.leader == inviter or room.mode != RoomMode.CLOSED or in_room)
 
-    print('\nINVITER: ', inviter, '\nINVITEE: ', invitee, '\nACTIVE: ', active, '\nIN ROOM: ', in_room, '\nCAN INVITE: ', can_invite, '\nIS LEADER: ', is_leader, '\n')
-    print(inviter, room.leader)
+    #print('\nINVITER: ', inviter, '\nINVITEE: ', invitee, '\nACTIVE: ', active, '\nIN ROOM: ', in_room, '\nCAN INVITE: ', can_invite, '\nIS LEADER: ', is_leader, '\n')
+    #print(inviter, room.leader)
 
     return {
         'active': active,
