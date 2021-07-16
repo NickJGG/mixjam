@@ -316,8 +316,9 @@ def account(request):
 
                 if form.is_valid():
                     form.save()
-                    print(form.instance)
-                    print(profile.picture)
+
+                    request.user.userprofile.picture = form.instance
+                    request.user.userprofile.save()
 
                 changed = True
 
