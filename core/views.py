@@ -320,6 +320,9 @@ def account(request):
                     profile.picture.large = request.FILES.get('small')
                     profile.picture.save()
 
+                    request.user.userprofile.picture = profile.picture
+                    request.user.userprofile.save()
+
                 changed = True
 
                 '''if color:
