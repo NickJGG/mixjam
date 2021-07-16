@@ -8,8 +8,9 @@ class StartupConfig(AppConfig):
     verbose_name = "MixJam"
 
     def ready(self):
-        from .models import UserProfile
+        '''from .models import UserProfile
 
         for user in UserProfile.objects.all():
             user.online_count = 0
-            user.save()
+            user.save()'''
+        pass
