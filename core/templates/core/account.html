@@ -17,9 +17,18 @@
 
 {% block panel_labels %}
 
-	<p class = "panel-label selected">Overview</p>
-	<p class = "panel-label">Personalization</p>
-	<p class = "panel-label">Privacy</p>
+	<div class = "panel-label item-label-trigger bottom selected">
+		<img src = "{% static 'img/icons/overview-white-96.png' %}">
+		<p class = "item-label">Overview</p>
+	</div>
+	<div class = "panel-label item-label-trigger bottom">
+		<img src = "{% static 'img/icons/edit-white-96.png' %}">
+		<p class = "item-label">Personalization</p>
+	</div>
+	<div class = "panel-label item-label-trigger bottom">
+		<img src = "{% static 'img/icons/eye-white-96.png' %}">
+		<p class = "item-label">Privacy</p>
+	</div>
 
 {% endblock %}
 

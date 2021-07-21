@@ -25,31 +25,68 @@
 
 {% block page_name %}{{ room.title }}{% endblock %}
 
-{% block page_name_after %}
+{% block panel_labels %}
 
-	{% if room.mode != 'closed' or room.leader == user %}
+	<div class = "panel-label item-label-trigger bottom {% if session_data.default_panel == 'home' %}selected{% endif %}">
+		<img src = "{% static 'img/icons/home-white-96.png' %}">
+		<p class = "item-label">Home</p>
+	</div>
+	<div class = "panel-label item-label-trigger bottom {% if session_data.default_panel == 'playlist' %}selected{% endif %}">
+		<img src = "{% static 'img/icons/music-note-white-96.png' %}">
+		<p class = "item-label">Playlist</p>
+	</div>
 
-		<div class = "subtitle-container">
-			<img id = "invite-link" src = "{% static 'img/icons/link-white-50.png' %}">
-			<div class = "subtitle-label" style = "width: 600%; left: -250%">
-				<p>Copy Invite Link</p>
-			</div>
+	{% if room.leader == user %}
+
+		<div class = "panel-label item-label-trigger bottom">
+			<img src = "{% static 'img/icons/settings-white-96.png' %}">
+			<p class = "item-label">Settings</p>
 		</div>
-		
-		<input id = "invite-url" type = "text" style = "position: absolute; top: -1000px; left: -1000px;" value = "{{ room.get_invite_link }}">
 
 	{% endif %}
 
 {% endblock %}
 
-{% block panel_labels %}
+{% block user_utilities %}
 
-	<div class = "panel-label selected">Home</div>
-	<p class = "panel-label">Playlist</p>
+	<div id = "room-preferences" class = "popup-container user-utility column bottom right">
+		<div class = "popup-toggle item-label-trigger bottom">
+			<img src = "{% static 'img/icons/wrench-white-96.png' %}">
+			<p class = "item-label">Room Preferences</p>
+		</div>
+		<div class = "popup-element">
+			<div class = "header">
+				<p>Room Preferences</p>
+			</div>
+			<div id = "preferences">
+				<form method = "POST">
+					{% csrf_token %}
+			
+					<input type = "hidden" name = "section" value = "preferences">
 
-	{% if room.leader == user %}
-		<p class = "panel-label">Settings</p>
-	{% endif %}
+					<div class = "settings-list">
+						<div class = "setting">
+							<p class = "setting-label">Default Panel</p>
+							<div class = "radio-buttons">
+								<div class = "radio-button {% if session_data.default_panel == 'home' %}checked{% endif %}">
+									<input type = "radio" name = "default-panel" id = "radio-home" value = "home" {% if room.mode == 'public' %}checked{% endif %}>
+									<p>Home</p>
+								</div>
+								<div class = "radio-button {% if session_data.default_panel == 'playlist' %}checked{% endif %}">
+									<input type = "radio" name = "default-panel" id = "radio-playlist" value = "playlist" {% if room.mode == 'private' %}checked{% endif %}>
+									<p>Playlist</p>
+								</div>
+								<p class = "radio-message"></p>
+							</div>
+						</div>
+						<div class = "settings-actions">
+							<input type = "submit" value = "Save">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 
 {% endblock %}
 

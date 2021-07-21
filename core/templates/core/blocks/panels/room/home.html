@@ -1,6 +1,6 @@
 {% load static %}
 
-<div id = "panel-home" class = "panel no-scrolling {% if selected == True %}selected{% endif %}">
+<div id = "panel-home" class = "panel no-scrolling {% if session_data.default_panel == 'home' %}selected{% endif %}">
     <div id = "room-info">
         <div id = "room-banner">
             <div id = "room-picture">

@@ -17,10 +17,19 @@
 
 {% block panel_labels %}
 
-	<p class = "panel-label selected">Home</p>
-	<p class = "panel-label">Create Room</p>
-	<p class = "panel-label">FAQ</p>
-
+	<div class = "panel-label item-label-trigger bottom selected">
+		<img src = "{% static 'img/icons/home-white-96.png' %}">
+		<p class = "item-label">Home</p>
+	</div>
+	<div class = "panel-label item-label-trigger bottom">
+		<img src = "{% static 'img/icons/invite-room-white-96.png' %}">
+		<p class = "item-label">Create Room</p>
+	</div>
+	<div class = "panel-label item-label-trigger bottom">
+		<img src = "{% static 'img/icons/home-white-30.png' %}">
+		<p class = "item-label">FAQ</p>
+	</div>
+		
 {% endblock %}
 
 {% block panel_container %}

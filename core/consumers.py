@@ -1,11 +1,8 @@
 import json
-from django.shortcuts import render
 
 from datetime import datetime
 
-from django.utils import timezone
 from django.template.loader import render_to_string
-from django.conf import settings
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -15,7 +12,7 @@ from . import util, spotify
 
 class UserConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        user = User.objects.get(username = self.scope['user'].username)
+        user = self.get_user()
 
         self.room_name = user.username
         self.group_name = 'user_%s' % self.room_name
@@ -60,7 +57,7 @@ class UserConsumer(AsyncWebsocketConsumer):
 
     # DISCONNECT FUNCTION
     async def disconnect(self, close_code):
-        user = User.objects.get(username = self.scope['user'].username)
+        user = self.get_user()
 
         user.userprofile.go_offline()
 
@@ -104,7 +101,7 @@ class UserConsumer(AsyncWebsocketConsumer):
         #request_type = request_data['type']
         #request_action = request_data['data']['action']
 
-        user = self.scope['user']
+        user = self.get_user()
 
         await self.channel_layer.group_send(
             self.group_name, request_data
@@ -121,6 +118,9 @@ class UserConsumer(AsyncWebsocketConsumer):
 
     async def request_notification(self, request_data):
         await self.response_send('notification', request_data)
+    
+    def get_user(self):
+        return User.objects.get(username = self.scope['user'])
 
 class RoomConsumer(AsyncWebsocketConsumer):
     put_methods = ['play', 'pause', 'seek']
@@ -138,7 +138,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
     # CONNECT FUNCTION
     async def connect(self):
         room_code = self.scope['url_route']['kwargs']['room_code']
-        user = self.scope['user']
+        user = self.get_user()
         room = Room.objects.get(code = room_code)
 
         self.room_name = room_code
@@ -197,7 +197,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.offline()
 
-        user = self.scope['user']
+        user = self.get_user()
         room = self.get_room()
 
         await self.send_history_entry('leave', user, 'left', before_subject = render_to_string('core/blocks/profile-picture.html', {
@@ -234,7 +234,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         request_type = request_data['type']
         request_action = request_data['data']['action']
 
-        user = self.scope['user']
+        user = self.get_user()
         room = self.get_room()
 
         self.print_request(request_data)
@@ -346,7 +346,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         request_action = request_data['action']
         request_action_data = request_data['action_data'] if 'action_data' in request_data else None
 
-        user = self.scope['user']
+        user = self.get_user()
         room = self.get_room()
 
         before_subject = None
@@ -370,7 +370,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             await self.send_self_history_entry(request_action, request_action_data['user'], self.playlist_to_history[request_action], before_subject = before_subject, before_object = before_object)
 
     async def request_chat(self, request_data):
-        request_data['data']['action_data']['user']['self'] = request_data['data']['action_data']['user']['username'] == self.scope['user'].username
+        request_data['data']['action_data']['user']['self'] = request_data['data']['action_data']['user']['username'] == self.get_user()
 
         await self.response_send('chat', request_data['data'])
 
@@ -380,7 +380,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         request_action = request_data['action']
         request_action_data = request_data['action_data'] if 'action_data' in request_data else None
 
-        user = self.scope['user']
+        user = self.get_user()
         room = self.get_room()
         
         if request_action == 'kick':
@@ -424,7 +424,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.response_send('user_action', request_data)
 
     async def request_connection(self, request_data):
-        user = self.scope['user']
+        user = self.get_user()
 
         if request_data['data']['connection_state']['connection_type'] != 'kick':
             room = self.get_room()
@@ -488,14 +488,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
         room = self.get_room()
 
         if room:
-            room.active_users.add(self.scope['user'])
+            room.active_users.add(self.get_user())
 
     @database_sync_to_async
     def offline(self):
         room = self.get_room()
 
         if room:
-            room.active_users.remove(self.scope['user'])
+            room.active_users.remove(self.get_user())
             room.save()
 
             if not room.is_active():
@@ -512,7 +512,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
     def print_request(self, request_data):
         print('\n=== RECEIVED REQUEST ===============')
         print('Time: ' + datetime.now().strftime('%I:%M:%S %m/%d'))
-        print('User: ' + self.scope['user'].username)
+        print('User: ' + self.get_user().username)
         print('\nType: ' + request_data['type'])
         print('Data: ' + json.dumps(request_data['data'], indent = 4))
         print('==================== END REQUEST ===\n')
@@ -521,7 +521,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         active = False
         volume = 0
 
-        user = self.scope['user']
+        user = self.get_user()
 
         raw_devices = await spotify.get_devices(user)
 
@@ -551,3 +551,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
             return devices, active, volume
         except:
             return None, None, None
+    
+    def get_user(self):
+        return User.objects.get(username = self.scope['user'])

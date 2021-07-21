@@ -1,21 +1,17 @@
 $(document).ready(function(){
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	//                                                                                 //
-	//                                    VARIABLES                                    //
-	//                                                                                 //
-	/////////////////////////////////////////////////////////////////////////////////////
+//	#region VARIABLES
 
 	const ws_scheme = window.location.protocol == 'https:' ? 'wss' : 'ws';
-	const roomUrl = 'r/' + code + '/', userUrl = 'u/' + username + '/';
+	const roomUrl = 'r/' + code + '/';
 	
-	var socket, timer, seek = false, movingProgress = false;
+	var socket, timer;
 	var historyEntries = [], historyUpper = 4000, historyLower = 2000, historyTransition = 200, displayHistoryEntry = true;
-	var deviceActive;
+	var deviceActive, seek = false, movingProgress = false;
 	
-	init();
-	
-// 	#region Main Functions
+//	#endregion
+
+// 	#region MAIN FUNCTIONS
 
 	function updateDevices(data){
 		var devices = data['response_data']['devices'],
@@ -38,6 +34,8 @@ $(document).ready(function(){
 			$('#volume-container').find('.progress-complete').css({
 				'height': 'calc(' + (volume) + '%)'
 			});
+			
+			$('#volume-container').css('display', 'flex');
 		} else {
 			$('#devices-image').removeClass('active').addClass('inactive');
 			$('#volume-image').removeClass('active').addClass('inactive');
@@ -269,6 +267,7 @@ $(document).ready(function(){
 				var songElement = $(roomState.song_block);
 				songElement.find('.song-cover > img').attr('src', song.track.album.images[2].url);
 				songElement.find('.song-title').text(song.track.name);
+				songElement.find('.song-length').text(secondsToClock(Math.floor(song.track.duration_ms / 1000)));
 				songElement.find('.song-artist').text(song.track.artists[0].name);
 				songElement.find('.song-album p').text(song.track.album.name);
 				songElement.find('.song-link').attr('href', song.track.external_urls.spotify);
@@ -313,7 +312,7 @@ $(document).ready(function(){
 	
 // 	#endregion
 
-// 	#region Initialization
+// 	#region INITIALIZATION
 	
 	function init(){
 		setupSocket();
@@ -686,11 +685,8 @@ $(document).ready(function(){
 
 // 	#endregion
 	
-// 	#region Helper Functions
+// 	#region HELPER FUNCTIONS
 
-	function staticFile(path){
-		return staticUrl + path;
-	}
 	function startTimer(milli, finished){
 		var seconds = milli / 1000;
 		
@@ -739,7 +735,7 @@ $(document).ready(function(){
 	function secondsToLength(seconds){
 		var hours = Math.floor(seconds / 3600), minutes = Math.floor((seconds - hours * 3600) / 60), clock = '';
 		
-		seconds %= 60;
+		seconds = Math.floor(seconds % 60);
 		
 		if (hours > 0)
 			clock += hours + 'h ';
@@ -747,8 +743,8 @@ $(document).ready(function(){
 		if (hours > 0 || minutes > 0)
 			clock += (minutes < 10 && hours > 0 ? '0' : '') + minutes + 'm';
 		
-		var clock = (hours == 0 && minutes == 0 ? ':' : '') + clock + (((minutes > 0 || hours > 0) && seconds < 10) || seconds < 10 ? '0' : '');
-		
+		var clock = (hours == 0 && minutes == 0 ? ':' : '') + clock + (((minutes > 0 || hours > 0) && seconds < 10) || seconds < 10 ? ' 0' : ' ') + seconds + 's';
+
 		if (clock[0] == ':'){
 			clock = '0' + clock;
 		}
@@ -792,7 +788,7 @@ $(document).ready(function(){
 
 // 	#endregion
 
-//	#region Socket Functions
+//	#region SOCKET FUNCTIONS
 
 	function socketSend(type, data){
 		var dataToSend = {
@@ -822,4 +818,7 @@ $(document).ready(function(){
 	}
 
 //	#endregion
+
+	init();
+
 });

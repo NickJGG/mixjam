@@ -15,21 +15,29 @@
 }
 
 #panel-labels{
+	height: 36px;
+
 	display: flex;
 	align-items: center;
 	
 	position: relative;
-	top: 2px;
-	
+	top: 1px;
+
 	margin-left: 30px;
-	
-	font-size: 12px;
-	text-transform: uppercase;
-	color: white;
+}
+#panel-labels .item-label{
+	background-color: var(--light-black);
 }
 .panel-label{
-	padding: 10px 14px;
+	width: 36px;
+	height: 36px;
 	
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	position: relative;
+
 	border-radius: var(--border-radius);
 
 	cursor: pointer;
@@ -39,15 +47,13 @@
 	box-sizing: border-box;
 }
 .panel-label.selected{
-	padding: 9px 14px;
-
-	font-family: Roboto-Medium;
-	font-size: 14px;
-
-	background-color: #2e2e2e;
+	background-color: var(--red);
+}
+.panel-label img{
+	height: 50%;
 }
 .panel-label:not(.selected):hover{
-	background-color: var(--light-black);
+	background-color: rgb(42, 42, 44);
 }
 .panel-label:not(:first-child){
 	margin-left: 10px;

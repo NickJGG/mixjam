@@ -36,10 +36,10 @@
 			</div>
 		</div>
 		<div id = "user-section" class = "nav-section">
-			{% block user_container_before %}
-			{% endblock %}
-
 			<div id = "user-utilities">
+				{% block user_utilities %}
+				{% endblock %}
+				
 				<div id = "connection-container" class = "disconnected user-utility popup-container column bottom right">
 					<div class = "popup-toggle connection-icon">
 						<img class = "disconnected" src = "{% static 'img/icons/disconnected-white-96.png' %}">
@@ -113,7 +113,7 @@
 
 				<div class = "popup-container side-panel-items-controller right barebones">
 					<div class = "side-panel-item item-label-trigger selector room popup-toggle right">
-						<img id = "expand" class = "side-panel-items-icon" src = "{% static 'img/icons/music-record-white-96.png' %}">
+						<img class = "side-panel-items-icon" src = "{% static 'img/icons/music-record-white-96.png' %}">
 						<p class = "item-label no-underline">Rooms</p>
 					</div>
 				</div>

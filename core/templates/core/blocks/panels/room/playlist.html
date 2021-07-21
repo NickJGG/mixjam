@@ -1,7 +1,7 @@
 {% load static %}
 {% load util %}
 
-<div id = "panel-playlist" class = "panel no-scrolling {% if selected == True %}selected{% endif %}">
+<div id = "panel-playlist" class = "panel no-scrolling {% if session_data.default_panel == 'playlist' %}selected{% endif %}">
     <div id = "playlist-wrapper">
         <div id = "playlist-info-container">
             <div id = "playlist-cover">

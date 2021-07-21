@@ -239,8 +239,13 @@ def room(request, room_code):
                     messages.success(request, 'Left ' + room.title)
 
                     return redirect('index')
+            elif section == 'preferences':
+                default_panel = request.POST.get('default-panel')
 
-        if request.user not in room.users.all():
+                request.session[room.code]['default_panel'] = default_panel
+                request.session.modified = True
+
+        if not room.users.filter(username = request.user).exists():
             if room.mode == RoomMode.PUBLIC:
                 room.users.add(request.user)
                 room.inactive_users.add(request.user)
@@ -256,18 +261,26 @@ def room(request, room_code):
         offline_users = []
 
         for user in room.users.all():
-            if user not in room.active_users.all():
+            if not room.active_users.filter(username = user).exists():
                 offline_users.append(user)
 
-        new_room = request.user in room.inactive_users.all()
+        new_room = room.inactive_users.filter(username = request.user).exists()
 
         if new_room:
             room.inactive_users.remove(request.user)
             room.save()
+        
+        if room.code not in request.session:
+            request.session[room.code] = {
+                'default_panel': 'home'
+            }
+
+            request.session.modified = True
 
         data['room'] = room
         data['new_room'] = new_room
         data['offline_users'] = offline_users
+        data['session_data'] = request.session.get(room.code)
     else:
         return render(request, 'core/error.html', errors['invalid_room'])
 
