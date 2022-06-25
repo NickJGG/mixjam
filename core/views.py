@@ -887,4 +887,4 @@ def password_reset(request):
     })
 
 def ssl_validation(request):
-    return redirect(to=static('8A3D973566FBB24256364C68D5B03A1F.txt'))
+    return redirect(to=static('2C3B9EAF7A93B50467ACD8A6FB6C36AE.txt'))
