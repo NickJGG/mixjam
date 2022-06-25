@@ -1,0 +1,73 @@
+{% extends 'core/_base_auth.html' %}
+{% load static %}
+
+{% block title %}{{ room.title }}{% endblock %}
+
+{% block css %}
+	{{ block.super }}
+
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/test.css' %}">
+
+{% endblock %}
+
+{% block container %}
+
+    <div class = "dropdown-container">
+        <input type = "hidden" class = "dropdown-group" value = "1">
+        <input type = "hidden" class = "dropdown-layer" value = "1">
+
+        <div class = "dropdown-toggle">1/1</div>
+        <div class = "dropdown-element">
+            <div class = "dropdown-container">
+                <input type = "hidden" class = "dropdown-group" value = "1">
+                <input type = "hidden" class = "dropdown-layer" value = "2">
+        
+                <div class = "dropdown-toggle">1/2</div>
+                <div class = "dropdown-element"></div>
+            </div>
+        </div>
+    </div>
+    <div class = "dropdown-container">
+        <input type = "hidden" class = "dropdown-group" value = "1">
+        <input type = "hidden" class = "dropdown-layer" value = "1">
+
+        <div class = "dropdown-toggle">1/1</div>
+        <div class = "dropdown-element"></div>
+    </div>
+    <div class = "dropdown-container">
+        <input type = "hidden" class = "dropdown-group" value = "1">
+        <input type = "hidden" class = "dropdown-layer" value = "2">
+
+        <div class = "dropdown-toggle">1/2</div>
+        <div class = "dropdown-element"></div>
+    </div>
+    <div class = "dropdown-container">
+        <input type = "hidden" class = "dropdown-group" value = "2">
+        <input type = "hidden" class = "dropdown-layer" value = "1">
+
+        <div class = "dropdown-toggle">2/1</div>
+        <div class = "dropdown-element"></div>
+    </div>
+    <div class = "dropdown-container">
+        <input type = "hidden" class = "dropdown-group" value = "2">
+        <input type = "hidden" class = "dropdown-layer" value = "1">
+
+        <div class = "dropdown-toggle">2/1</div>
+        <div class = "dropdown-element"></div>
+    </div>
+    <div class = "dropdown-container">
+        <input type = "hidden" class = "dropdown-group" value = "2">
+        <input type = "hidden" class = "dropdown-layer" value = "2">
+
+        <div class = "dropdown-toggle">2/2</div>
+        <div class = "dropdown-element"></div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+	{{ block.super }}
+	
+	<script src = "{% static 'js/test.js' %}"></script>
+
+{% endblock %}

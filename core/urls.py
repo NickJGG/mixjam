@@ -10,9 +10,14 @@ from . import views
 urlpatterns = [
     path('', views.index, name = 'index'),
     path('callback/', views.callback, name = 'callback'),
+    
+    path('rooms/', views.rooms, name = 'rooms'),
+    path('announcements/', views.announcements, name = 'announcements'),
 
     path('r/<str:room_code>/', views.room, name = 'room'),
     path('i/<str:invite_code>/', views.invite, name = 'invite'),
+
+    path('test/', views.test, name = 'test'),
 
     path('notification/', views.notification, name = 'notification'),
     path('friend/request/', views.request_friend, name = 'request_friend'),
@@ -31,5 +36,5 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name = 'core/password_reset/password_reset_confirm.html'), name = 'password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name = 'core/password_reset/password_reset_complete.html'), name = 'password_reset_complete'),
 
-    path('.well-known/pki-validation/8A3D973566FBB24256364C68D5B03A1F.txt/', views.ssl_validation, name = 'ssl_validation'),
+    path('.well-known/pki-validation/2C3B9EAF7A93B50467ACD8A6FB6C36AE.txt/', views.ssl_validation, name = 'ssl_validation'),
 ]

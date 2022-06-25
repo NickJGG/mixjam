@@ -1,0 +1,175 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% load util %}
+
+{% block css %}
+	{{ block.super }}
+
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/_base_auth.css' %}">
+	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/messages.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+	<div id = "nav-header">
+        <div class = "nav-section">
+            <a href = "{% url 'index' %}">
+                <div id = "page-header" class = "nav-element">
+                    <img src = "{% static 'img/icons/logo/logo-red.png' %}">
+                </div>
+            </a>
+            <div id = "nav-links">
+                <a href = "{% url 'index' %}">
+                    <div class = "nav-link nav-element select-element icon-element expand-element {% block selected_home %}{% endblock %}">
+                        <img class = "selected" src = "{% static 'img/icons/home-white-filled-88.png' %}">
+                        <img src = "{% static 'img/icons/home-white-88.png' %}">
+                    </div>
+                </a>
+                <div class = "nav-link nav-element select-element icon-element expand-element {% block selected_rooms %}{% endblock %}">
+                    <img class = "selected" src = "{% static 'img/icons/musicrecord-white-filled-80.png' %}">
+                    <img src = "{% static 'img/icons/musicrecord-white-80.png' %}">
+                </div>
+            </div>
+        </div>
+        <div class = "nav-section">
+            <div id = "connection-container" class = "dropdown-container column bottom right">
+                <input type = "hidden" class = "dropdown-group" value = "1">
+                <input type = "hidden" class = "dropdown-layer" value = "1">
+                
+                <div class = "dropdown-toggle nav-element select-element icon-element">
+                    <img class = "connected" src = "{% static 'img/icons/connected-white-80.png' %}">
+                    <img class = "disconnected" src = "{% static 'img/icons/disconnected-white-80.png' %}">
+                </div>
+                <div class = "dropdown-element">
+                    <div class = "header no-margin">
+                        <div class = "header-info">
+                            <p>Connections</p>
+                        </div>
+                        <div class = "header-actions">
+                            <div class = "header-element dropdown-close">
+                                <img src = "{% static 'img/icons/close-white-56.png' %}">
+                            </div>
+                        </div>
+                    </div>
+                    <div id = "connection-list">
+                        <div id = "connection-online" class = "connection">
+                            <div class = "connection-image">
+                                <img src = "{% static 'img/icons/people-white-filled-80.png' %}">
+                            </div>
+                            <p class = "connection-name">Online Services</p>
+                            <p class = "connection-status">Disconnected</p>
+                        </div>
+                        <div id = "connection-room" class = "connection">
+                            <div class = "connection-image">
+                                <img src = "{% static 'img/icons/musicrecord-white-filled-80.png' %}">
+                            </div>
+                            <p class = "connection-name">Room Services</p>
+                            <p class = "connection-status">Disconnected</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id = "notification-container" class = "dropdown-container column bottom right">
+                <input type = "hidden" class = "dropdown-group" value = "1">
+                <input type = "hidden" class = "dropdown-layer" value = "1">
+                
+                <div class = "dropdown-toggle nav-link nav-element select-element icon-element expand-element">
+                    <img class = "selected" src = "{% static 'img/icons/notification-white-filled-80.png' %}">
+                    <img src = "{% static 'img/icons/notification-white-filled-80.png' %}">
+                </div>
+                <div class = "dropdown-element padding">
+                    <div class = "header">
+                        <div class = "header-info">
+                            <p>Notifications</p>
+                        </div>
+                        <div class = "header-actions">
+                            <div class = "header-element dropdown-close">
+                                <img src = "{% static 'img/icons/close-white-56.png' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id = "friends-container" class = "dropdown-container column bottom right">
+                <input type = "hidden" class = "dropdown-group" value = "1">
+                <input type = "hidden" class = "dropdown-layer" value = "1">
+
+                <div class = "dropdown-toggle nav-link nav-element select-element icon-element expand-element">
+                    <img class = "selected" src = "{% static 'img/icons/people-white-filled-80.png' %}">
+                    <img src = "{% static 'img/icons/people-white-filled-80.png' %}">
+                </div>
+                <div class = "dropdown-element padding">
+                    <div class = "header">
+                        <div class = "header-info">
+                            <p>Friends</p>
+                        </div>
+                        <div class = "header-actions">
+                            <div class = "header-element dropdown-close">
+                                <img src = "{% static 'img/icons/close-white-56.png' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id = "user-container" class = "dropdown-container column bottom right">
+                <input type = "hidden" class = "dropdown-group" value = "1">
+                <input type = "hidden" class = "dropdown-layer" value = "1">
+
+                <div class = "dropdown-toggle nav-element select-element">
+                    {% include 'core/blocks/profile-picture.html' with profile=user %}
+                </div>
+                <div class = "dropdown-element padding">
+                    <div class = "header">
+                        <div class = "header-info">
+                            <p>{{ user.username }}</p>
+                        </div>
+                        <div class = "header-actions">
+                            <div class = "header-element dropdown-close">
+                                <img src = "{% static 'img/icons/close-white-56.png' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id = "container">
+        {% block container %}
+        {% endblock %}
+    </div>
+
+    <div id = "nav-footer">
+        <a href = "{% url 'index' %}">
+            <div class = "nav-link nav-element select-element icon-element expand-element {% block selected_home2 %}{% endblock %}">
+                <img class = "selected" src = "{% static 'img/icons/feed-white-filled-72.png' %}">
+                <img src = "{% static 'img/icons/feed-white-72.png' %}">
+            </div>
+        </a>
+        <a href = "{% url 'index' %}">
+            <div class = "nav-link nav-element select-element icon-element expand-element {% block selected_rooms2 %}{% endblock %}">
+                <img class = "selected" src = "{% static 'img/icons/musicrecord-white-filled-80.png' %}">
+                <img src = "{% static 'img/icons/musicrecord-white-80.png' %}">
+            </div>
+        </a>
+        <a href = "{% url 'index' %}">
+            <div class = "nav-link nav-element select-element icon-element expand-element {% block selected_account2 %}{% endblock %}">
+                <img class = "selected" src = "{% static 'img/icons/account-white-filled-72.png' %}">
+                <img src = "{% static 'img/icons/account-white-72.png' %}">
+            </div>
+        </a>
+    </div>
+
+{% endblock %}
+	
+{% block js %}
+	{{ block.super }}
+
+	<script src = "{% static 'js/ajax.js' %}"></script>
+	<script src = "{% static 'js/base_auth.js' %}"></script>
+	<script type = "text/javascript">
+		var username = '{{ user.username }}';
+	</script>
+{% endblock %}

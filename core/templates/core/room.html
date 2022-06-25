@@ -1,4 +1,4 @@
-{% extends 'core/base_auth.html' %}
+{% extends 'core/_base_auth.html' %}
 {% load static %}
 
 {% block title %}{{ room.title }}{% endblock %}
@@ -7,8 +7,6 @@
 	{{ block.super }}
 
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/room.css' %}">
-	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/panel.css' %}">
-	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/subpanel.css' %}">
 	<link rel = "stylesheet" type = "text/css" href = "{% static 'css/settings.css' %}">
 
 	{% if room.banner_color != None %}
@@ -24,73 +22,11 @@
 {% endblock %}
 
 {% block page_name %}{{ room.title }}{% endblock %}
+{% block selected_rooms %}selected{% endblock %}
+{% block selected_rooms2 %}selected{% endblock %}
 
-{% block panel_labels %}
+{% block container %}
 
-	<div class = "panel-label item-label-trigger bottom {% if session_data.default_panel == 'home' %}selected{% endif %}">
-		<img src = "{% static 'img/icons/home-white-96.png' %}">
-		<p class = "item-label">Home</p>
-	</div>
-	<div class = "panel-label item-label-trigger bottom {% if session_data.default_panel == 'playlist' %}selected{% endif %}">
-		<img src = "{% static 'img/icons/music-note-white-96.png' %}">
-		<p class = "item-label">Playlist</p>
-	</div>
-
-	{% if room.leader == user %}
-
-		<div class = "panel-label item-label-trigger bottom">
-			<img src = "{% static 'img/icons/settings-white-96.png' %}">
-			<p class = "item-label">Settings</p>
-		</div>
-
-	{% endif %}
-
-{% endblock %}
-
-{% block user_utilities %}
-
-	<div id = "room-preferences" class = "popup-container user-utility column bottom right">
-		<div class = "popup-toggle item-label-trigger bottom">
-			<img src = "{% static 'img/icons/wrench-white-96.png' %}">
-			<p class = "item-label">Room Preferences</p>
-		</div>
-		<div class = "popup-element">
-			<div class = "header">
-				<p>Room Preferences</p>
-			</div>
-			<div id = "preferences">
-				<form method = "POST">
-					{% csrf_token %}
-			
-					<input type = "hidden" name = "section" value = "preferences">
-
-					<div class = "settings-list">
-						<div class = "setting">
-							<p class = "setting-label">Default Panel</p>
-							<div class = "radio-buttons">
-								<div class = "radio-button {% if session_data.default_panel == 'home' %}checked{% endif %}">
-									<input type = "radio" name = "default-panel" id = "radio-home" value = "home" {% if room.mode == 'public' %}checked{% endif %}>
-									<p>Home</p>
-								</div>
-								<div class = "radio-button {% if session_data.default_panel == 'playlist' %}checked{% endif %}">
-									<input type = "radio" name = "default-panel" id = "radio-playlist" value = "playlist" {% if room.mode == 'private' %}checked{% endif %}>
-									<p>Playlist</p>
-								</div>
-								<p class = "radio-message"></p>
-							</div>
-						</div>
-						<div class = "settings-actions">
-							<input type = "submit" value = "Save">
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-{% endblock %}
-
-{% block panel_container %}
 	{% if new_room %}
 
 		<div id = "user-message-container">
@@ -129,15 +65,209 @@
 
 	{% endif %}
 
-	{% include 'core/blocks/panels/room/home.html' with selected=True %}
-	{% include 'core/blocks/panels/room/playlist.html' %}
+	<div id = "room-container">
+		<div id = "room-info-container">
+			<div id = "room-details">
+				<div id = "room-cover">
+					<img src = "{{ room.playlist_image_url }}">
+				</div>
+				<p id = "room-title">{{ room.title }}</p>
+				<div id = "room-creator">
+					<img class = "label-image" src = "{% static 'img/icons/crown-white-88.png' %}">
 
-	{% if room.leader == user %}
-		{% include 'core/blocks/panels/room/settings.html' with room=room %}
-	{% endif %}
-	
-	<div id = "player-container">
-		<div id = "song-info">
+					{% include 'core/blocks/profile-picture.html' with profile=room.leader width='1.4em' height='1.4em' %}
+					
+					<p id = "creator-username">{{ room.leader.username }}</p>
+				</div>
+			</div>
+		</div>
+		<div id = "playlist-container">
+			<div id = "playlist">
+				
+			</div>
+		</div>
+		<div id = "social-container">
+
+		</div>
+	</div>
+	<div id = "player-container" class = "dropdown-container">
+		<input type = "hidden" class = "dropdown-group" value = "1">
+		<input type = "hidden" class = "dropdown-layer" value = "1">
+
+		<div id = "mobile-player" class = "dropdown-element">
+			<div id = "mp-header">
+				<div>
+					<div class = "player-element dropdown-close">
+						<img src = "{% static 'img/icons/downarrow-white-72.png' %}">
+					</div>
+				</div>
+				<div>
+					<div class = "player-element">
+						<img src = "{% static 'img/icons/spotify-80.png' %}">
+					</div>
+				</div>
+			</div>
+			<div id = "mp-body">
+				<div class = "current-song-image">
+					
+				</div>
+				<div id = "mp-details">
+					<p class = "current-song-title"></p>
+					<p class = "current-song-artist"></p>
+				</div>
+				<div class = "song-progress-container">
+					<!-- <p class = "song-progress-time">- : - -</p> -->
+					<p class = "song-progress-time">0:00</p>
+					<div class = "song-progress progress-container row">
+						<div class = "progress-complete">
+							<div class = "progress-thumb">
+								
+							</div>
+						</div>
+						<div class = "progress-incomplete">
+							
+						</div>
+					</div>
+					<!-- <p class = "song-total-time">- : - -</p> -->
+					<p class = "song-total-time">3:12</p>
+				</div>
+			</div>
+			<div id = "mp-controls">
+				<div class = "device-container dropdown-container column top right">
+					<input type = "hidden" class = "dropdown-group" value = "1">
+					<input type = "hidden" class = "dropdown-layer" value = "2">
+				
+					<div class = "dropdown-toggle player-element select-element icon-element">
+						<img src = "{% static 'img/icons/device-white-96.png' %}">
+					</div>
+					<div class = "dropdown-element">
+						<div class = "header no-margin">
+							<div class = "header-info">
+								<p>Devices</p>
+							</div>
+							<div class = "header-actions">
+								<div class = "header-element nav-element refresh-devices">
+									<img src = "{% static 'img/icons/refresh-white-96.png' %}">
+								</div>
+								<div class = "header-element nav-element dropdown-close">
+									<img src = "{% static 'img/icons/close-white-56.png' %}">
+								</div>
+							</div>
+						</div>
+						<div class = "device-list">
+							<div class = "device">
+								<input class = "device-id" type = "hidden" value = "{{ device.id }}">
+								<img src = "{% static 'img/icons/phone-white-88.png' %}">
+								<div class = "device-info">
+									<p class = "device-name">Nicks-PC</p>
+									<p class = "device-type">Computer</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class = "song-control player-element previous">
+					<img src = "{% static 'img/icons/rewind-white-70.png' %}">
+				</div>
+				<div class = "song-control player-element play">
+					<img class = "play" src = "{% static 'img/icons/play-white-56.png' %}">
+					<img class = "pause" src = "{% static 'img/icons/pause-white-56.png' %}">
+				</div>
+				<div class = "song-control player-element next">
+					<img src = "{% static 'img/icons/fastforward-white-70.png' %}">
+				</div>
+				<div class = "player-element">
+					<img src = "{% static 'img/icons/volume-white-88.png' %}">
+				</div>
+			</div>
+		</div>
+		<div id = "song-info" class = "dropdown-toggle">
+			<div class = "current-song-image">
+				
+			</div>
+			<div id = "song-details">
+				<p class = "current-song-title"></p>
+				<p class = "current-song-artist"></p>
+			</div>
+		</div>
+		<div id = "song-controller">
+			<div id = "song-controls">
+				<div class = "song-control player-element previous">
+					<img src = "{% static 'img/icons/rewind-white-70.png' %}">
+				</div>
+				<div class = "song-control player-element play">
+					<img class = "play" src = "{% static 'img/icons/play-white-56.png' %}">
+					<img class = "pause" src = "{% static 'img/icons/pause-white-56.png' %}">
+				</div>
+				<div class = "song-control player-element next">
+					<img src = "{% static 'img/icons/fastforward-white-70.png' %}">
+				</div>
+			</div>
+			<div class = "song-progress-container">
+				<!-- <p class = "song-progress-time">- : - -</p> -->
+				<p class = "song-progress-time">0:00</p>
+				<div class = "song-progress progress-container row">
+					<div class = "progress-complete">
+						<div class = "progress-thumb">
+							
+						</div>
+					</div>
+					<div class = "progress-incomplete">
+						
+					</div>
+				</div>
+				<!-- <p class = "song-total-time">- : - -</p> -->
+				<p class = "song-total-time">3:12</p>
+			</div>
+		</div>
+		<div id = "song-extra-controls">
+			<div class = "device-container dropdown-container column top right">
+				<input type = "hidden" class = "dropdown-group" value = "1">
+				<input type = "hidden" class = "dropdown-layer" value = "1">
+
+				<div class = "dropdown-toggle player-element select-element icon-element">
+					<img src = "{% static 'img/icons/device-white-96.png' %}">
+				</div>
+				<div class = "dropdown-element">
+					<div class = "header no-margin">
+						<div class = "header-info">
+							<p>Devices</p>
+						</div>
+						<div class = "header-actions">
+							<div class = "refresh-devices header-element nav-element">
+								<img src = "{% static 'img/icons/refresh-white-96.png' %}">
+							</div>
+						</div>
+					</div>
+					<div class = "device-list">
+						<div class = "device">
+							<input class = "device-id" type = "hidden" value = "{{ device.id }}">
+							<img src = "{% static 'img/icons/phone-white-88.png' %}">
+							<div class = "device-info">
+								<p class = "device-name">Nicks-PC</p>
+								<p class = "device-type">Computer</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id = "volume-container" class = "dropdown-container column top right">
+				<input type = "hidden" class = "dropdown-group" value = "1">
+				<input type = "hidden" class = "dropdown-layer" value = "1">
+
+				<div class = "dropdown-toggle player-element select-element icon-element">
+					<img src = "{% static 'img/icons/volume-white-88.png' %}">
+				</div>
+				<div class = "dropdown-element">
+					<p>;welrfuhwlehwlefuhwleiuhal;wiefukj</p>
+					<p>;welrfuhwlehwlefuhwleiuhal;wiefukj</p>
+					<p>;welrfuhwlehwlefuhwleiuhal;wiefukj</p>
+					<p>;welrfuhwlehwlefuhwleiuhal;wiefukj</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- <div id = "song-info">
 			<div id = "song-image">
 				<img>
 			</div>
@@ -173,11 +303,16 @@
 			<p id = "song-total-time">- : - -</p>
 		</div>
 		<div id = "extra-controls-container">
-			<div class = "popup-container column top right">
-				<div id = "history" class = "control popup-toggle">
+			<div id = "sync-playlist" class = "control item-label-trigger top">
+				<img src = "{% static 'img/icons/sync-white-96.png' %}">
+				<p class = "item-label">Sync Playlist</p>
+			</div>
+			<div class = "dropdown-container column top right">
+				<div id = "history" class = "control dropdown-toggle item-label-trigger top">
 					<img src = "{% static 'img/icons/history-white-96.png' %}">
+					<p class = "item-label">Room History</p>
 				</div>
-				<div id = "history-container" class = "popup-element">
+				<div id = "history-container" class = "dropdown-element">
 					<div class = "header">
 						<p>History</p>
 					</div>
@@ -191,11 +326,12 @@
 					
 				</div>
 			</div>
-			<div class = "popup-container column top right">
-				<div id = "devices" class = "control popup-toggle">
+			<div class = "dropdown-container column top right">
+				<div id = "devices" class = "control dropdown-toggle item-label-trigger top">
 					<img id = "devices-image" src = "{% static 'img/icons/device-white-96.png' %}">
+					<p class = "item-label">Devices</p>
 				</div>
-				<div id = "devices-container" class = "popup-element">
+				<div id = "devices-container" class = "dropdown-element">
 					<div class = "header">
 						<p>Devices</p>
 						<div id = "devices-options">
@@ -209,11 +345,12 @@
 					</div>
 				</div>
 			</div>
-			<div class = "popup-container column top right">
-				<div id = "volume" class = "control popup-toggle">
+			<div class = "dropdown-container column top right">
+				<div id = "volume" class = "control dropdown-toggle item-label-trigger top">
 					<img id = "volume-image" src = "{% static 'img/icons/speaker-white-96.png' %}">
+					<p class = "item-label">Volume</p>
 				</div>
-				<div id = "volume-container" class = "popup-element">
+				<div id = "volume-container" class = "dropdown-element">
 					<div id = "volume-progress" class = "progress-container column">
 						<div class = "progress-incomplete">
 							
@@ -226,39 +363,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-
-{% endblock %}
-
-{% block selector_options %}
-
-	<div id = "selector-users" class = "selector-option">
-		<img class = "side-panel-items-icon" src = "{% static 'img/icons/room-users-white-96.png' %}">
-	</div>
-
-{% endblock %}
-
-{% block hide_friends %}{% endblock %}
-{% block hide_friends_icon %}{% static 'img/icons/room-users-white-96.png' %}{% endblock %}
-
-{% block selector_groups %}
-
-	<div id = "group-users" class = "side-panel-items-group selected">
-		<div class = "side-panel-items-subgroup">
-
-			{% for room_user in room.active_users.all %}
-				{% include 'core/blocks/side-panel-items/room-user.html' with room_user=room_user %}
-			{% endfor %}
-
-		</div>
-		<div class = "side-panel-items-subgroup grayscale">
-
-			{% for room_user in offline_users %}
-				{% include 'core/blocks/side-panel-items/room-user.html' with room_user=room_user %}
-			{% endfor %}
-			
-		</div>
+		</div> -->
 	</div>
 
 {% endblock %}
@@ -269,22 +374,18 @@
 	{% static 'img/icons/pause-white-24.png' as pausePath %}
 	{% static 'img/icons/play-white-24.png' as playPath %}
 	{% static '' as static_url %}
-	{{ room_state|json_script:"roomState" }}
 	{{ room.code|json_script:"code" }}
 	{{ user.username|json_script:"username" }}
 	{{ room_state.song_state.is_playing|json_script:"is_playing" }}
 	
 	<script src = "{% static 'js/room.js' %}"></script>
-	<script src = "{% static 'js/panel.js' %}"></script>
-	<script src = "{% static 'js/tab.js' %}"></script>
-	<script src = "{% static 'js/settings.js' %}"></script>
+	<script src = "{% static 'js/jquery-mobile.js' %}"></script>
 	<script type = "text/javascript">
 		var code = JSON.parse(document.getElementById('code').textContent),
 			staticUrl = '{{ static_url }}',
 			pausePath = '{{ pausePath }}',
 			playPath = '{{ playPath }}',
-			playing = "{{ room_state.song_state.is_playing }}" == "True",
-			roomState = JSON.parse(document.getElementById('roomState').textContent);
+			playing = "{{ room_state.song_state.is_playing }}" == "True";
 	</script>
 
 {% endblock %}

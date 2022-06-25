@@ -136,6 +136,9 @@ input[type="radio"], input[type="file"]{
 	margin-top: 5px;
 }
 .radio-button{
+	--selected-color: var(--dark-green);
+	--hover-color: rgb(52, 52, 54);
+
 	width: calc(fit-content);
 
 	display: flex;
@@ -144,7 +147,7 @@ input[type="radio"], input[type="file"]{
 
 	padding: 10px 14px;
 
-	background-color: var(--light-black);
+	background-color: rgb(44, 44, 46);
 
 	border-radius: var(--border-radius);
 
@@ -153,13 +156,13 @@ input[type="radio"], input[type="file"]{
 	cursor: pointer;
 }
 .radio-button.checked{
-	background-color: var(--dark-green);
+	background-color: var(--selected-color);
 }
 .radio-button:not(:first-child){
 	margin-left: 6px;
 }
 .radio-button:not(.checked):hover{
-	background-color: #292929;
+	background-color: var(--hover-color);
 }
 .radio-button p{
 	position: relative;

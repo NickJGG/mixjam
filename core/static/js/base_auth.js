@@ -121,195 +121,76 @@ $(document).ready(function(){
         $(this).width($(this).height());
     });
 
-    $(document).on('click', ':not(.popup-element)', function(e){
-        var div = this;
+    $(document).on('click', '*', function(e){
+        var div = $(e.target),
+            isElement = div.hasClass('dropdown-element') || div.parents('.dropdown-element').length > 0,
+            isToggle = div.hasClass('dropdown-toggle') || div.parents('.dropdown-toggle').length > 0;
+        
+        var container = $(this).parents('.dropdown-container').first(),
+            toggle = container.find('.dropdown-toggle').first(),
+            inContainer = container.length > 0;
+        
+        var group = container.find('.dropdown-group').first().val(),
+            layer = parseInt(container.find('.dropdown-layer').first().val());
 
-        $('.popup-container:not(.barebones)').each(function(){
-            var toggle = $(this).find('.popup-toggle'),
-                element = $(this).find('.popup-element');
+        if (!isElement || isToggle){
+            if (inContainer){
+                container.toggleClass('open');
+                toggle.toggleClass('selected');
 
-            var target = $(div).parents('.popup-container')[0] == $(this)[0] || $(div)[0] == $(this)[0];
+                $('.dropdown-container').each(function(){
+                    var otherGroup = $(this).find('.dropdown-group').first().val(),
+                        otherLayer = parseInt($(this).find('.dropdown-layer').first().val()),
+                        otherToggle = $(this).find('.dropdown-toggle').first();
+                
+                    if (group == otherGroup && layer <= otherLayer){
+                        var otherContainer = $(this);
 
-            if (target && ($(div).hasClass('popup-element') || $(div).parents('.popup-element').length > 0))
-                return;
-
-            if (target && ($(div).hasClass('popup-toggle') || $(div).parents('.popup-toggle').length > 0)){
-                if (element.css('visibility') == 'visible'){
-                    $(this).removeClass('open');
-
-                    element.css({
-                        'visibility': 'hidden',
-                        'opacity': '0'
-                    });
-                } else {
-                    $(this).addClass('open');
-
-                    element.css({
-                        'visibility': 'visible',
-                        'opacity': '1'
-                    });
-                }
-            } else {
-                $(this).removeClass('open');
-
-                element.css({
-                    'visibility': 'hidden',
-                    'opacity': '0'
+                        if (otherContainer[0] != container[0]){
+                            otherContainer.removeClass('open');
+                            otherToggle.removeClass('selected');
+                        }
+                    }
                 });
-            }
-        });
-
-        e.stopPropagation();
-    });
-
-    $('#close-message').on('click', function(){
-        $('#user-message-container').css('display', 'none');
-    });
-
-    $('.message img').on('click', function(){
-        $(this).parent().remove();
-
-        if ($('#messages-container').children().length == 0){
-            $('#messages-container').remove();
-        }
-    });
-
-    $('.side-panel-items-controller').on('mouseenter', function(){
-        $(this).find('.popup-element').addClass('open');
-    });
-    $('.side-panel-items-controller .popup-element').on('mouseleave', function(){
-        $(this).removeClass('open');
-    });
-
-    $('.selector-option').hover(function(){
-        var id = $(this).prop('id'),
-            text = '';
-
-        if (id == 'selector-friends'){
-            text = 'Friends';
-        } else {
-            text = 'Room Users';
-        }
-
-        $(this).parents('.popup-element').find('.item-label').text(text);
-    });
-    $('.selector-option').on('click', function(){
-        var id = $(this).prop('id'),
-            name = id.split('selector-')[1];
-
-        if (id == 'selector-friends'){
-            $(this).parents('.popup-container').find('.popup-toggle img').attr('src', $(this).find('img').attr('src'));
-        } else {
-            $(this).parents('.popup-container').find('.popup-toggle img').attr('src', $(this).find('img').attr('src'));
-        }
-
-        $(this).appendTo($(this).parents('.selector-options'));
-
-        $(this).parents('.popup-element').removeClass('open');
-
-        $('#right-side-panel .side-panel-items-group').removeClass('selected');
-        $('#group-' + name).addClass('selected');
-    });
-
-    $(document).on('click', '.notification-action, .notification-action *', function(){
-        var accept = true,
-            notificationDiv = $(this).parents('.notification'),
-            notificationId = notificationDiv.find('.notification-id').val();
-
-        if ($(this).hasClass('notification-action')){
-            if ($(this).hasClass('close')){
-                notificationDiv.remove();
-
-                return;
+            } else{
+                $('.dropdown-container').removeClass('open');
+                $('.dropdown-container .dropdown-toggle').removeClass('selected');
             }
 
-            accept = $(this).hasClass('accept');
-        } else if ($(this).parents('.notification-action').hasClass('close')){
-            notificationDiv.remove();
+            e.stopPropagation();
+        } else if (isElement){
+            div.find('.dropdown-container').each(function(){
+                var otherLayer = parseInt($(this).find('.dropdown-layer').val());
+            
+                if (layer <= otherLayer){
+                    var otherContainer = $(this);
 
-            return;
-        } else
-            accept = $(this).parents('.notification-action').hasClass('accept');
-
-        $.ajax({
-            url: '/notification/',
-            type: 'POST',
-            data: {
-                notification_id: notificationId,
-                accept: accept
-            },
-            success: function(data){
-                console.log(data);
-
-                var notificationCount = parseInt($('#notification-badge p').text());
-
-                if (notificationCount > 1)
-                    $('#notification-badge p').text(notificationCount - 1);
-                else{
-                    $('#notification-badge p').text('0');
-                    
-                    $('#notification-badge').removeClass('show');
+                    if (otherContainer[0] != container[0]){
+                        otherContainer.removeClass('open');
+                    }
                 }
+            });
 
-                notificationDiv.remove();
-            },
-            failure: function(e){
-                console.log('failure');
+            var isClose = div.hasClass('dropdown-close') || div.parents('.dropdown-close').length > 0;
+
+            if (isClose){
+                container.removeClass('open');
+                toggle.removeClass('selected');
             }
-        });
-    });
 
-    $('#add-friend input').on('keypress', function(e){
-        if (e.which == 13){
-            sendFriendRequest();
+            e.stopPropagation();
         }
     });
-    $('#add-friend .preview-option.accept').on('click', sendFriendRequest);
 
-    $(document).on('click', '.preview-option.remove-friend, .preview-option.remove-friend *', function(){
-        var username = $(this).parents('.popup-container').find('input[name="username"]').val();
-
-        $.ajax({
-            url: '/friend/remove/',
-            type: 'POST',
-            data: {
-                username: username
-            },
-            success: function(data){
-                console.log(data);
-            },
-            failure: function(e){
-                console.log('failure');
-            }
-        });
+    $(document).on('click', '#song-info, #song-info *, #mobile-player .dropdown-close, #mobile-player .dropdown-close *', function(){
+        $('body').addClass('disabled');
     });
-    $(document).on('click', '.preview-option.add-friend, .preview-option.add-friend *', function(){
-        var username = $(this).parents('.popup-container').find('input[name="username"]').val();
-
-        sendFriendRequest(username);
-    });
-    $(document).on('click', '.preview-option.room-invite, .preview-option.room-invite *', function(){
-        var username = $(this).parents('.popup-container').find('input[name="username"]').val(),
-            roomCode = $(this).parents('.popup-container').find('input[name="room-code"]').val();
-
-        $.ajax({
-            url: '/room/invite/',
-            type: 'POST',
-            data: {
-                username: username,
-                room_code: roomCode
-            },
-            success: function(data){
-                console.log(data);
-            },
-            failure: function(e){
-                console.log('failure');
-            }
-        });
+    $(document).on('click', '#mobile-player .dropdown-close, #mobile-player .dropdown-close *', function(){
+        $('body').removeClass('disabled');
     });
 });
 
-var connections = [], connectionCount = 0;
+var connections = [];
 
 function registerConnection(socket, code, name, url, callback){
     connections.push({
@@ -320,14 +201,12 @@ function registerConnection(socket, code, name, url, callback){
         'callback': callback
     });
 
-    $('.connection.' + code).remove();
+    var connectionElement = $('#connection-' + code);
 
-    var template = $('.connection.template').clone();
-    template.find('.connection-name').text(name);
-    template.removeClass('template');
-    template.addClass(code);
-
-    template.insertBefore('.connection.template');
+    connectionElement.addClass('open');
+    connectionElement.addClass('connecting');
+    
+    connectionElement.find('.connection-status').text('Connecting...');
 
     socket.onopen = function(e){
         var i;
@@ -336,17 +215,13 @@ function registerConnection(socket, code, name, url, callback){
             var connection = connections[i];
 
             if (connection.socket == socket){
-                $('.connection.' + connection.code).removeClass('disconnected');
-                $('.connection.' + connection.code).addClass('connected');
-
-                $('.connection.' + connection.code + ' .connection-icon img.disconnected').hide();
-                $('.connection.' + connection.code + ' .connection-icon img.connected').show();
+                connectionElement.addClass('connected');
+                connectionElement.removeClass('connecting');
+                connectionElement.find('.connection-status').text('Connected');
 
                 break;
             }
         }
-
-        connectionCount++;
 
         updateConnectionStatus();
     };
@@ -357,11 +232,8 @@ function registerConnection(socket, code, name, url, callback){
             connection = connections[i];
 
             if (connection.socket == socket){
-                $('.connection.' + connection.code).removeClass('connected');
-                $('.connection.' + connection.code).addClass('disconnected');
-
-                $('.connection.' + connection.code + ' .connection-icon img.connected').hide();
-                $('.connection.' + connection.code + ' .connection-icon img.disconnected').show();
+                connectionElement.removeClass('connected');
+                connectionElement.find('.connection-status').text('Disconnected');
 
                 connections.remove(i);
 
@@ -377,35 +249,21 @@ function registerConnection(socket, code, name, url, callback){
             connection.callback(socket);
         }, 5000);
 
-        connectionCount--;
-
         updateConnectionStatus();
     };
 }
 function updateConnectionStatus(){
-    var image = $('#connection-container .popup-toggle img'), src = image.attr('src');
+    var totalConnections = $('.connection.open').length,
+        connectedCount = $('.connection.connected').length;
 
-    if (connectionCount == 0){
+    if (connectedCount == 0){
         $('#connection-container').removeClass('connected');
         $('#connection-container').removeClass('mixed');
-        $('#connection-container').addClass('disconnected');
-
-        $('#connection-container .popup-toggle img.connected').hide();
-        $('#connection-container .popup-toggle img.disconnected').show();
-        $('.connection.' + connection.code + ' .connection-icon img.disconnected').show();
-    } else if (connectionCount == connections.length){
-        $('#connection-container').removeClass('disconnected');
+    } else if (connectedCount == totalConnections){
         $('#connection-container').removeClass('mixed');
         $('#connection-container').addClass('connected');
-
-        $('#connection-container .popup-toggle img.disconnected').hide();
-        $('#connection-container .popup-toggle img.connected').show();
     } else {
-        $('#connection-container').removeClass('disconnected');
         $('#connection-container').removeClass('connected');
         $('#connection-container').addClass('mixed');
-
-        $('#connection-container .popup-toggle img.disconnected').hide();
-        $('#connection-container .popup-toggle img.connected').show();
     }
 }

@@ -1,7 +1,7 @@
-{% extends 'core/base_auth.html' %}
+{% extends 'core/_base_auth.html' %}
 {% load static %}
 
-{% block title %}{{ error_title }}{% endblock %}
+{% block title %}{% if error_title %}{{ error_title }}{% else %}Error{% endif %}{% endblock %}
 
 {% block css %}
 	{{ block.super }}
@@ -10,17 +10,7 @@
 
 {% endblock %}
 
-{% block page_name %}
-
-    {% if error_title %}
-        {{ error_title }}
-    {% else %}
-        Error
-    {% endif %}
-
-{% endblock %}
-
-{% block panel_container %}
+{% block container %}
 	
 	<div id = "error-container">
         <img src = "{% static 'img/not-found-96.png' %}">

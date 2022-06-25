@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'ydh#&zkf&ru@j*5_nxitp1w=uj2m$h9_y!#(@#t_j+(m=j9$y#'
 
-ALLOWED_HOSTS = ['localhost', 'syncified.herokuapp.com', 'www.mixjam.io', 'mixjam.io']
+ALLOWED_HOSTS = ['localhost', 'syncified.herokuapp.com', 'www.mixjam.io', 'mixjam.io', '10.0.0.53']
 
 INSTALLED_APPS = [
     'channels',

@@ -165,7 +165,6 @@ body{
 		.profile-picture{
 			--width: 200px;
 			--height: 200px;
-			--background-color: var(--blue);
 		
 			width: var(--width);
 			height: var(--height);
@@ -175,8 +174,6 @@ body{
 			justify-content: center;
 		
 			position: relative;
-			
-			background-color: var(--background-color);
 		
 			border-radius: var(--border-radius);
 			
@@ -218,9 +215,9 @@ body{
 		margin-left: 15px;
 	}
 	#logo{
-		height: 36px;
+		height: 2rem;
 		
-		margin-right: 20px;
+		margin-right: 1rem;
 	}
 	#page-info{
 		display: flex;
@@ -228,7 +225,7 @@ body{
 	}
 	#page-name{
 		font-family: Roboto-Medium;
-		font-size: 24px;
+		font-size: 1.5rem;
 		color: white;
 	}
 
@@ -898,9 +895,9 @@ body{
 				cursor: pointer;
 			}
 			.preview-option:hover{ background-color: #333; }
-			.preview-option.blue:hover{ background-color: var(--blue-hover); }
-			.preview-option.red:hover{ background-color: var(--red-hover); }
-			.preview-option.green:hover{ background-color: var(--dark-green); }
+			.preview-option.blue:hover{ background-color: var(--blue); }
+			.preview-option.red:hover{ background-color: var(--red); }
+			.preview-option.green:hover{ background-color: var(--dark); }
 			.preview-option:not(:first-child){
 				margin-left: calc(var(--panel-padding) / 2);
 			}
@@ -1178,6 +1175,29 @@ body{
 	}
 	.footer-link:hover{
 		background-color: var(--red);
+	}
+
+/* #endregion */
+
+/* #region MEDIA QUERIES */
+
+	@media (min-width:320px){ /* smartphones, iPhone, portrait 480x320 phones */
+		
+	}
+	@media (min-width:481px){ /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */
+		
+	}
+	@media (min-width:641px){ /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */
+		
+	}
+	@media (min-width:961px){ /* tablet, landscape iPad, lo-res laptops ands desktops */
+		
+	}
+	@media (min-width:1025px){ /* big landscape tablets, laptops, and desktops */
+		
+	}
+	@media (min-width:1281px){ /* hi-res laptops and desktops */
+		
 	}
 
 /* #endregion */

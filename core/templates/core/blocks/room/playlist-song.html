@@ -1,33 +1,23 @@
 {% load static %}
 
-<div class = "song">
+<div class = "pl-song">
     <div class = "song-info">
-        <div class = "song-cover">
+        <div class = "song-image">
             <img src = "">
-
-            <div class = "song-play">
-                <img src = "{% static 'img/icons/play-white-24.png' %}">
-            </div>
         </div>
         <div class = "song-details">
             <p class = "song-title"></p>
             <p class = "song-artist"></p>
         </div>
-        <div class = "song-album">
-            <img src = "{% static 'img/icons/album-white-96.png' %}">
-            <p></p>
-        </div>
     </div>
     <div class = "song-actions">
-        <a class = "song-link no-underline" href = "" target = "_blank" rel = "noopener noreferrer">
-            <div class = "song-action item-label-trigger left">
-                <img src = "{% static 'img/icons/spotify-96.png' %}">
-
-                <p class = "item-label">Open in Spotify</p>
+        <div class = "song-action dropdown-container row left">
+            <div class = "dropdown-toggle">
+                <img src = "{% static 'img/icons/more-white-64.png' %}">
             </div>
-        </a>
-    </div>
-    <div class = "song-extras">
-        <p class = "song-length"></p>
+            <div class = "dropdown-element">
+                <p>MORE</p>
+            </div>
+        </div>
     </div>
 </div>

@@ -13,6 +13,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.templatetags.static import static
 from django.template.loader import render_to_string
@@ -26,6 +27,9 @@ import spotify as spotify_auth
 from syncify import settings
 
 from .models import *
+from .decorators import *
+
+from . import errors
 
 from . import spotify
 from .templatetags import util
@@ -33,40 +37,13 @@ from .templatetags import util
 client_id = os.environ.get('CLIENT_ID')
 client_secret = os.environ.get('CLIENT_SECRET')
 
-errors = {
-    'no_link': {
-        'error_title': 'Spotify Link Error',
-        'error_message': 'No Spotify account linked',
-        'error_code': 100
-    },
-    'non_member': {
-        'error_title': 'Room Error',
-        'error_message': 'You are not a member of this room',
-        'error_code': 101
-    },
-    'invalid_invite': {
-        'error_title': 'Invite Error',
-        'error_message': 'Invite code invalid',
-        'error_code': 102
-    },
-    'expired_invite': {
-        'error_title': 'Invite Error',
-        'error_message': 'Invite code expired',
-        'error_code': 103
-    },
-    'invalid_room': {
-        'error_title': 'Invite Error',
-        'error_message': 'Room does not exist',
-        'error_code': 104
-    }
-}
-
 def index(request):
     if request.user.is_authenticated:
         return home(request)
     else:
         return landing(request)
 
+@authorization_required
 def home(request):
     if request.POST:
         name = request.POST.get('room-name')
@@ -112,13 +89,6 @@ def home(request):
         else:
             rooms = [room for room in rooms if room.pk != request.user.userprofile.most_recent_room.pk]
 
-    response = spotify.get(request.user, spotify.endpoints['current_user_playlists'])
-
-    if request.user.userprofile.authorized:
-        playlists = response.json()['items']
-    else:
-        return render(request, 'core/error.html', errors['no_link'])
-
     if request.user.userprofile.new_user:
         new_user = True
 
@@ -129,7 +99,7 @@ def home(request):
 
     return render(request, 'core/home.html', {
         'other_rooms': rooms,
-        'playlists': playlists,
+        'recent_room': request.user.userprofile.most_recent_room if request.user.userprofile.most_recent_room is not None else None,
         'new_user': new_user
     })
 
@@ -150,6 +120,21 @@ def callback(request):
 
     return redirect('index')
 
+def rooms(request):
+    user_rooms = Room.objects.filter(users = request.user).all()
+
+    return render(request, 'core/rooms.html', {
+        'rooms': user_rooms,
+    })
+
+def announcements(request):
+    announcements = Room.objects.filter(users = request.user).all()
+
+    return render(request, 'core/announcements.html', {
+        'announcements': announcements,
+    })
+
+@authorization_required
 def room(request, room_code):
     data = {
         'in_room': True
@@ -251,7 +236,7 @@ def room(request, room_code):
                 room.inactive_users.add(request.user)
                 room.save()
             else:
-                return render(request, 'core/error.html', errors['non_member'])
+                return errors.non_member(request)
 
         request.user.userprofile.most_recent_room = room
         request.user.userprofile.save()
@@ -282,7 +267,7 @@ def room(request, room_code):
         data['offline_users'] = offline_users
         data['session_data'] = request.session.get(room.code)
     else:
-        return render(request, 'core/error.html', errors['invalid_room'])
+        return errors.invalid_room(request)
 
     return render(request, 'core/room.html', data)
 
@@ -299,9 +284,9 @@ def invite(request, invite_code):
 
             return redirect('room', room_code = room.code)
         else:
-            return render(request, 'core/error.html', errors['expired_invite'])
+            return errors.expired_invite(request)
     else:
-        return render(request, 'core/error.html', errors['invalid_invite'])
+        return errors.invalid_invite(request)
 
 def account(request):
     authorized = spotify.refresh_token(request.user)
@@ -886,5 +871,10 @@ def password_reset(request):
         'password_reset_form': password_reset_form
     })
 
+def test(request):
+    return render(request, 'core/test.html')
+
 def ssl_validation(request):
-    return redirect(to=static('8A3D973566FBB24256364C68D5B03A1F.txt'))
+    return redirect(to=static('2C3B9EAF7A93B50467ACD8A6FB6C36AE.txt'))
+
+from django.contrib.auth.decorators import user_passes_test

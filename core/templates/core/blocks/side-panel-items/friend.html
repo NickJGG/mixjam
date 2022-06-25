@@ -1,7 +1,7 @@
-<div id = "friend-{{ friend.username }}" class = "popup-container row top left margin">
+<div id = "friend-{{ friend.username }}" class = "side-panel-item popup-container row top left margin">
     <input type = "hidden" name = "username" value = "{{ friend.username }}">
 
-    <div class = "side-panel-item item-label-trigger left room popup-toggle">
+    <div class = "item-label-trigger left room popup-toggle">
         {% include 'core/blocks/profile-picture.html' with user=friend width='100%' height='100%' %}
         <p class = "item-label no-underline">{{ friend.username }}</p>
     </div>

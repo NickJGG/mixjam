@@ -1,11 +1,14 @@
-#panel-container{
+#container{
     align-items: center;
     justify-content: center;
 }
 
 #error-container{
+    height: 100%;
+
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
 
     box-sizing: border-box;

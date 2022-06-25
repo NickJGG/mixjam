@@ -77,7 +77,7 @@ class UserProfilePicture(models.Model):
 
 class Room(models.Model):
     code = models.CharField(max_length = 30)
-    title = models.CharField(max_length=150, default="New Room")
+    title = models.CharField(max_length = 150, default = "New Room")
     description = models.CharField(max_length = 1000, default = "")
     banner_color = models.CharField(max_length = 6, null = True, blank = True, default = 'ec4a4e')
     mode = models.CharField(max_length = 50, choices = RoomMode.MODE_CHOICES, default = RoomMode.PRIVATE)
@@ -85,8 +85,8 @@ class Room(models.Model):
     invite_code = models.CharField(max_length = 6, null = True, blank = True)
     invite_time = models.DateTimeField(blank = True, null = True)
 
-    leader = models.ForeignKey(User, on_delete=models.CASCADE)
-    time_created = models.DateTimeField(auto_now_add=True)
+    leader = models.ForeignKey(User, on_delete = models.CASCADE)
+    time_created = models.DateTimeField(auto_now_add = True)
 
     playlist_id = models.CharField(max_length = 50, null = True)
     playlist_image_url = models.CharField(max_length = 250, null = True, blank = True)

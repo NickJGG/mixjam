@@ -1,4 +1,4 @@
-{% extends 'core/base_auth.html' %}
+{% extends 'core/_base_auth.html' %}
 {% load static %}
 
 {% block title %}Home{% endblock %}
@@ -14,25 +14,10 @@
 {% endblock %}
 
 {% block page_name %}Home{% endblock %}
+{% block selected_home %}selected{% endblock %}
+{% block selected_home2 %}selected{% endblock %}
 
-{% block panel_labels %}
-
-	<div class = "panel-label item-label-trigger bottom selected">
-		<img src = "{% static 'img/icons/home-white-96.png' %}">
-		<p class = "item-label">Home</p>
-	</div>
-	<div class = "panel-label item-label-trigger bottom">
-		<img src = "{% static 'img/icons/invite-room-white-96.png' %}">
-		<p class = "item-label">Create Room</p>
-	</div>
-	<div class = "panel-label item-label-trigger bottom">
-		<img src = "{% static 'img/icons/home-white-30.png' %}">
-		<p class = "item-label">FAQ</p>
-	</div>
-		
-{% endblock %}
-
-{% block panel_container %}
+{% block container %}
 
 	{% if new_user %}
 
@@ -54,9 +39,70 @@
 
 	{% endif %}
 
-	{% include 'core/blocks/panels/home/home.html' with rooms=rooms selected=True %}
-	{% include 'core/blocks/panels/home/create.html' %}
-	{% include 'core/blocks/panels/home/faq.html' %}
+	<div class = "section">
+		<div class = "section-header">
+			<p class = "section-label">Your Rooms</p>
+		</div>
+		<div id = "room-list" class = "section-content">
+			{% if recent_room %}
+
+				<a class = "no-underline" role = "button" tabIndex = 0 href = "{% url 'room' room_code=recent_room.code %}">
+					<div class = "room playing">
+						<div class = "room-cover">
+							<div class = "room-image" style = "background-image: url({{ recent_room.playlist_image_url }})"></div>
+							<div class = "room-playing">
+								<img src = "{% static 'img/icons/animation/logo2/logo.gif' %}">
+								<p>Playing</p>
+							</div>
+						</div>
+						<div class = "room-info">
+							<p class = "room-name">{{ recent_room.title }}</p>
+							<div class = "room-users">
+								<img class = "label-image" src = "{% static 'img/icons/twopeople-white-88.png' %}">
+
+								{% for profile in recent_room.users.all|slice:"0:4" %}
+									{% include 'core/blocks/profile-picture.html' with profile=profile width='1.4em' height='1.4em' %}
+								{% endfor %}
+
+								{% if recent_room.users.all|length > 4 %}
+									<p>+{{ recent_room.users.all|length|add:"-4" }}</p>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</a>
+
+			{% endif %}
+
+			{% for room in other_rooms %}
+
+				<a class = "no-underline" href = "{% url 'room' room_code=room.code %}">
+					<div class = "room">
+						<div class = "room-cover">
+							<div class = "room-image" style = "background-image: url({{ room.playlist_image_url }})">
+
+							</div>
+						</div>
+						<div class = "room-info">
+							<p class = "room-name">{{ room.title }}</p>
+							<div class = "room-users">
+								<img class = "label-image" src = "{% static 'img/icons/twopeople-white-88.png' %}">
+
+								{% for profile in room.users.all|slice:"0:4" %}
+									{% include 'core/blocks/profile-picture.html' with profile=profile width='1.4em' height='1.4em' %}
+								{% endfor %}
+
+								{% if room.users.all|length > 4 %}
+									<p>+{{ room.users.all|length|add:"-4" }}</p>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</a>
+
+			{% endfor %}
+		</div>
+	</div>
 
 {% endblock %}
 
