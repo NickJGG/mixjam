@@ -41,8 +41,8 @@ class RoomMode(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
     tag_line = models.CharField(max_length = 50, default = 'Jammer')
-    access_token = models.CharField(blank = True, null = True)
-    refresh_token = models.CharField(blank = True, null = True)
+    access_token = models.CharField(max_length = 255, blank = True, null = True)
+    refresh_token = models.CharField(max_length = 255, blank = True, null = True)
     authorized = models.BooleanField(default = False)
     most_recent_room = models.ForeignKey('Room', blank = True, null = True, on_delete = models.SET_NULL, related_name = 'most_recent_name')
     friends = models.ManyToManyField(User, blank = True, related_name = 'friends')
