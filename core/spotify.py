@@ -276,7 +276,7 @@ def refresh_token(user):
     else:
         user.userprofile.authorized = False
     
-    print(f'----- { user.userprofile.username } -----')
+    print(f'----- { user.username } -----')
     print(user.userprofile.access_token)
     print(user.userprofile.refresh_token)
 
